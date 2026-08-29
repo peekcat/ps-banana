@@ -11,8 +11,11 @@
 | `Xiasanqi-Wheelchair.zip` | 3,170,646 | `b6455f0a543ed189c3f3a5a56cd6be887ea190a9e9751bc566276e1f792e1e2c` |
 | `6.6.3 for mac.zip` | 3,151,595 | `03d485c8a5cbb45d6054581452a51884a43d04e3a052369f45f4de2a75033b85` |
 | `轮椅6.6.3_安装程序.exe` | 5,137,900 | `5800aa7404f928f0814f0c9edf0e1e328ed22548775a6b67c35d02eb1eee5373` |
+| `Plug-ins.zip` | 29,389 | `b456ad641691558a29fd036ed9371a9fc1f2207911ecc41b81a6ff0a644b194b` |
 
-三者是同一版本 6.6.3 的三种分发形式，不是三个不同的东西。
+前三者是同一版本 6.6.3 的三种分发形式，不是三个不同的东西。
+
+`Plug-ins.zip` 是补充来源，不是上游分发包：在 Windows 上实际跑完 `轮椅6.6.3_安装程序.exe` 之后，从 Photoshop 的 `Plug-ins` 目录取回的两个配套插件（详见下文「配套插件」）。
 
 ## 两个 zip 的关系：内容完全相同
 
@@ -50,21 +53,39 @@ mac.zip 条目 621 / 磁盘文件 621
 
 即 `plugin/` 同时匹配两个独立打包的原始包，可以确信内容无损。
 
-## 已知缺失
+## 配套插件
 
-`plugin/` **不是完整的安装目录**。插件代码里 `tile-browser.host.js:74` 和 `bootstrap-handlers.js:573` 会从插件目录读取两个配套包：
+两个 zip 分发包都**不含**配套插件，但主插件的一键安装流程会从自己的插件目录读它们：
 
-- `browser-pkg.zip` —— 浏览器面板，`BROWSER_LATEST_VERSION = '1.0.1'`
-- `satellite-pkg.zip` —— 卫星面板 / 轮椅遥控器，版本 `2.0.0`
+```
+tile-browser.host.js:74    pluginFolder.getEntry('browser-pkg.zip')
+bootstrap-handlers.js:573  pluginFolder.getEntry('satellite-pkg.zip')
+```
 
-两个 zip 分发包里都没有这两个文件。它们是**内置**的（`pluginFolder.getEntry(...)`）而非运行时下载，所以唯一的副本在 `轮椅6.6.3_安装程序.exe` 里面——exe 5.1MB 比 zip 的 3.1MB 多出的约 2MB 大致就是它们。
+是**内置**读取而非运行时下载，所以唯一副本在 `轮椅6.6.3_安装程序.exe` 里（exe 5.1MB 比 zip 的 3.1MB 多出约 2MB）。
 
-**exe 目前拆不开**：它是 Inno Setup 6.7.0 打的，而 innoextract 最新的 1.10-dev 只支持到 6.3.3。手工解 `zlb\x1a` 压缩块也失败——6.7 改了容器布局，块头的 CRC 与 stored_size 都校验不过。
+**exe 至今拆不开**：Inno Setup 6.7.0 打的，innoextract 最新的 1.10-dev 只支持到 6.3.3。手工解 `zlb\x1a` 压缩块也失败——6.7 改了容器布局，块头的 CRC 与 stored_size 都校验不过。
 
-取回这两个包的可行途径，按可靠性排序：
+**已通过实机安装绕过**：在 Windows 上跑完安装程序，从 Photoshop 的 `Plug-ins` 目录取回两个插件文件夹，即 `Plug-ins.zip`，解包到 `companion/`：
 
-1. 在 Windows 机器（或虚拟机）上跑一遍 `轮椅6.6.3_安装程序.exe`，把装出来的插件目录里的 `browser-pkg.zip` / `satellite-pkg.zip` 拷回来。最稳。
-2. 等 innoextract 支持 Inno Setup 6.7 后重拆 exe。
-3. 用 `innounp`（Windows 专用的 Inno 解包器，对新版本跟进较快）。
+| 插件 | id | 版本 | 主插件期待值 |
+|---|---|---|---|
+| 轮椅浏览器 | `com.xiasanqi.ps.wheelchair.browser` | 1.0.1 | `BROWSER_LATEST_VERSION = '1.0.1'` ✅ |
+| 轮椅遥控器 v2 | `com.xiasanqi.ps.wheelchair.v6.satellite` | 2.0.0 | `latestVersion = '2.0.0'` ✅ |
 
-拿到后放进 `plugin/`，在 `upstream` 分支补一次提交并重打 tag。
+版本与主插件里硬编码的常量吻合，可确认是配套的同一批。安装目标目录名也对得上（`BROWSER_DIR_NAME = '轮椅浏览器'`、`targetDir = pluginsDir + '\轮椅遥控器'`）。
+
+## 重建的文件（非上游原始字节）
+
+`plugin/browser-pkg.zip` 和 `plugin/satellite-pkg.zip` 由 `_originals/build-pkgs.py` 从 `companion/` 重建，**不是**上游的原始字节。
+
+布局依据 `install_browser.bat` / `install_satellite.bat` 的行为：
+
+```powershell
+Expand-Archive -Path <pkg.zip> -DestinationPath <PS Plug-ins\轮椅浏览器>
+if (-not (Test-Path (Join-Path $d 'manifest.json'))) { 报错 }
+```
+
+即 zip 根目录下直接是 `manifest.json` 等文件，不能有包裹目录。脚本构建后会按这条判据自检，并用源文件自身的 mtime 保证可重复构建。
+
+上游那两个 zip 的确切字节（压缩参数、条目顺序、是否还有别的文件）无从得知，这里只保证**解压后的文件内容与实际安装出来的一致**。若日后 exe 能拆开，应以其中的原始 zip 为准替换。

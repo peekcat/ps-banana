@@ -22,9 +22,10 @@ GPL v3。见 `LICENSE`。
 
 ```
 plugin/       主插件源码，621 个文件，原样解包自上游 zip
-_originals/   三个原始分发包 + 解包脚本 extract.py
+companion/    两个配套插件源码：轮椅浏览器 1.0.1、轮椅遥控器 2.0.0
+_originals/   原始分发包 + 解包脚本 extract.py + 配套包重建脚本 build-pkgs.py
 LICENSE       GPL-3.0 全文（上游分发缺这个文件，此处补上）
-PROVENANCE.md 来源、SHA256、校验结果、已知缺失
+PROVENANCE.md 来源、SHA256、校验结果、重建说明
 ```
 
 ## 分支
@@ -86,6 +87,21 @@ cpolar 是内网穿透的临时域名，随时可能变更或失效。要换地�
 
 因此长期可持续的方向是转向纯 BYOK，或自建一套后台顶替这些 `/api/*` 端点。
 
-## 缺失
+## 配套插件
 
-`plugin/` 不是完整的安装目录，缺两个内置的配套插件包：`browser-pkg.zip`（浏览器面板 1.0.1）和 `satellite-pkg.zip`（卫星面板 2.0.0）。两个 zip 分发包里都没有，唯一副本在 exe 安装包里，而该 exe 目前拆不开。详见 `PROVENANCE.md`。
+主插件带一键安装两个配套插件的功能，会从自己的插件目录读 `browser-pkg.zip` / `satellite-pkg.zip`。这两个文件上游的 zip 分发包里没有，只有 exe 安装包里有，而该 exe 拆不开（Inno Setup 6.7，innoextract 只支持到 6.3.3）。
+
+已通过在 Windows 上实机安装绕过：配套插件源码在 `companion/`，`plugin/` 下的两个 pkg zip 由 `_originals/build-pkgs.py` 重建——
+
+```
+python3 _originals/build-pkgs.py
+```
+
+| 插件 | 版本 | 说明 |
+|---|---|---|
+| `companion/轮椅浏览器/` | 1.0.1 | 浏览器面板，PS ≥ 24.0.0 |
+| `companion/轮椅遥控器/` | 2.0.0 | 遥控器 / 卫星面板，PS ≥ 26.0.0 |
+
+两者也可以单独用 UDT 加载，不必走主插件的安装流程（那个流程是 Windows 专用的 .bat）。
+
+注意 `plugin/browser-pkg.zip` 和 `plugin/satellite-pkg.zip` 是**重建产物**，不是上游原始字节，详见 `PROVENANCE.md`。
