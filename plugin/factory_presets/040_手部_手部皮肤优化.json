@@ -1,0 +1,9 @@
+{
+  "id": "f_039",
+  "title": "手部皮肤优化",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_hand_shape\":\"保持手部形状姿势完全不变\",\"preserve_nail_polish\":\"如有甲油保持颜色不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析手部皮肤状态：皱纹/干纹深度、老茧位置、青筋突出程度、关节暗沉、肤色与面部的色差、指甲状态、光源方向\"},\"skin_refinement\":{\"wrinkle_reduction\":{\"action\":\"减弱手部皱纹和干纹深度约50-65%\",\"method\":\"高低频分离：低频层平滑整体起伏，高频层保留微细纹理走向\",\"preserve\":\"保留约35-50%的自然纹路避免塑料感，手指关节弯曲纹必须保留\"},\"vein_reduction\":{\"action\":\"减弱手背青筋突出的可见度约40-60%\",\"method\":\"降低青筋区域的色彩对比度和阴影深度\",\"limit\":\"保留微弱的血管纹路作为真实感基底\"},\"color_unification\":{\"action\":\"统一手部肤色\",\"target\":\"手部整体肤色趋近面部肤色(白皙/红润/通透)\",\"joint_brightening\":\"指关节暗沉区域提亮到与周围一致\",\"callus\":\"消除手掌/指侧的老茧泛黄\"},\"moisture_gloss\":{\"hydration\":\"手部皮肤呈现水润细腻质感\",\"sheen\":\"手背微弱的健康光泽，不油腻\",\"fingertip\":\"指尖皮肤细腻粉嫩\"},\"nail_cleanup\":{\"shape\":\"指甲形状修整为整齐的圆弧或方圆型\",\"surface\":\"甲面光滑有自然光泽，无坑洼竖纹\",\"color\":\"自然粉色健康指甲色(或保持甲油色)\",\"cuticle\":\"甲沟整洁无倒刺\"}},\"constraints\":{\"严禁\":\"改变手部形状大小姿势、皮肤过度磨皮呈婴儿感、手指变形\",\"禁止\":\"纹理完全消除呈塑料感、指甲过于完美呈假甲感\"},\"integration\":{\"color_continuity\":\"手部肤色与手臂/全身肤色协调\",\"noise_match\":\"噪点一致\"}}",
+  "category": "hands",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

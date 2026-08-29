@@ -1,0 +1,940 @@
+/* ============================================================
+ *  tile-poster.css — 海报排版磁贴
+ *  仅保留 w10 体系不能覆盖的:缩略图网格 / details 折叠 / 紧凑窄面板
+ * ============================================================ */
+
+/* === 顶部大类 tab 行(放在 w10-panel 内第一个 row) === */
+.poster-tab-row{
+  display:flex;
+  gap:6px;
+  margin-bottom:14px;
+}
+.poster-tab-row .w10-btn{
+  flex:1;
+  padding:8px 14px;
+  font-size:11px;
+}
+
+/* === 重渲时关闭入场动画(避免每次按钮点击整面板闪一下) ===
+   首次展开磁贴时 .w10-panel 走 stagger 动画;之后任何重渲(切大类/添加页/删图等)
+   会带 .poster-no-anim 类,直接显示,无动画 → 用户感知不到刷新 */
+.w10-panel.poster-no-anim,
+.w10-panel.poster-no-anim > *{
+  animation:none !important;
+}
+
+/* === details 折叠通用 === */
+.poster-fold{
+  margin:0;
+  padding:0;
+}
+.poster-fold > summary{
+  list-style:none;
+  cursor:pointer;
+  user-select:none;
+  /* 复用 w10-section-title 的视觉,但加左侧三角 */
+  font-size:11px;
+  font-weight:600;
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  padding:6px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  margin-top:14px;
+  margin-bottom:8px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.poster-fold > summary::-webkit-details-marker{display:none}
+.poster-fold > summary::before{
+  content:'▸';
+  display:inline-block;
+  font-size:9px;
+  transition:transform 0.15s;
+  color:var(--text-sub);
+}
+.poster-fold[open] > summary::before{
+  transform:rotate(90deg);
+  color:var(--accent);
+}
+.poster-fold > summary .poster-fold-meta{
+  margin-left:auto;
+  font-size:9px;
+  color:var(--text-sub);
+  font-weight:500;
+  text-transform:none;
+  letter-spacing:0;
+}
+
+/* === 智能填写 textarea === */
+.poster-autofill-input{
+  width:100%;
+  min-height:90px;
+  max-height:180px;
+  padding:8px 10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:4px;
+  color:var(--text);
+  font-size:11px;
+  line-height:1.5;
+  font-family:'Segoe UI','Microsoft YaHei',sans-serif;
+  resize:vertical;
+  outline:none;
+  box-sizing:border-box;
+}
+.poster-autofill-input:focus{
+  border-color:var(--accent);
+}
+.poster-autofill-hint{
+  font-size:10px;
+  color:var(--text-sub);
+  line-height:1.5;
+  margin:6px 0 8px;
+}
+.poster-autofill-actions{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:6px;
+}
+.poster-autofill-status{
+  flex:1 1 auto;
+  font-size:10px;
+  color:var(--text-sub);
+  word-break:break-word;
+  line-height:1.4;
+}
+.poster-autofill-status.is-loading{color:var(--accent)}
+.poster-autofill-status.is-loading::before{content:'⏳ '}
+.poster-autofill-status.is-err{color:#ff8a8a}
+
+/* === pill 组(用于 single/multi-select) === */
+.poster-pill-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  justify-content:flex-end;
+}
+.poster-pill{
+  padding:4px 10px;
+  font-size:10px;
+  border-radius:11px;
+  border:1px solid rgba(255,255,255,0.1);
+  background:rgba(255,255,255,0.04);
+  color:var(--text-sub);
+  cursor:pointer;
+  white-space:nowrap;
+  transition:all 0.12s;
+}
+.poster-pill:hover{
+  background:rgba(255,255,255,0.08);
+  color:var(--text);
+}
+.poster-pill.is-on{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#111;
+  font-weight:600;
+}
+
+/* === 上传按钮 === */
+.poster-upload-row{
+  display:flex;
+  gap:4px;
+  align-items:center;
+  justify-content:flex-end;
+}
+.poster-mini-x{
+  width:22px;
+  height:22px;
+  padding:0;
+  background:rgba(255,80,80,0.15);
+  border:1px solid rgba(255,80,80,0.35);
+  border-radius:3px;
+  color:#f88;
+  font-size:14px;
+  line-height:1;
+  cursor:pointer;
+}
+.poster-mini-x:hover{
+  background:rgba(255,80,80,0.3);
+  color:#fff;
+}
+
+/* === 图片池 === */
+.poster-pool-meta{
+  font-size:10px;
+  color:var(--text-sub);
+  font-variant-numeric:tabular-nums;
+}
+.poster-pool-meta.is-warn{color:#ffaa44}
+.poster-pool-meta.is-full{color:#ff5252}
+.poster-source-btns{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  margin-bottom:8px;
+}
+.poster-source-btns .w10-btn{padding:4px 10px;font-size:10px}
+.poster-image-pool{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(56px,1fr));
+  gap:4px;
+  min-height:60px;
+  padding:0;
+}
+.poster-pool-empty{
+  grid-column:1 / -1;
+  text-align:center;
+  font-size:10px;
+  color:var(--text-sub);
+  padding:14px 0;
+  border:1px dashed rgba(255,255,255,0.08);
+  border-radius:3px;
+}
+.poster-image-cell{
+  position:relative;
+  aspect-ratio:1;
+  border-radius:3px;
+  overflow:hidden;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+}
+.poster-image-cell img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.poster-img-placeholder{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:10px;
+  color:var(--text-sub);
+}
+.poster-img-tag{
+  position:absolute;
+  top:2px;
+  left:2px;
+  padding:1px 4px;
+  background:rgba(0,0,0,0.7);
+  color:#fff;
+  font-size:9px;
+  font-weight:600;
+  border-radius:2px;
+}
+.poster-img-x{
+  position:absolute;
+  top:2px;
+  right:2px;
+  width:16px;
+  height:16px;
+  padding:0;
+  background:rgba(255,80,80,0.7);
+  border:none;
+  border-radius:2px;
+  color:#fff;
+  font-size:10px;
+  line-height:1;
+  cursor:pointer;
+  display:none;
+}
+.poster-image-cell:hover .poster-img-x{display:block}
+
+/* === 分页 === */
+.poster-page-summary{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  width:100%;
+}
+.poster-page-summary .poster-page-del{
+  margin-left:auto;
+  width:18px;
+  height:18px;
+  padding:0;
+  font-size:11px;
+  line-height:1;
+  background:rgba(255,80,80,0.15);
+  border:1px solid rgba(255,80,80,0.3);
+  border-radius:2px;
+  color:#f88;
+  cursor:pointer;
+}
+.poster-page-del:hover{background:rgba(255,80,80,0.3);color:#fff}
+.poster-page-body{
+  padding:6px 0 4px;
+}
+.poster-page-imgs{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(48px,1fr));
+  gap:3px;
+  margin-bottom:8px;
+}
+.poster-page-img{
+  position:relative;
+  aspect-ratio:1;
+  border-radius:2px;
+  overflow:hidden;
+  background:rgba(255,255,255,0.04);
+}
+.poster-page-img img{width:100%;height:100%;object-fit:cover}
+.poster-page-empty{
+  font-size:10px;
+  color:var(--text-sub);
+  padding:8px 0;
+  text-align:center;
+  border:1px dashed rgba(255,255,255,0.08);
+  border-radius:3px;
+  margin-bottom:8px;
+}
+.poster-assign-label{
+  font-size:9px;
+  color:var(--text-sub);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:4px;
+}
+.poster-assign-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:3px;
+}
+.poster-assign-pill{
+  width:24px;
+  height:24px;
+  padding:0;
+  font-size:10px;
+  font-weight:600;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:3px;
+  color:var(--text-sub);
+  cursor:pointer;
+  font-variant-numeric:tabular-nums;
+}
+.poster-assign-pill:hover{
+  background:rgba(255,255,255,0.08);
+  color:var(--text);
+}
+.poster-assign-pill.is-on{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:#111;
+}
+
+.poster-add-page-row{
+  display:flex;
+  margin-top:6px;
+}
+.poster-add-page-row .w10-btn{flex:1;padding:6px 12px;font-size:10px}
+
+/* === 生成 step === */
+.poster-resolution-hint{
+  font-size:10px;
+  color:var(--text-sub);
+  line-height:1.5;
+  font-variant-numeric:tabular-nums;
+  padding:6px 0;
+}
+.poster-resolution-hint b{color:var(--text);font-weight:500}
+.poster-generate-btn{
+  width:100%;
+  padding:10px !important;
+  font-size:13px !important;
+  font-weight:600;
+  margin-top:8px;
+}
+
+.poster-status{
+  margin-top:8px;
+  padding:6px 10px;
+  font-size:10px;
+  border-radius:3px;
+  line-height:1.5;
+}
+.poster-status-info{background:rgba(79,195,247,0.1);color:var(--accent)}
+.poster-status-ok  {background:rgba(105,240,174,0.1);color:#69f0ae}
+.poster-status-err {background:rgba(255,82,82,0.1);color:#ff5252}
+
+/* === 提示词预览 === */
+.poster-prompt-preview{
+  width:100%;
+  min-height:120px;
+  max-height:240px;
+  padding:8px 10px;
+  background:rgba(0,0,0,0.32);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:4px;
+  color:rgba(220,220,230,0.9);
+  font-family:'Segoe UI','Microsoft YaHei',sans-serif;
+  font-size:11px;
+  line-height:1.55;
+  resize:vertical;
+  white-space:pre-wrap;
+  word-break:break-word;
+  box-sizing:border-box;
+  outline:none;
+}
+.poster-prompt-preview:focus{border-color:var(--accent)}
+
+/* === 数据未加载兜底 === */
+.poster-empty{
+  text-align:center;
+  padding:40px 20px;
+  color:var(--text-sub);
+  font-size:11px;
+}
+
+/* === 窄面板优化(框架自动加 .panel-sz-narrow / .panel-sz-compact) === */
+.w10-panel.panel-sz-narrow .poster-tab-row .w10-btn,
+.w10-panel.panel-sz-compact .poster-tab-row .w10-btn{
+  font-size:10px;
+  padding:6px 10px;
+}
+.w10-panel.panel-sz-narrow .poster-pill,
+.w10-panel.panel-sz-compact .poster-pill{
+  padding:3px 8px;
+  font-size:9px;
+}
+.w10-panel.panel-sz-narrow .poster-image-pool{
+  grid-template-columns:repeat(auto-fill,minmax(48px,1fr));
+}
+
+/* === poster-row-stack:含 pill 组/长输入的 row 一律纵向堆叠 ===
+   理由:横向布局时 pill 行 flex-wrap 会撑大右栏,把左侧 label 挤成一字一列。
+   所以这类 row 在所有面板宽度下都强制纵向(label 在上、控件在下),不依赖窄面板 class。 */
+.w10-row.poster-row-stack{
+  flex-direction:column;
+  align-items:stretch;
+  gap:6px;
+}
+.w10-row.poster-row-stack .w10-row-left{
+  flex:0 0 auto;
+  width:100%;
+  flex-direction:row;
+  align-items:baseline;
+  gap:8px;
+}
+.w10-row.poster-row-stack .w10-row-label{
+  flex:0 0 auto;
+}
+.w10-row.poster-row-stack .w10-row-desc{
+  flex:0 0 auto;
+}
+.w10-row.poster-row-stack .w10-row-right{
+  margin-left:0;
+  width:100%;
+  justify-content:flex-start;
+}
+.w10-row.poster-row-stack .poster-pill-row{
+  justify-content:flex-start;
+}
+
+/* 非 stack 的 row(toggle / file-upload / 选择项数 < 4 的 single-select):
+   保持横向但要确保 label 不会被压扁 */
+.w10-row:not(.poster-row-stack) .w10-row-left{
+  min-width:80px;
+}
+
+/* === STEP 2 标题行内放「🛠 管理预设」按钮 === */
+.poster-step-title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+.poster-manage-btn{
+  font-size:10px;
+  padding:4px 10px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(170,120,255,0.35);
+  border-radius:4px;
+  color:#c8a8ff;
+  cursor:pointer;
+  font-weight:500;
+  text-transform:none;
+  letter-spacing:0;
+}
+.poster-manage-btn:hover{
+  background:rgba(170,120,255,0.15);
+  color:#fff;
+}
+
+/* === 管理预设编辑器(全屏覆盖) === */
+.poster-editor-panel{
+  display:flex;
+  flex-direction:column;
+  height:100%;
+  padding:0 !important;
+  overflow:hidden !important;
+}
+.poster-editor-topbar{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  background:rgba(20,20,25,0.6);
+  border-bottom:1px solid rgba(255,255,255,0.08);
+}
+.poster-editor-back-btn{
+  flex:0 0 auto;
+  font-size:11px;
+  padding:5px 12px;
+}
+.poster-editor-tab-row{
+  display:flex;
+  gap:4px;
+  flex:0 0 auto;
+}
+.poster-editor-tab-row .w10-btn{
+  font-size:10px;
+  padding:5px 12px;
+}
+.poster-editor-actions{
+  margin-left:auto;
+  display:flex;
+  gap:4px;
+}
+.poster-editor-actions .w10-btn{
+  font-size:10px;
+  padding:5px 10px;
+}
+
+.poster-editor-body{
+  flex:1 1 auto;
+  display:grid;
+  grid-template-columns:240px 1fr;
+  gap:1px;
+  background:rgba(255,255,255,0.06);
+  min-height:0;
+  overflow:hidden;
+}
+@media (max-width: 700px){
+  .poster-editor-body{ grid-template-columns: 1fr; grid-template-rows: 200px 1fr; }
+}
+
+.poster-editor-left,
+.poster-editor-right{
+  background:rgba(15,15,20,0.55);
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+}
+
+.poster-editor-left-head{
+  flex:0 0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 12px 6px;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  color:var(--accent);
+  font-weight:600;
+}
+.poster-mini-btn-add{
+  font-size:9px;
+  padding:3px 8px;
+  background:rgba(170,120,255,0.15);
+  border:1px solid rgba(170,120,255,0.4);
+  border-radius:3px;
+  color:#c8a8ff;
+  cursor:pointer;
+}
+.poster-mini-btn-add:hover{
+  background:rgba(170,120,255,0.3);
+  color:#fff;
+}
+
+.poster-editor-section-list{
+  flex:1 1 auto;
+}
+.poster-editor-section-item{
+  position:relative;
+  padding:8px 10px;
+  margin:2px 6px;
+  border-radius:3px;
+  cursor:pointer;
+  border:1px solid transparent;
+  background:rgba(255,255,255,0.02);
+  transition:all 0.12s;
+}
+.poster-editor-section-item:hover{
+  background:rgba(255,255,255,0.06);
+}
+.poster-editor-section-item.is-active{
+  background:rgba(170,120,255,0.15);
+  border-color:rgba(170,120,255,0.5);
+}
+.poster-editor-sec-name{
+  font-size:11px;
+  font-weight:500;
+  color:var(--text);
+  margin-bottom:2px;
+}
+.poster-editor-sec-meta{
+  font-size:9px;
+  color:var(--text-sub);
+}
+.poster-editor-sec-del{
+  position:absolute;
+  top:4px;
+  right:4px;
+  width:18px;
+  height:18px;
+  padding:0;
+  background:rgba(255,80,80,0.15);
+  border:1px solid rgba(255,80,80,0.3);
+  border-radius:2px;
+  color:#f88;
+  font-size:11px;
+  line-height:1;
+  cursor:pointer;
+  opacity:0;
+  transition:opacity 0.12s;
+}
+.poster-editor-section-item:hover .poster-editor-sec-del{
+  opacity:1;
+}
+.poster-editor-sec-del:hover{
+  background:rgba(255,80,80,0.3);
+  color:#fff;
+}
+
+/* 右栏 */
+.poster-editor-right{
+  padding:14px 16px;
+  gap:12px;
+}
+.poster-editor-empty{
+  text-align:center;
+  padding:40px 20px;
+  color:var(--text-sub);
+  font-size:11px;
+  line-height:1.6;
+}
+.poster-editor-meta{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding-bottom:10px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  margin-bottom:10px;
+}
+.poster-editor-field{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.poster-editor-field label{
+  font-size:9px;
+  color:var(--text-sub);
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+}
+.poster-editor-field .w10-input,
+.poster-editor-field .w10-select{
+  width:100%;
+}
+.poster-editor-textarea{
+  width:100%;
+  min-height:60px;
+  max-height:200px;
+  padding:6px 8px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:4px;
+  color:var(--text);
+  font-size:11px;
+  line-height:1.5;
+  font-family:'Segoe UI','Microsoft YaHei',sans-serif;
+  resize:vertical;
+  outline:none;
+  box-sizing:border-box;
+}
+.poster-editor-textarea:focus{
+  border-color:var(--accent);
+}
+
+.poster-editor-buttons{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.poster-editor-buttons-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  color:var(--accent);
+  font-weight:600;
+  margin-bottom:4px;
+}
+.poster-editor-button-item{
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:4px;
+  padding:8px 10px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.poster-editor-btn-row{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}
+.poster-editor-btn-row .w10-input{
+  flex:1 1 auto;
+}
+.poster-editor-btn-id{
+  flex:0 0 110px !important;
+  font-size:10px !important;
+  color:var(--text-sub) !important;
+}
+.poster-editor-empty-list{
+  font-size:10px;
+  color:var(--text-sub);
+  text-align:center;
+  padding:14px 0;
+  border:1px dashed rgba(255,255,255,0.1);
+  border-radius:3px;
+}
+
+/* === 一过性教程面板(遮罩 + 卡片) === */
+.poster-tutorial-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(15,15,20,0.78);
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
+  padding:20px;
+  animation:posterTutFadeIn 0.22s cubic-bezier(.4,0,.2,1);
+}
+@keyframes posterTutFadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+.poster-tutorial-card{
+  width:100%;
+  max-width:680px;
+  max-height:calc(100% - 40px);
+  background:linear-gradient(180deg,rgba(35,30,55,0.98),rgba(20,18,35,0.98));
+  border:1px solid rgba(170,120,255,0.35);
+  border-radius:14px;
+  box-shadow:0 20px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.04) inset;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  animation:posterTutSlideIn 0.28s cubic-bezier(.22,1,.36,1);
+}
+@keyframes posterTutSlideIn{
+  from{opacity:0;transform:translateY(20px) scale(0.96)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* === 就地展开版教程(顶部按钮触发,非弹窗) === */
+.poster-tutorial-bar{ display:flex; justify-content:flex-end; padding:2px 0 8px; }
+.poster-tutorial-inline{ margin-bottom:10px; }
+.poster-tutorial-card-inline{
+  width:100%; max-width:none;
+  max-height:none;          /* 就地展开: 不内部滚动, 跟随整个面板一起滚 */
+  border-radius:10px;
+  box-shadow:none;
+  animation:none;           /* 不做位移动画, 避免在毛玻璃面板上重绘闪烁 */
+}
+.poster-tutorial-card-inline .poster-tutorial-body{ overflow:visible; max-height:none; }
+.poster-tutorial-head{
+  flex:0 0 auto;
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+  padding:18px 22px;
+  background:rgba(170,120,255,0.08);
+  border-bottom:1px solid rgba(170,120,255,0.18);
+}
+.poster-tutorial-title{
+  font-size:15px;
+  font-weight:600;
+  color:#fff;
+  letter-spacing:0.2px;
+  margin-bottom:4px;
+}
+.poster-tutorial-sub{
+  font-size:11px;
+  color:rgba(220,200,255,0.7);
+}
+.poster-tutorial-close{
+  flex:0 0 auto;
+  width:28px;
+  height:28px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:6px;
+  color:rgba(255,255,255,0.6);
+  cursor:pointer;
+  font-size:13px;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transition:all 0.15s;
+}
+.poster-tutorial-close:hover{
+  background:rgba(255,255,255,0.08);
+  color:#fff;
+  border-color:rgba(255,255,255,0.3);
+}
+
+.poster-tutorial-body{
+  flex:1 1 auto;
+  overflow-y:auto;
+  padding:18px 22px;
+  font-size:12.5px;
+  line-height:1.65;
+  color:rgba(235,235,245,0.92);
+}
+.poster-tutorial-body::-webkit-scrollbar{width:6px}
+.poster-tutorial-body::-webkit-scrollbar-thumb{background:rgba(170,120,255,0.25);border-radius:3px}
+
+.poster-tutorial-section{
+  margin-bottom:20px;
+}
+.poster-tutorial-section:last-child{
+  margin-bottom:0;
+}
+.poster-tutorial-section-title{
+  font-size:12px;
+  font-weight:600;
+  color:#c8a8ff;
+  text-transform:uppercase;
+  letter-spacing:0.5px;
+  margin-bottom:10px;
+  padding-bottom:6px;
+  border-bottom:1px solid rgba(170,120,255,0.18);
+}
+.poster-tutorial-steps{
+  margin:0;
+  padding-left:22px;
+  counter-reset:tut-step;
+  list-style:none;
+}
+.poster-tutorial-steps li{
+  position:relative;
+  padding:6px 0 6px 4px;
+  counter-increment:tut-step;
+}
+.poster-tutorial-steps li::before{
+  content:counter(tut-step);
+  position:absolute;
+  left:-22px;
+  top:6px;
+  width:18px;
+  height:18px;
+  background:rgba(170,120,255,0.25);
+  border:1px solid rgba(170,120,255,0.5);
+  border-radius:50%;
+  font-size:10px;
+  font-weight:700;
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-variant-numeric:tabular-nums;
+}
+.poster-tutorial-steps li b{
+  color:#fff;
+  font-weight:600;
+}
+
+.poster-tutorial-faq{
+  margin-bottom:14px;
+  padding:12px 14px;
+  background:rgba(255,255,255,0.025);
+  border:1px solid rgba(255,255,255,0.06);
+  border-left:3px solid rgba(170,120,255,0.5);
+  border-radius:6px;
+}
+.poster-tutorial-faq:last-child{
+  margin-bottom:0;
+}
+.poster-tutorial-faq-q{
+  font-size:12px;
+  font-weight:600;
+  color:#fff;
+  margin-bottom:6px;
+}
+.poster-tutorial-faq-a{
+  font-size:11.5px;
+  color:rgba(220,220,235,0.85);
+  line-height:1.7;
+}
+.poster-tutorial-faq-a b{color:#c8a8ff}
+.poster-tutorial-faq-a ul{
+  margin:6px 0 6px 18px;
+  padding:0;
+}
+.poster-tutorial-faq-a ul li{
+  padding:2px 0;
+}
+
+.poster-tutorial-example{
+  background:rgba(48,209,88,0.06);
+  border:1px solid rgba(48,209,88,0.2);
+  border-radius:8px;
+  padding:14px 16px;
+}
+.poster-tutorial-example .poster-tutorial-section-title{
+  color:#69f0ae;
+  border-bottom-color:rgba(48,209,88,0.25);
+}
+.poster-tutorial-example-body{
+  font-size:11.5px;
+  color:rgba(220,235,225,0.9);
+  line-height:1.75;
+}
+
+.poster-tutorial-foot{
+  flex:0 0 auto;
+  padding:16px 22px;
+  border-top:1px solid rgba(255,255,255,0.06);
+  background:rgba(0,0,0,0.18);
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.poster-tutorial-foot .w10-btn{
+  flex:0 0 auto;
+  padding:10px 26px !important;
+  font-size:12px !important;
+  font-weight:600;
+}
+.poster-tutorial-hint{
+  flex:1 1 auto;
+  font-size:10.5px;
+  color:rgba(180,180,195,0.55);
+  line-height:1.5;
+}
+
+/* 窄面板下教程卡片更紧凑 */
+@media (max-width:600px){
+  .poster-tutorial-head{padding:14px 16px}
+  .poster-tutorial-body{padding:14px 16px;font-size:12px}
+  .poster-tutorial-foot{padding:12px 16px;flex-direction:column;align-items:stretch}
+  .poster-tutorial-foot .w10-btn{width:100%}
+  .poster-tutorial-hint{text-align:center}
+}

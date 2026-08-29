@@ -1,0 +1,131 @@
+{
+  "id": "cyberpunk",
+  "version": "2.0",
+  "name": "赛博朋克",
+  "icon": "🌆",
+  "cover": "",
+  "description": "霓虹都市 · 雨夜街角 · 写实 CG / 电影级渲染",
+  "shooting": {
+    "lighting": [
+      {
+        "id": "neon_cool",
+        "label": "霓虹冷调",
+        "promptEn": "saturated neon-lit cool atmosphere, vivid cyan and magenta key lights bleeding into deep cobalt shadows, volumetric god rays through humid air, cinematic color grading reminiscent of Blade Runner 2049"
+      },
+      {
+        "id": "rainy_reflective",
+        "label": "雨夜反光",
+        "promptEn": "torrential rainy night, wet asphalt glistening with mirror-like neon reflections, individual falling raindrops catching the highlights, dense atmospheric fog, photographed in the style of Blade Runner 2049 directed by Denis Villeneuve, cinematography by Roger Deakins"
+      },
+      {
+        "id": "smoky_alley",
+        "label": "雾巷暖光",
+        "promptEn": "narrow smoky alleyway lit by warm amber and sodium-pink neon, thick steam curling from grates, dust particles dancing in shafts of light, color palette inspired by Cyberpunk 2077 night city, cinematic chiaroscuro"
+      },
+      {
+        "id": "dawn_gloom",
+        "label": "末日黎明",
+        "promptEn": "polluted post-apocalyptic dawn, sickly yellow-orange sun barely piercing through smog and acid rain, deep blue-grey shadows, high dynamic range, lighting style reminiscent of Ghost in the Shell (2017) and Children of Men"
+      },
+      {
+        "id": "techno_red",
+        "label": "黑红警戒",
+        "promptEn": "high-contrast hazard lighting, deep crimson red key light against absolute black shadows, emergency strobes, oppressive atmosphere, lighting reference: Aliens by James Cameron and the Resident Evil films"
+      }
+    ],
+    "focalLength": { "min": 10, "max": 135, "default": 35 },
+    "tilt": [
+      { "id": "down",  "label": "俯视", "promptEn": "high angle aerial drone-style shot looking down at street level" },
+      { "id": "level", "label": "平视", "promptEn": "eye-level cinematic shot with shallow depth of field" },
+      { "id": "up",    "label": "仰视", "promptEn": "dramatic low angle hero shot looking up at towering megastructures, exaggerated perspective" }
+    ],
+    "areaPlaceholder": "例: 从屋顶俯瞰, 从拥挤街道, 从地下酒吧入口"
+  },
+
+  "items": {
+    "front": {
+      "subcategories": [
+        {
+          "id": "signage",
+          "name": "招牌灯饰",
+          "items": [
+            { "id": "kanji_neon",   "label": "汉字霓虹",   "icon": "🪧", "promptEn": "vertical hanzi/kanji neon signs in saturated cyan and magenta, individually rendered glass tubes with realistic glow falloff and bloom",   "maxCount": 5 },
+            { "id": "led_billboard","label": "巨型电子屏", "icon": "📺", "promptEn": "massive towering LED billboards with hyperreal animated holographic models and corporate megacorp logos, slight scanlines, anime-stylized adverts",     "maxCount": 3 },
+            { "id": "hologram_ad",  "label": "全息广告",   "icon": "✨", "promptEn": "translucent volumetric holographic advertisements with chromatic aberration, soft glitching edges, projected through humid air",                "maxCount": 4 },
+            { "id": "shop_lantern", "label": "店铺灯笼",   "icon": "🏮", "promptEn": "hand-painted noodle-stall paper lanterns glowing crimson against rusted dark walls, weathered authentic details",                                "maxCount": 6 }
+          ]
+        },
+        {
+          "id": "props",
+          "name": "前景道具",
+          "items": [
+            { "id": "vending_glow", "label": "发光售货机", "icon": "🥫", "promptEn": "weathered glowing vending machines plastered with cyrillic and katakana stickers, layered grime and scratches, photoreal PBR materials",      "maxCount": 4 },
+            { "id": "trash_steam",  "label": "蒸汽垃圾",   "icon": "🗑️", "promptEn": "overflowing trash bags and rusted dumpsters in the foreground with billowing steam vents, gritty urban texture, hyperdetailed",              "maxCount": 3 },
+            { "id": "wet_railing",  "label": "湿润栏杆",   "icon": "🛡️", "promptEn": "rain-soaked metal handrails reflecting neon, beads of water on chrome, shallow depth of field, macro detail",                                "maxCount": 2 },
+            { "id": "umbrella",     "label": "透明伞",     "icon": "☂️", "promptEn": "translucent plastic umbrellas underlit by neon LEDs, subsurface scattering on the canopy, raindrops bouncing off",                            "maxCount": 4 },
+            { "id": "puddle",       "label": "积水反射",   "icon": "💧", "promptEn": "shallow puddles on cracked pavement reflecting the entire neon skyline above, mirror-like reflections with subtle ripples",                  "maxCount": 3 }
+          ]
+        }
+      ]
+    },
+    "middle": {
+      "subcategories": [
+        {
+          "id": "people",
+          "name": "中景人群",
+          "items": [
+            { "id": "crowd",        "label": "都市人群",   "icon": "👥", "promptEn": "crowd of pedestrians in techwear, hooded raincoats and reflective jackets, motion-blurred figures captured at 1/30s shutter",         "maxCount": 3 },
+            { "id": "street_food",  "label": "街边小贩",   "icon": "🍜", "promptEn": "street food vendor under a glowing canopy, steaming bowls of ramen, hyper-detailed food photography style",                          "maxCount": 2 },
+            { "id": "biker_gang",   "label": "机车党",     "icon": "🏍️", "promptEn": "heavily modified neon-trim motorcycles with armored riders, exhaust steam, color reference: Akira film",                            "maxCount": 3 },
+            { "id": "samurai",      "label": "电子武士",   "icon": "⚔️", "promptEn": "lone cyber-samurai figure with glowing katana and trench coat, silhouetted against neon, cinematic backlight",                       "maxCount": 1 }
+          ]
+        },
+        {
+          "id": "vehicles",
+          "name": "中景载具",
+          "items": [
+            { "id": "taxi_glow",    "label": "发光出租",   "icon": "🚕", "promptEn": "battered yellow taxi with neon underglow LEDs and chipped paint, photoreal vehicle rendering with weathered surface details",         "maxCount": 3 },
+            { "id": "police_drone", "label": "警用无人机", "icon": "🚓", "promptEn": "low-altitude police surveillance drones with red and blue strobe lights, military-grade silhouette",                               "maxCount": 4 },
+            { "id": "delivery_bot", "label": "配送机器人", "icon": "🤖", "promptEn": "small wheeled delivery bots with corporate megacorp logos, photoreal hard surface modeling, scratched paint",                       "maxCount": 5 },
+            { "id": "cyber_truck",  "label": "改装重卡",   "icon": "🚚", "promptEn": "heavily modified cargo truck with armored plating, exposed hydraulics and neon trim, gritty industrial design",                       "maxCount": 2 }
+          ]
+        }
+      ]
+    },
+    "back": {
+      "subcategories": [
+        {
+          "id": "buildings",
+          "name": "远景建筑",
+          "items": [
+            { "id": "skyscraper",     "label": "摩天大楼", "icon": "🏙️", "promptEn": "towering megacorp skyscrapers covered in vertical neon strips, vanishing into thick smog, scale reference: Coruscant from Star Wars and Hong Kong skyline",         "maxCount": 10 },
+            { "id": "pagoda_tech",    "label": "科技塔楼", "icon": "🗼", "promptEn": "futuristic tech pagodas with rotating data rings and antenna arrays, asian-fusion architecture",                                                                "maxCount": 5 },
+            { "id": "slum_blocks",    "label": "贫民楼群", "icon": "🏚️", "promptEn": "stacked slum apartment blocks festooned with cables, AC units, satellite dishes and laundry, color reference: Kowloon Walled City",                          "maxCount": 8 },
+            { "id": "highway_bridge", "label": "高架公路", "icon": "🌉", "promptEn": "elevated multi-level highway with light streaks from passing vehicles, long exposure cinematography",                                                          "maxCount": 3 },
+            { "id": "factory_smoke",  "label": "工业烟囱", "icon": "🏭", "promptEn": "distant industrial smokestacks belching colored smoke into the sky, dystopian factory district silhouette",                                                  "maxCount": 4 }
+          ]
+        },
+        {
+          "id": "sky",
+          "name": "天空元素",
+          "items": [
+            { "id": "flying_car",   "label": "飞行载具",   "icon": "🚁", "promptEn": "Spinner-style flying vehicles streaking across the sky leaving long light trails, reference: Blade Runner Spinner design",          "maxCount": 8 },
+            { "id": "blimp_ad",     "label": "广告飞艇",   "icon": "🎈", "promptEn": "massive corporate megacorp advertisement blimps drifting above the city with rotating LED panels, anime-style ad imagery",         "maxCount": 3 },
+            { "id": "moon_giant",   "label": "巨大月球",   "icon": "🌕", "promptEn": "oversized moon or terraformed planet looming behind the skyline, hyperreal celestial detail, atmospheric perspective",            "maxCount": 1 },
+            { "id": "satellite",    "label": "轨道卫星",   "icon": "🛰️", "promptEn": "low-orbit satellites and space stations visible as bright streaks crossing the night sky",                                       "maxCount": 5 },
+            { "id": "lightning",    "label": "电浆闪电",   "icon": "⚡", "promptEn": "branching purple plasma lightning between buildings, electromagnetic storm, dramatic atmospheric phenomenon",                       "maxCount": 3 }
+          ]
+        }
+      ]
+    }
+  },
+
+  "promptTemplate": "{refImageHint}A photorealistic cinematic {tilt}, captured at {focalLength}mm focal length on a full-frame cinema camera (Arri Alexa LF or RED Komodo){areaSegment}. The scene is set in a vast cyberpunk megacity inspired by the visual language of Blade Runner 2049, Cyberpunk 2077 and Ghost in the Shell. \n\nLighting and atmosphere: {lighting}. \n\nForeground details: {front}. \n\nMid-ground action: {middle}. \n\nBackground and skyline: {back}. \n\nRendering style: hyperrealistic CG render, Unreal Engine 5 with Lumen and Nanite, ray-traced reflections and global illumination, physically-based materials, subsurface scattering on translucent surfaces, volumetric atmospheric haze with light shafts, cinematic anamorphic lens flares, shallow depth of field with bokeh, ISO 800 film grain, slight chromatic aberration at the edges, color graded for cinema (high contrast, teal-orange palette tweaked for neon), 8K resolution, ultra-detailed textures, award-winning concept art quality, trending on ArtStation.",
+
+  "negativePrompt": "blurry, low resolution, low quality, jpeg artifacts, watermark, signature, text artifacts, anime cartoon flat shading, oversaturated cartoon style, distorted faces, extra limbs, deformed anatomy, low-poly, plastic-looking skin, amateur photo, smartphone snapshot, harsh on-camera flash",
+
+  "refImageHints": {
+    "withRef": "The exact person from the reference image is naturally composited into the scene as the central subject, preserving their facial identity, body proportions, clothing and pose. Match the camera angle, lighting direction and depth shown by the reference. The person is fully integrated into the cyberpunk environment with consistent shadows, ambient color bounce from neon, and atmospheric haze. ",
+    "withoutRef": ""
+  }
+}

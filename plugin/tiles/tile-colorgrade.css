@@ -1,0 +1,31 @@
+/* === tile-colorgrade.css === */
+
+/* 施工中 banner (bug ② — AI 调色未实装) */
+.cg-construction-banner {
+  background: linear-gradient(135deg, rgba(255, 152, 0, 0.18), rgba(255, 87, 34, 0.18));
+  border: 1px solid rgba(255, 152, 0, 0.4);
+  color: #ffb74d;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 1.55;
+  margin-bottom: 10px;
+  display: block;
+}
+.cg-construction-banner b {
+  color: #ffd180;
+  margin-right: 2px;
+}
+
+.cg-frozen button,
+.cg-frozen input,
+.cg-frozen select,
+.cg-frozen textarea {
+  opacity: 0.55;
+  cursor: not-allowed !important;
+  pointer-events: none;
+}
+.cg-frozen .w10-section-title,
+.cg-frozen .w10-row {
+  opacity: 0.75;
+}

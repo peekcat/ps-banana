@@ -1,0 +1,329 @@
+/* === tiles.css — 磁贴系统样式 (从验证原型提取) ===
+ * 动画时长系统(尽量保持一致):
+ *   120ms  — 微反馈(hover 高亮、点击回弹 scale)
+ *   150ms  — 按钮状态切换、颜色过渡
+ *   180ms  — 对话框淡入、面包屑切换
+ *   220ms  — 面板内容模式切换、分组折叠
+ *   250ms  — 磁贴入场(tile-reveal)、面板滑入
+ *   300ms  — 磁贴展开/合并(布局动画)、背景层淡出
+ *   350ms  — 磁贴移动/推挤(带弹性)
+ * 缓动:
+ *   cubic-bezier(.4,0,.2,1)   标准,适合大部分过渡
+ *   cubic-bezier(.22,1,.36,1) 苹果风丝滑减速 (easeOutQuint),用于磁贴位移/推挤回归
+ */
+
+/* === 视口 === */
+.vp{position:relative;z-index:auto;width:100%;height:100%;overflow-y:scroll;overflow-x:hidden;padding:8px;padding-bottom:60px;scroll-behavior:smooth}
+
+/* === 磁贴基础 === */
+.tile{
+  position:relative;border-radius:var(--tile-radius);overflow:hidden;cursor:pointer;user-select:none;
+  background:var(--tile-bg);
+  backdrop-filter:blur(var(--tile-blur)) saturate(1.3);-webkit-backdrop-filter:blur(var(--tile-blur)) saturate(1.3);
+  border:1px solid var(--tile-border);z-index:1;
+  transition:transform 0.35s cubic-bezier(.22,1,.36,1),box-shadow 0.2s,border-color 0.2s,opacity 0.2s;
+}
+.tile:hover:not(.expanded):not(.expanding):not(.edit-mode):not(.panel-mode):not(.frozen):not(.inline-source){
+  /* 不要任何能溢出磁贴外的视觉效果 (no box-shadow, no outline) —
+   * hover 反馈只走内部的 .tile-reveal 均匀变亮 (参考 .bal-row:hover 的做法). */
+}
+
+/* === 展开态 === */
+/* z-index 700: 必须高于 #topbarHost (600) — 否则 fixed 的 expanded tile 顶部会被顶栏遮挡,
+ * X 关闭按钮被压在顶栏下方. 顶栏自己 expand 时, host 内部的 tile 受父 host (600) 层叠上下文
+ * 限制, 这里写 700 实际仍是 600 区域 — 仍大于 .expand-bg (400) ✓ */
+.tile.expanding{
+  position:fixed!important;z-index:700;border-color:transparent;border-radius:var(--tile-radius);
+  transition:top 0.3s cubic-bezier(.4,0,.2,1),left 0.3s cubic-bezier(.4,0,.2,1),width 0.3s cubic-bezier(.4,0,.2,1),height 0.3s cubic-bezier(.4,0,.2,1),box-shadow 0.3s;
+  box-shadow:0 8px 40px rgba(0,0,0,0.5);
+  display:flex;flex-direction:column;
+}
+.tile.expanded{
+  position:fixed!important;z-index:700;border-color:transparent;border-radius:var(--tile-radius);
+  box-shadow:0 8px 40px rgba(0,0,0,0.5);
+  user-select:auto;cursor:auto;pointer-events:auto;
+  display:flex;flex-direction:column;
+}
+.tile.expanded .tile-inner,.tile.expanding .tile-inner{justify-content:flex-start;align-items:flex-start;padding:12px 14px;height:auto;flex-shrink:0}
+.tile.expanded .tile-flip-box,.tile.expanding .tile-flip-box{height:auto;flex-shrink:0}
+.tile.expanded .tile-flip-back,.tile.expanding .tile-flip-back{display:none}
+.tile.expanded .tile-flip-front,.tile.expanding .tile-flip-front{position:relative}
+.tile.expanded *{pointer-events:auto}
+.tile-expand-content{display:none;width:100%;margin-top:6px;font-size:10px;color:var(--text-sub);line-height:1.6;overflow-y:auto;flex:1;pointer-events:auto}
+.tile.expanded .tile-expand-content{display:block;opacity:1;transform:translateY(0);pointer-events:auto;user-select:auto;cursor:auto;position:relative;z-index:5}
+.tile.expanded .tile-expand-content textarea{user-select:auto;cursor:text;-webkit-user-select:auto;pointer-events:auto}
+.tile.expanded .tile-expand-content input{pointer-events:auto;user-select:auto}
+.tile.expanded .tile-expand-content select{pointer-events:auto;cursor:pointer}
+.tile.expanded .tile-expand-content button{pointer-events:auto;cursor:pointer}
+.tile.expanded .tile-expand-content input[type=range]{-webkit-appearance:auto;appearance:auto;cursor:pointer}
+.tile.expanded .tile-inner{pointer-events:none;will-change:auto}
+.tile.expanding .tile-expand-content{display:block;opacity:0;transform:translateY(12px);transition:opacity 0.3s cubic-bezier(.4,0,.2,1) 0.15s,transform 0.3s cubic-bezier(.4,0,.2,1) 0.15s}
+
+/* === 关闭按钮 === */
+.tile-expand-close{
+  display:none;position:absolute;top:6px;right:8px;width:36px;height:36px;
+  align-items:center;justify-content:center;font-size:18px;color:rgba(255,255,255,0.5);
+  cursor:pointer;z-index:11;pointer-events:auto;border-radius:4px;transition:background 0.1s,color 0.1s;
+}
+.tile-expand-close:hover{background:rgba(255,255,255,0.08);color:#fff}
+.tile.expanded .tile-expand-close{display:flex}
+
+/* === 背景遮罩 === */
+.expand-bg{position:fixed;top:0;left:0;right:0;bottom:0;z-index:400;background:rgba(0,0,0,0);pointer-events:none;transition:background 0.35s}
+.expand-bg.show{background:rgba(0,0,0,0.5);pointer-events:auto}
+
+/* === 磁贴内部 === */
+.tile-inner{
+  position:relative;z-index:1;width:100%;height:100%;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:6px;pointer-events:none;
+}
+/* will-change 只在 hover/expanding 等真要 transform 的时候挂上, 平时不要常驻 */
+.tile:hover .tile-inner,
+.tile.expanding .tile-inner,
+.tile.expanded .tile-inner{will-change:transform}
+.tile-icon{font-size:calc(18px * var(--tile-icon-scale, 1));margin-bottom:2px;line-height:1}
+.tile-label{font-size:9px;font-weight:600;text-align:center;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.tile-desc{font-size:7px;color:var(--text-sub);text-align:center;margin-top:1px}
+
+/* 磁贴正面迷你进度条 (tile-tasks 运行中使用) */
+.tile-task-front-bar{
+  position:absolute;left:6px;right:6px;bottom:4px;
+  height:2px;background:rgba(255,255,255,0.08);border-radius:1px;overflow:hidden;
+}
+.tile-task-front-fill{
+  position:absolute;top:0;left:0;right:0;bottom:0;width:100%;
+  border-radius:1px;
+  transition:background 0.3s cubic-bezier(.4,0,.2,1);
+}
+.tile-badge{position:absolute;top:3px;right:3px;background:var(--accent);color:#fff;font-size:6px;font-weight:700;padding:1px 4px;border-radius:1px;z-index:2;letter-spacing:0.3px}
+
+/* 参考图磁贴: 有参考图时高亮 (提醒用户当前带着参考图, 别忘了该删则删).
+ * 用 accent 边框 + 内发光, 不外溢磁贴 (内部 inset, 不破坏布局); 不在展开/编辑态打扰. */
+.tile[data-id="refimages"].refimg-has-refs:not(.expanded):not(.expanding):not(.edit-mode){
+  border-color:var(--accent);
+  box-shadow:inset 0 0 0 1px var(--accent), inset 0 0 12px -2px var(--accent-glow, rgba(74,158,255,0.4));
+}
+@keyframes refimgPulse{0%,100%{box-shadow:inset 0 0 0 1px var(--accent), inset 0 0 10px -3px var(--accent-glow, rgba(74,158,255,0.35))}50%{box-shadow:inset 0 0 0 1px var(--accent), inset 0 0 16px 0 var(--accent-glow, rgba(74,158,255,0.55))}}
+.tile[data-id="refimages"].refimg-has-refs:not(.expanded):not(.expanding):not(.edit-mode){
+  animation:refimgPulse 2.4s ease-in-out infinite;
+}
+
+/* === 光照追踪 === */
+/* === 内部变亮 (hover 反馈) ===
+ * 参考 .bal-row:hover 的做法 (uniform 背景变亮), 但 alpha 给大一点更明显.
+ * .tile-reveal 之前是 cursor-tracking radial gradient, 现在改成均匀白色覆盖.
+ * 不溢出磁贴外, 由 .tile 的 overflow:hidden 自动裁剪到圆角内. */
+.tile-reveal{
+  position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;opacity:0;
+  background:rgba(255,255,255,0.12);
+  transition:opacity 0.15s ease;
+}
+.tile:hover:not(.expanded):not(.edit-mode):not(.panel-mode):not(.frozen) .tile-reveal{opacity:1}
+
+/* === 涟漪 === */
+.tile-ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,0.1);transform:scale(0);animation:rpl 0.45s ease-out forwards;pointer-events:none;z-index:3}
+@keyframes rpl{to{transform:scale(3);opacity:0}}
+
+/* === 入场动画 === */
+@keyframes enterTile{0%{opacity:0;transform:translateY(16px)}100%{opacity:1;transform:none}}
+/* 默认无入场动画(由 app.js 首次启动时统一接管 "四面八方飞入") */
+.tile{}
+
+/* "四面八方归位" 动画:每个磁贴由 JS 设初始偏移 + transition-delay
+ * JS 给磁贴加 .tile-fly-init(初始偏移+透明,无过渡),下一帧再加 .tile-fly-in 归位
+ */
+.tile.tile-fly-init{
+  opacity:0 !important;
+  transition:none !important;    /* 关键:初始态瞬时跳到屏外,不走过渡 */
+  will-change:transform,opacity;
+}
+.tile.tile-fly-in{
+  opacity:1 !important;
+  transform:none !important;
+  transition:transform 0.55s cubic-bezier(.22,1.2,.3,1),opacity 0.35s ease-out !important;
+}
+
+/* === 翻转 === */
+.tile-flip-box{position:relative;width:100%;height:100%;transform-style:preserve-3d}
+.tile-flip-front,.tile-flip-back{position:absolute;top:0;left:0;width:100%;height:100%;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px}
+.tile-flip-back{transform:rotateX(180deg);font-size:8px;color:var(--text-sub);text-align:center;line-height:1.4}
+@keyframes liveFlip{0%,42%{transform:rotateX(0)}50%,92%{transform:rotateX(180deg)}100%{transform:rotateX(360deg)}}
+.tile.live:not(.expanded):not(.expanding):not(.edit-mode) .tile-flip-box{animation:liveFlip 8s ease-in-out infinite}
+/* 全局禁用磁贴翻转动画(由设置磁贴的"翻转动画"开关控制) */
+body.tile-flip-disabled .tile.live .tile-flip-box{animation:none!important}
+
+/* === 展开后颜色选择器 === */
+/* 旧的 .tile-color-btn 已移除(全屏展开不再出现取色按钮) */
+.tile-color-picker{
+  overflow:hidden;max-height:0;opacity:0;
+  transition:max-height 0.3s cubic-bezier(.22,1,.36,1),opacity 0.2s,padding 0.3s;
+  padding:0 14px;
+}
+.tile-color-picker.open{
+  max-height:140px;opacity:1;padding:10px 14px 12px;
+}
+/* Portal 到 body 顶层的取色面板(编辑栏调用) */
+.tile-color-picker.tile-color-picker-portal{
+  position:fixed;z-index:100300;
+  width:240px;
+  background:rgba(28,28,30,0.96);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:4px;
+  box-shadow:0 12px 36px rgba(0,0,0,0.55);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+}
+.tile-hsl-row{
+  display:flex;align-items:center;gap:6px;margin-bottom:4px;
+}
+.tile-hsl-label{
+  font-size:8px;color:var(--text-sub);width:12px;text-align:right;flex-shrink:0;
+}
+.tile-hsl-slider{
+  flex:1;height:4px;-webkit-appearance:none;appearance:none;
+  border-radius:2px;outline:none;border:none;box-shadow:none;cursor:pointer;
+  pointer-events:auto;
+}
+.tile-hsl-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;width:12px;height:12px;border-radius:50%;
+  background:#fff;cursor:pointer;border:1px solid rgba(0,0,0,0.3);
+  box-shadow:0 1px 3px rgba(0,0,0,0.3);
+}
+.tile-hsl-val{
+  font-size:8px;color:var(--text-sub);width:24px;text-align:right;font-variant-numeric:tabular-nums;
+}
+.tile-color-reset{
+  font-size:8px;color:var(--text-sub);cursor:pointer;padding:2px 8px;
+  border:1px solid rgba(255,255,255,0.08);border-radius:3px;transition:all 0.15s;
+  pointer-events:auto;margin-top:2px;display:inline-block;
+}
+.tile-color-reset:hover{color:var(--text);border-color:rgba(255,255,255,0.2)}
+
+/* === 就地展开面板 === */
+.inline-panel{
+  position:absolute;z-index:10;
+  background:rgba(32,32,32,var(--bg-opacity));
+  backdrop-filter:blur(var(--tile-blur));-webkit-backdrop-filter:blur(var(--tile-blur));
+  border:1px solid var(--accent);
+  border-radius:0 0 var(--tile-radius) var(--tile-radius);
+  box-shadow:0 4px 20px var(--accent-glow);
+  overflow:hidden;
+  transition:height 0.35s cubic-bezier(.22,1,.36,1),opacity 0.25s;
+  height:0;opacity:0;
+  pointer-events:auto;
+  box-sizing:border-box;
+}
+/* 向上展开:圆角换到顶部,阴影方向翻转,动画用 transform 而非 height */
+.inline-panel.up-direction{
+  border-radius:var(--tile-radius) var(--tile-radius) 0 0;
+  box-shadow:0 -4px 20px var(--accent-glow);
+  transition:transform 0.35s cubic-bezier(.22,1,.36,1),opacity 0.25s;
+}
+.inline-panel.open{opacity:1}
+.inline-panel-content{
+  padding:6px 8px;
+  min-height:60px;
+  height:100%;       /* 撑满父 .inline-panel 的高度,内部子 panel 才能正确 overflow */
+  box-sizing:border-box;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.inline-panel-content .w10-panel{
+  height:100%!important;   /* 覆盖默认 auto;让带 overflow-y:auto 的子面板能正确 overflow */
+  min-height:0!important;
+  padding:0;
+  flex:1;min-height:0;
+  overflow-y:auto;         /* 统一兜底:无论子面板有没有自己的 overflow,内容都能滚 */
+}
+/* 就地展开里禁掉 .w10-panel 子元素的渐次入场动画 (w10SlideIn) — 面板本身已经有
+ * height/opacity 入场,行再各自 50/80/110...ms 渐入,会让用户在面板展开"结束"瞬间
+ * 看到内容又被刷一次, 卡顿感很重. 内联展开让内容跟随面板高度一起出现就够了. */
+.inline-panel-content .w10-panel > .w10-section-title,
+.inline-panel-content .w10-panel > .w10-row{
+  animation:none!important;
+}
+.inline-panel-close{
+  position:absolute;top:4px;right:6px;width:20px;height:20px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:rgba(255,255,255,0.4);cursor:pointer;z-index:11;
+  border-radius:2px;transition:background 0.1s,color 0.1s;
+}
+.inline-panel-close:hover{background:rgba(255,255,255,0.08);color:#fff}
+
+/* 其他磁贴冻结态 */
+.tile.frozen{
+  opacity:0.25;pointer-events:none;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+  transition:opacity 0.25s,transform 0.35s cubic-bezier(.22,1,.36,1);
+}
+/* 展开源磁贴高亮 */
+.tile.inline-source{
+  opacity:1!important;pointer-events:auto!important;
+  z-index:12;
+  border:1px solid var(--accent)!important;
+  border-bottom:none!important;
+  border-radius:var(--tile-radius) var(--tile-radius) 0 0!important;
+  box-shadow:0 0 0 1px var(--accent-glow)!important;
+}
+/* 源磁贴底部向下延伸1px，覆盖面板顶边接缝 */
+.tile.inline-source::after{
+  content:'';position:absolute;left:-1px;right:-1px;bottom:-1px;height:1px;
+  background:rgba(32,32,32,var(--bg-opacity));pointer-events:none;z-index:1;
+}
+
+/* === 就地展开内容修正 === */
+.inline-panel-content .panel-placeholder{min-height:120px}
+
+/* === 面板模式内容修正 === */
+.tile.panel-mode .w10-panel{height:100%}
+
+/* === 面板模式（>1x1 直接显示内容） === */
+.tile.panel-mode{
+  /* hidden 而非 auto:让 panel-mode tile 内部的 flex 链生效;
+     原本的 auto 会在 textarea 内容大量输入时让整个 tile 出滚动条,把顶栏挤出视口 */
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.tile.panel-mode .tile-expand-content{
+  display:flex!important;             /* flex column,让子 .w10-panel 的 flex:1 子元素能正确收缩 */
+  flex-direction:column;
+  flex:1;min-height:0;
+  opacity:1!important;
+  pointer-events:auto;user-select:auto;cursor:auto;
+  margin-top:0;overflow-y:auto;
+}
+.tile.panel-mode .tile-expand-close{display:none!important}
+.tile.panel-mode .tile-reveal{display:none}
+
+/* 大磁贴 (panel-mode) hover 边缘发光 — 风格统一于 .preset-cat-card:hover 的 accent 边框.
+ * :focus-within 排除: 用户开始在磁贴内交互/聚焦输入时, hover 高亮自动消失避免干扰. */
+.tile.panel-mode:hover:not(:focus-within):not(.edit-mode):not(.expanded):not(.expanding):not(.frozen){
+  border-color:var(--accent);
+  box-shadow:0 0 0 1px var(--accent-glow);
+}
+
+/* === 编辑模式 === */
+@keyframes wobble{0%,100%{transform:rotate(0)}25%{transform:rotate(0.8deg)}75%{transform:rotate(-0.8deg)}}
+.tile.edit-mode{animation:wobble 0.2s ease-in-out infinite!important;cursor:grab;border:1px dashed rgba(255,255,255,0.2)}
+.tile.edit-mode.tile-sliding{animation:none!important}
+.tile.edit-mode .resize-handle{display:flex}
+.tile.drag-ph{opacity:0.12;border:1px dashed var(--accent)}
+.drag-clone{position:fixed;z-index:9999;pointer-events:none;opacity:0.75;border:1px solid var(--accent);box-shadow:0 8px 32px rgba(0,0,0,0.5);border-radius:var(--tile-radius)}
+
+/* === 编组拖拽提示 === */
+.tile.group-hover{
+  border-color:var(--accent)!important;
+  box-shadow:0 0 16px var(--accent-glow),0 0 0 2px var(--accent)!important;
+  transform:scale(1.08)!important;
+  transition:all 0.2s cubic-bezier(.22,1,.36,1)!important;
+  z-index:3;
+}
+.drag-clone.group-ready{
+  opacity:0.5!important;
+  transform:scale(0.8);
+}
+
+/* === 缩放手柄 === */
+.resize-handle{display:none;position:absolute;bottom:0;right:0;width:16px;height:16px;cursor:se-resize;z-index:10;align-items:center;justify-content:center}
+.resize-handle::before{content:'';position:absolute;bottom:3px;right:3px;width:5px;height:5px;border-right:1.5px solid rgba(255,255,255,0.4);border-bottom:1.5px solid rgba(255,255,255,0.4)}

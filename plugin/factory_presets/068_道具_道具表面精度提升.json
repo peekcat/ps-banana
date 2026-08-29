@@ -1,0 +1,9 @@
+{
+  "id": "f_067",
+  "title": "道具表面精度提升",
+  "content": "{\"role\":\"道具后期渲染升级师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_prop_shape\":\"保持道具形状设计不变\",\"preserve_prop_color\":\"保持道具颜色方案不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析道具当前精度问题：表面粗糙/模糊、细节缺失、纹理低分辨率\",\"identify_material\":\"识别道具材质类型(金属/宝石/布料/皮革/木材)\"},\"precision_upgrade\":{\"texture_resolution\":{\"action\":\"表面纹理精度提升至等效4K-8K水平\",\"metal\":\"金属表面锻造纹理/拉丝/蚀刻花纹更清晰\",\"gem\":\"宝石切面棱角更锐利，内部折射更清晰\",\"fabric\":\"布面编织纹理更清晰可辨\",\"engrave\":\"雕刻/浮雕的线条更锐利精细\"},\"micro_detail\":{\"scratches\":\"适度添加微观使用痕迹(极浅划痕)增加真实感\",\"dust\":\"关键位置微弱灰尘/风化增加年代感(如需要)\",\"grain\":\"材质微观颗粒(金属晶粒/木材纤维/石材矿物)更清晰\"},\"edge_sharpening\":{\"action\":\"道具边缘/棱角更锐利清晰\",\"profile\":\"刃口/尖角处保持设计的锐利度\"}},\"constraints\":{\"严禁\":\"改变道具形状/颜色/设计\",\"禁止\":\"过度锐化产生不自然光晕\"},\"integration\":{\"light_match\":\"升级后反光/高光与场景光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "accessory",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_002",
+  "title": "自然感修容",
+  "content": "{\"role\":\"资深Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"operations\":\"保持妆容不变消除:黑眼圈眼袋法令纹鱼尾纹唇纹笑纹鼻周阴影痘印皱纹老化下垂;柔和唇妆腮红修容;肤色均匀年轻水嫩影视级光影;移除遮面碎发\",\"constraints\":{\"锁定\":\"五官位置表情肤色不变\"}}",
+  "category": "head",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

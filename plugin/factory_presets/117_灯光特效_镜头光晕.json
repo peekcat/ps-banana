@@ -1,0 +1,9 @@
+{
+  "id": "f_116",
+  "title": "镜头光晕",
+  "content": "{\"role\":\"影视后期合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":true,\"preserve_global_hsl\":\"不过度改变画面整体色调\",\"no_scale_rotate_translate\":true,\"additive_only\":\"仅叠加光晕效果\"},\"detection\":{\"identify_light_source\":\"识别画面中的主要光源位置(太阳/灯光/反射光)、光源方向角度和强度\",\"identify_lens\":\"判断拍摄使用的镜头特征(广角/标准/长焦)以匹配光晕风格\"},\"lens_flare\":{\"star_burst\":{\"shape\":\"从光源方向产生六角或八角星芒(Starburst)\",\"rays\":\"星芒射线长度与光源亮度成正比，射线从核心向外渐隐\",\"color\":\"核心为过曝纯白，射线为暖白或微偏光源色\"},\"ghost_artifacts\":{\"circular\":\"沿光源到画面中心的轴线分布2-5个圆形/多边形散射光斑(Ghost)\",\"color\":\"光斑呈现色散效果：青色/绿色/品红/橙色等薄膜干涉色\",\"opacity\":\"光斑Opacity 5-20%，不抢夺视觉焦点\",\"size\":\"光斑大小从光源端向对端递增\"},\"anamorphic_streak\":{\"条纹\":\"可选添加水平方向的宽幅光线条纹(Anamorphic flare)，模拟变形镜头效果\",\"color\":\"条纹呈蓝白色或暖橙色，与光源色温相关\",\"opacity\":\"条纹Opacity 10-30%\"},\"chromatic_aberration\":{\"action\":\"光源周围微弱的色散彩虹条纹(chromatic aberration)\",\"spectrum\":\"红绿蓝色通道在光源边缘微弱分离\"}},\"overall_bloom\":{\"action\":\"光源周围产生柔和的Bloom辉光扩散\",\"radius\":\"扩散半径与光源亮度成正比\",\"falloff\":\"Gaussian衰减从中心向外\"},\"constraints\":{\"严禁\":\"光晕过强遮挡模特面部、光晕方向与光源位置不一致\",\"禁止\":\"光晕效果廉价不自然\"},\"integration\":{\"direction_consistency\":\"所有光晕元素方向统一指向光源\",\"noise_match\":\"噪点一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_066",
+  "title": "道具清洁翻新",
+  "content": "{\"role\":\"道具后期修复师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_prop_shape\":\"保持道具形状设计不变\",\"preserve_model\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别道具上的污损问题：灰尘/指纹、划痕/磨损、掉漆/掉色、胶水残留/标签残留、裂纹/破损\",\"identify_material\":\"分析道具材质(金属/木材/塑料/树脂/布料/皮革)和原始颜色\"},\"cleaning_operations\":{\"dust_removal\":\"移除表面灰尘/指纹/油污，恢复材质本来的干净表面\",\"scratch_fix\":\"修复划痕和磨损区域，恢复表面光滑度\",\"paint_restore\":\"掉漆/掉色区域恢复原始颜色和涂层\",\"residue_clean\":\"清除胶水/标签/贴纸残留痕迹\",\"crack_repair\":\"修复裂纹和微小破损，表面恢复完整\",\"surface_refresh\":\"整体表面翻新为崭新状态，光泽和色彩饱满\"},\"quality_control\":{\"material_match\":\"修复区域材质纹理与原始一致\",\"color_match\":\"修复区域颜色与周围一致\",\"light_match\":\"修复区域反光与周围一致\",\"invisible\":\"修复痕迹不可见\"},\"constraints\":{\"严禁\":\"改变道具设计/形状/颜色方案\",\"禁止\":\"修复区域出现涂抹感\"},\"integration\":{\"noise_match\":\"噪点一致\"}}",
+  "category": "accessory",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

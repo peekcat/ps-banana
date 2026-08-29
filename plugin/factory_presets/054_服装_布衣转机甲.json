@@ -1,0 +1,9 @@
+{
+  "id": "f_053",
+  "title": "布衣转机甲",
+  "content": "{\"role\":\"CG机甲材质转换师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_body_pose\":true,\"preserve_pattern\":\"保留图案/标志/色块位置形状\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析服装各区域的材质(布料/皮革/针织)、图案/标志位置、色块分布\"},\"material_conversion\":{\"hard_shell\":{\"action\":\"布料面料升级为CG硬质装甲片\",\"surface\":\"表面极光滑如汽车漆面(Roughness 0.05-0.15)\",\"reflection\":\"清晰的环境反射(Metalness 0.7-0.9)\",\"edge\":\"装甲板块边缘呈锐利切割线\",\"seam\":\"板块间有精密的技术接缝(约1-2mm暗缝)\"},\"joint_material\":{\"action\":\"关节弯曲处(肘部/膝盖/腰部)使用碳纤维编织材质\",\"texture\":\"可见的碳纤维3K/6K编织纹理(45度交叉斜纹)\",\"flexibility\":\"碳纤维区域呈现微弱弹性形变暗示运动功能\"},\"texture_elimination\":{\"remove\":\"完全消除布料褶皱、透肉感、织物纹理\",\"replace\":\"替换为硬壳贴合身体曲面的装甲形态，表面平整光滑\"},\"pattern_preserve\":{\"logos\":\"原有图案/标志/文字保留在对应位置\",\"color\":\"原有色块区域保持相同颜色，仅材质从布面升级为喷漆/电镀\",\"emboss\":\"图案可从印刷升级为浮雕(微弱凸起)或发光\"}},\"detail\":{\"panel_lines\":\"装甲板块分割线根据身体结构合理分区\",\"vent\":\"可在适当位置添加散热格栅/技术细节\",\"led\":\"可在接缝处添加微弱的LED发光线(属性色)\"},\"constraints\":{\"严禁\":\"改变身体姿势、改变图案标志的设计内容\",\"禁止\":\"装甲形态不符合人体工学(关节处硬板无法弯曲)\"},\"integration\":{\"light_match\":\"装甲反射与场景光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "clothing",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

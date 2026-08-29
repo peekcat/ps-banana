@@ -1,0 +1,9 @@
+{
+  "id": "f_058",
+  "title": "配饰道具归位",
+  "content": "{\"role\":\"Cosplay后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_pose\":true,\"preserve_accessory_design\":\"严格保持配饰原始设计结构和材质不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify_displaced\":\"识别画面中滑落、歪斜、脱位的配饰道具：头冠/头饰偏移、耳饰不对称、肩甲/护甲滑落、腰带松垮、披风歪斜、发饰脱落\",\"identify_correct_position\":\"根据角色原设或配饰的功能性设计判断其正确佩戴位置\"},\"adjustment_operations\":{\"headpiece\":{\"action\":\"头饰/头冠归位到头顶正中或设计指定位置\",\"symmetry\":\"如果头饰有中轴对称设计，确保左右对称\",\"attachment\":\"头饰与头发的接触面自然贴合，无悬浮感\"},\"earring\":{\"action\":\"耳饰调整为自然垂挂状态，双耳耳饰对称(除非设计为不对称)\",\"physics\":\"耳饰垂挂方向符合重力逻辑\"},\"shoulder_armor\":{\"action\":\"肩甲/护甲归位到肩部正确位置\",\"fit\":\"贴合肩部曲面，连接带/扣件位置正确\"},\"belt_sash\":{\"action\":\"腰带收紧至正确位置，腰带扣/装饰居中\",\"drape\":\"飘带/腰封自然垂落，符合重力和布料物理\"},\"general\":{\"action\":\"其他配饰(项链/手镯/臂环/胸针)归位到正确佩戴位置\"}},\"quality_control\":{\"light_rebuild\":\"配饰移动后，其表面高光和阴影根据新位置重新计算，匹配原图光源\",\"shadow_update\":\"配饰在新位置对皮肤/服装产生正确的投影\",\"gap_fill\":\"配饰原来位置留下的空白区域使用皮肤/服装纹理精确填补\"},\"constraints\":{\"严禁\":\"改变配饰设计/材质/颜色、改变模特动作姿势\",\"禁止\":\"调整后配饰出现悬浮感或与身体穿模\"}}",
+  "category": "accessory",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

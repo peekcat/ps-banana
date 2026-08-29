@@ -1,0 +1,9 @@
+{
+  "id": "f_033",
+  "title": "抹油勒肉",
+  "content": "{\"role\":\"Cosplay人像后期修图师(综合美化)\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":true,\"preserve_costume_design\":\"服装款式不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析全身皮肤状态(色差/暗沉/瑕疵)、服装贴合度、皮肤光泽度\"},\"comprehensive_retouch\":{\"skin_color\":{\"unify\":\"统一全身皮肤颜色色温，消除不同部位的色差和暗沉\",\"method\":\"以面部肤色为基准，手臂/腿部/颈部/腰部趋近统一\",\"warmth\":\"整体色温偏暖，呈现健康通透感\"},\"skin_texture\":{\"technique\":\"中性灰(Dodge&Burn)+高低频分离精修全身皮肤\",\"cleanup\":\"消除痘印/色斑/疤痕/毛孔粗大等瑕疵\",\"preserve\":\"保留自然毛孔纹理(约30-40%)避免塑料感\",\"wrinkle\":\"消除不和谐的褶皱和干纹\"},\"oil_sheen\":{\"effect\":\"全身皮肤呈现微汗/涂油的湿润光泽效果\",\"highlight_zones\":\"额头、鼻梁、颧骨、锁骨、肩峰、胸部上沿等突出部位添加湿润镜面高光\",\"intensity\":\"高光Specular约0.4-0.6，呈现性感的油润感而非出汗感\",\"light_match\":\"所有高光方向与原图光源一致\"},\"clothing_tighten\":{\"fit\":\"服装更贴身绷紧，消除多余褶皱\",\"meat_press\":\"服装边缘(领口/袖口/袜口/腰带)添加柔和的勒肉效果——皮肤在服装边缘微微隆起溢出\",\"softness\":\"勒肉隆起柔和自然(高度约1-3mm)，呈现肉感而非被紧勒的不适感\"}},\"constraints\":{\"严禁\":\"改变身材比例/姿势、过度磨皮呈塑料感\",\"禁止\":\"勒肉效果过于夸张呈疼痛感\"},\"integration\":{\"coherent\":\"全身处理程度统一协调\",\"noise_match\":\"噪点一致\"}}",
+  "category": "torso",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

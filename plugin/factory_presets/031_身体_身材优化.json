@@ -1,0 +1,9 @@
+{
+  "id": "f_030",
+  "title": "身材优化",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":true,\"preserve_pose\":true,\"preserve_costume_design\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析全身身材比例、各部位粗细、服装贴合度、光源方向\"},\"body_sculpting\":{\"hourglass\":{\"action\":\"塑造丰满的沙漏型身材曲线\",\"bust\":\"胸部饱满圆润(增大10-25%)\",\"waist\":\"腰部纤细(收缩8-15%)，呈现自然沙漏收腰\",\"hips\":\"臀部圆润饱满(增大5-15%)\",\"proportion\":\"胸腰臀三围比例协调自然(参考0.7腰臀比)\"},\"limbs\":{\"legs\":\"腿部线条修长纤细，肌肉轮廓流畅\",\"arms\":\"手臂纤细但不骨感\"},\"clothing\":{\"fit\":\"紧身服装更贴合优化后的身体曲线\",\"material\":\"服装材质呈现高细节质感\",\"cleanup\":\"移除不合理的色块、堆积褶皱和使用痕迹\",\"tension\":\"受力区域可见自然的张力纹\"},\"skin\":{\"shadow\":\"优化后身体的阴影和高光根据新曲面重新计算\",\"continuity\":\"液化区域皮肤纹理无拉伸变形\"}},\"background_repair\":\"液化导致的背景变形完全修复\",\"constraints\":{\"严禁\":\"改变动作姿势、比例严重失调呈不自然感\",\"禁止\":\"背景可见液化变形、服装纹理拉伸\"},\"integration\":{\"light_match\":\"光影与原图一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "torso",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

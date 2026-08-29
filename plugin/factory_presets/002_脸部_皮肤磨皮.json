@@ -1,0 +1,9 @@
+{
+  "id": "f_001",
+  "title": "皮肤磨皮",
+  "content": "{\"role\":\"资深人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"operations\":\"中性灰+高低频分离移除全部原始毛孔后重绘均匀精致新毛孔(约原始50-60%),T区略密两颊略疏,保留高低频纹理层次避免塑料感\",\"constraints\":{\"严禁\":\"改变肤色光影,磨至无纹理塑料感\"}}",
+  "category": "head",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

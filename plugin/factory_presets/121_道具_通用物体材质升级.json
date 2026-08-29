@@ -1,0 +1,9 @@
+{
+  "id": "f_120",
+  "title": "通用物体材质升级",
+  "content": "{\"role\":\"3D材质渲染升级师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":true,\"preserve_object_shape\":\"保持物体形状不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify_objects\":\"识别画面中低精度/低质感的物体(道具/家具/背景物件)\",\"classify_material\":\"自动分类每个物体的材质类型：金属/布料/皮革/木材/塑料/石材/玻璃/陶瓷\"},\"material_upgrade\":{\"pbr_assignment\":{\"metal\":\"金属→Metalness 0.8-1.0, Roughness 0.1-0.4, 清晰环境反射\",\"fabric\":\"布料→Roughness 0.6-0.85, 编织纹理Displacement, 微弱SSS\",\"leather\":\"皮革→Roughness 0.3-0.55, 毛孔纹理Normal Map, 各向异性高光\",\"wood\":\"木材→Roughness 0.4-0.7, 木纹Normal Map, 年轮细节\",\"plastic\":\"塑料→Roughness 0.2-0.5, 微弱SSS, 均匀色泽\",\"stone\":\"石材→Roughness 0.6-0.9, 矿物颗粒纹理, 风化细节\",\"glass\":\"玻璃→IOR 1.52, 透明折射, 边缘Fresnel反射\",\"ceramic\":\"陶瓷→Roughness 0.1-0.3, 釉面光泽, 微弱SSS\"},\"texture_enhancement\":{\"resolution\":\"表面纹理精度提升至等效4K-8K分辨率\",\"micro_detail\":\"添加微观细节：金属划痕/布料编织纹/皮革毛孔/木材年轮/石材矿物颗粒\",\"wear\":\"适度添加自然使用痕迹(磨损/划痕/灰尘)增加真实感\"}},\"constraints\":{\"严禁\":\"改变物体形状/颜色/设计\",\"禁止\":\"材质过于崭新呈CG渲染过度感(除非原物就是新的)\"},\"integration\":{\"light_match\":\"升级后材质的反射/高光与场景光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "accessory",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

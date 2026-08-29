@@ -1,0 +1,9 @@
+{
+  "id": "f_009",
+  "title": "鼻梁高光",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face_features\":\"严格锁定鼻子形状大小不变，五官位置不偏移\",\"preserve_expression\":true,\"preserve_skin_color\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析原图主光源方向和强度、模特面部角度、鼻梁骨骼走向、现有高光分布情况\"},\"nose_highlight\":{\"bridge_highlight\":{\"position\":\"高光沿鼻梁中线分布，从眉心（山根）到鼻尖，宽度约鼻梁宽度的40-60%\",\"shape\":\"高光形状跟随鼻梁骨骼结构自然渐变：山根处窄且柔和，鼻梁中段最宽最亮，鼻尖处收窄并形成圆润光斑\",\"gradient\":\"高光从中心向两侧柔和衰减(Gaussian Falloff)，边缘无硬切，与周围皮肤自然融合\",\"intensity\":\"高光强度为皮肤亮度的110-125%，禁止过曝呈现油腻/塑料感\",\"light_direction\":\"高光偏移方向必须与原图主光源方向完全一致，如光从左上来则高光偏左\"},\"tip_highlight\":{\"position\":\"鼻尖添加圆润的高光点，面积约鼻尖的30-40%\",\"quality\":\"高光呈柔和Fresnel反射质感，模拟皮肤自然油脂层的微光泽\"},\"alar_shadow\":{\"action\":\"鼻翼两侧根据光源方向微调阴影，增强鼻子立体感\",\"intensity\":\"阴影加深量不超过原图的10-15%，保持自然不刻意\"}},\"skin_texture_preservation\":{\"pore_visibility\":\"高光区域仍需保留清晰可见的皮肤毛孔纹理，禁止磨皮式的光滑高光\",\"texture_continuity\":\"高光区域皮肤质感与周围非高光区域完全一致\"},\"constraints\":{\"严禁\":\"改变鼻子形状大小、改变五官间距、高光过亮呈现油腻塑料感\",\"禁止\":\"高光方向与光源不一致、高光边缘出现硬边\"},\"integration\":{\"seamless_blend\":\"高光区域与周围皮肤无缝过渡\",\"noise_match\":\"修改区域噪点颗粒度与原图完全一致\"}}",
+  "category": "head",
+  "subCategory": "nose",
+  "refImages": [],
+  "_isFactory": true
+}

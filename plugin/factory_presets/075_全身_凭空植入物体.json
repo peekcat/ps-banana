@@ -1,0 +1,9 @@
+{
+  "id": "f_074",
+  "title": "凭空植入物体",
+  "content": "{\"role\":\"3D场景合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_pose\":true,\"preserve_background\":true,\"preserve_global_hsl\":true,\"no_scale_rotate_translate\":true,\"additive_only\":true},\"detection\":{\"identify_scene\":\"分析原图场景类型(室内/室外/影棚)、光源方向和色温、透视消失点、地面材质\",\"identify_character\":\"识别模特的Cos角色IP属性、服饰风格、文化背景，用于判断植入物体的风格匹配\"},\"object_insertion\":{\"target\":\"在匹配原有光线和场景风格的前提下，在画面中添加___（用户指定的物体）\",\"material_quality\":\"植入的所有物体必须呈现3D建模质感，表面材质使用PBR标准：合理的Roughness/Metalness/Specular参数，具有清晰的法线贴图(Normal Map)细节和环境光遮蔽(AO)\",\"lighting_match\":{\"direction\":\"物体受光面方向与原图光源完全一致\",\"color_temp\":\"反射光和高光色温匹配原图主光源色温\",\"shadow\":\"物体在接触面投射符合光源方向的投影，投影硬度与原图中其他投影一致\",\"reflection\":\"如果物体为金属/光滑材质，表面环境反射映射需匹配原图环境\"},\"perspective\":\"物体透视角度与原图消失点一致，近大远小比例正确\",\"scale_reference\":\"物体大小以画面中已有元素为参照（如模特身高/手掌大小/武器长度），保持合理比例\"},\"scene_integration\":{\"visual_center\":\"画面中所有元素经过精心排布，保证视觉中心仍然是画面中的角色，植入物体不抢夺视觉焦点\",\"depth_of_field\":\"如果原图有景深效果，植入物体根据其所在深度呈现对应的锐度/模糊\",\"contact_physics\":\"物体与场景接触点需有物理合理性：放在地面的物体有接触阴影(Contact Shadow)，悬浮物体需有合理的悬浮逻辑（魔法效果/风力支撑等）\",\"atmospheric_perspective\":\"远处物体需要有空气透视效果：饱和度略降、亮度略偏环境色、细节略减\"},\"constraints\":{\"严禁\":\"移动/遮挡模特面部、改变模特动作姿势、缩放旋转平移原图画面\",\"禁止\":\"植入物体风格与场景不匹配（如古风场景出现现代物品，除非用户明确要求）\"},\"integration\":{\"edge_treatment\":\"物体边缘锐度与原图同景深物体一致，无抠图硬边\",\"noise_grain\":\"植入区域噪点颗粒度与原图完全匹配\",\"anti_pasted_look\":\"物体必须看起来是原图拍摄时就存在的，禁止出现'贴上去'的违和感\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

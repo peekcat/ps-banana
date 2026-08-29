@@ -1,0 +1,9 @@
+{
+  "id": "f_104",
+  "title": "实景棚处理",
+  "content": "{\"role\":\"摄影棚后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":\"严禁改变模特的动作、表情、服装、肤色\",\"preserve_scene_structure\":\"保持场景布景的整体结构不变(家具/装饰/墙体)\",\"preserve_global_hsl_gamma\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_equipment\":\"识别画面中所有摄影设备穿帮：灯架/灯罩/反光板/柔光箱/C架/旗板/线缆/插线板/灯体本身\",\"identify_scene_style\":\"分析实景棚的装修风格(欧式/日式/中式/现代/复古)和模特角色的文化背景\",\"identify_light_source\":\"记录每个摄影灯的位置、光照方向、色温、强度，用于后续光源替换参考\"},\"equipment_removal\":{\"stands_and_frames\":{\"action\":\"完全移除所有灯架、C架、旗板等支撑设备\",\"inpaint\":\"被设备遮挡的背景区域使用场景材质(墙纸/墙面/家具)精确重建\"},\"cables\":{\"action\":\"移除所有可见的电线、线缆、插线板\",\"floor_rebuild\":\"地面线缆区域重建为场景原有地面材质\"},\"light_body_transform\":{\"action\":\"将不可避免出现在画面中的摄影灯体转化为场景合理光源\",\"style_match\":\"替换光源必须符合场景装修风格：欧式场景→壁灯/烛台，日式→纸灯笼/障子光，中式→红灯笼/宫灯，现代→台灯/落地灯\",\"light_preservation\":\"替换后的装饰光源保持与原摄影灯相同的光照方向和色温效果\"}},\"quality_control\":{\"style_coherence\":\"所有替换/修补元素与场景整体风格统一\",\"texture_match\":\"修补区域材质纹理与周围一致\",\"light_continuity\":\"光源替换后画面整体光影逻辑不变\",\"edge_blend\":\"所有修补边缘无缝融合\",\"noise_match\":\"修补区域噪点与原图一致\"},\"constraints\":{\"严禁\":\"改变灯光效果(只移除/替换灯具实体)、改变模特任何特征\",\"禁止\":\"替换光源风格与场景不匹配\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_114",
+  "title": "通用去水印文字",
+  "content": "{\"role\":\"图像修复师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":true,\"preserve_global_hsl_gamma\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别画面中所有水印、文字覆盖层、logo标记：半透明水印、角落logo、横幅文字、摄影师签名\",\"identify_under\":\"分析水印下方被遮盖的原始图像内容(皮肤/服装/背景)的颜色纹理光影\"},\"removal\":{\"watermark\":{\"action\":\"完全移除所有水印和半透明覆盖层\",\"alpha_recovery\":\"精确恢复水印下方被混合的原始像素颜色\"},\"text\":{\"action\":\"移除所有叠加文字/字幕/标题\",\"font_area\":\"文字区域完全清除包括字体边缘残留和阴影\"},\"logo\":{\"action\":\"移除角落/居中的logo/台标\"},\"inpaint\":{\"method\":\"使用周围内容智能重建被水印/文字覆盖的区域\",\"texture\":\"重建的纹理质感与周围完全一致\",\"continuity\":\"如果水印覆盖了人物皮肤/服装，重建后该区域的肤色/布料纹理自然连续\"}},\"quality_control\":{\"clean\":\"不残留任何水印痕迹或色差\",\"light_match\":\"重建区域光影与周围一致\",\"edge_blend\":\"无可见修补边界\",\"noise_match\":\"噪点一致\"},\"constraints\":{\"严禁\":\"误删画面原有内容(如角色身上的文字设计)\",\"禁止\":\"修补区域出现色差或涂抹感\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

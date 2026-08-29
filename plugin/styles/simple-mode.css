@@ -1,0 +1,74 @@
+/* ============================================================
+ *  simple-mode.css —— 简洁模式
+ *  去除所有彩色 → PS 风灰度; 图标 ICON 转纯色剪影。
+ *  开关在「设置」磁贴 (appearance.simpleMode), 靠 body.simple-mode 生效。
+ *  默认关闭(无 body.simple-mode 时零影响)。
+ * ============================================================ */
+
+/* 1) 整套配色压成 PS 风灰度。变量定义在 body, 整个界面继承, 覆盖主题色(主题色定义在
+ *    documentElement, body 是更近的祖先 → 界面内元素优先继承 body 的灰度)。 */
+body.simple-mode {
+  --bg: #282828;            /* 背景底色 */
+  --tile-bg: #323232;       /* 磁贴/面板表面 */
+  --tile-border: #4a4a4a;   /* 描边/分隔线 */
+  --tile-color-opacity: 0;  /* 关掉用户染色背景 */
+  --accent: #4a4a4a;        /* 强调/激活(灰, 白字仍可读) */
+  --accent-hover: #5a5a5a;
+  --accent-dark: #3a3a3a;
+  --accent-glow: rgba(255, 255, 255, 0.12);
+  --text: #c8c8c8;          /* 主文字 + 图标剪影 */
+  --text-main: #d4d4d4;
+  --text-sub: #8a8a8a;      /* 次要文字 */
+  --input-bg: #2b2b2b;
+  --border-color: #4a4a4a;
+  background: #282828 !important;
+}
+
+/* 2) 中和用户给磁贴上的彩色(磁贴色是 inline 写死的 hsla, 用 !important 压回标准表面) */
+body.simple-mode .tile {
+  background-color: var(--tile-bg) !important;
+  border-color: var(--tile-border) !important;
+}
+
+/* 3) 背景层 / 背景图也去色 */
+body.simple-mode .bg-layer,
+body.simple-mode .bg-blur {
+  filter: grayscale(1);
+}
+
+/* 4) 装饰性图标 → 转黑白:全局所有 emoji 图标(磁贴正面 / 预设分类 / 面板按钮 都覆盖),
+ *    只去颜色、保留内部结构。最佳效果需开启"Emoji 图片化"(设置→Emoji 风格 Flat/Color)。 */
+body.simple-mode .emoji-img {
+  filter: grayscale(1) brightness(1.08);
+}
+/* 原生彩色 emoji(不在图片集里的, 如 🗺️ 🎯 🧰 ↩️ 🛡️ 🔁): 它们是文字字形, 不是 .emoji-img,
+ *    在 .tile-icon 容器上整体去色才能压灰(磁贴图标 + Dock 图标都在 .tile-icon 里)。 */
+body.simple-mode .tile-icon {
+  filter: grayscale(1);
+}
+
+/* 5) 刻意"保留颜色"的功能性内容(不去色):
+ *    - 开关打开态 → 绿色, 一眼看出 开/关
+ *    - 红色未读/提醒角标(日志/客服)→ 保留红, 当提醒用(不在去色范围内)
+ *    - 错误/告警/在线状态等写死的状态色 → 本就不去色, 自动保留 */
+body.simple-mode .w10-toggle.on {
+  background: #43a047 !important;
+}
+
+/* 6) Dock 背景(写死的深色)也压灰 */
+body.simple-mode #dockHost {
+  background: rgba(40, 40, 40, var(--dock-opacity, 0.92)) !important;
+}
+
+/* 7) 预设分类的数量角标: 原配色(深灰字 + 写死浅蓝底)对比度太低 → 换成浅字 + 浅灰底 */
+body.simple-mode .preset-cat-card-count {
+  color: #d8d8d8 !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+}
+
+/* 8) 优化磁贴: 它的配色全是写死的紫/蓝(rgba(170,120,255)、#aa78ff、渐变…),没走主题变量,
+ *    token 覆盖管不到 → 对整块加灰度滤镜彻底去色(面板内层无 backdrop-filter, 安全;
+ *    紫蓝渐变/徽章/内部 emoji 一并变灰且保留结构)。 */
+body.simple-mode .optimizer-panel {
+  filter: grayscale(1);
+}

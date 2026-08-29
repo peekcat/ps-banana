@@ -1,0 +1,9 @@
+{
+  "id": "f_065",
+  "title": "道具接缝消除",
+  "content": "{\"role\":\"道具后期修复师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_prop_shape\":\"保持道具形状设计不变\",\"preserve_model\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别道具上的拼接缝/模具线/3D打印层纹/分件接合痕迹\",\"identify_material\":\"分析道具材质(树脂/EVA泡沫/PVC/金属/木材)和表面处理(喷漆/电镀/包皮)\"},\"seam_removal\":{\"detection_targets\":\"模具分模线(parting line)/3D打印FDM层纹(layer lines)/拼件胶合缝/螺丝孔/铆接点\",\"inpaint\":{\"action\":\"完全消除接缝痕迹\",\"method\":\"接缝区域重建为连续光滑的原始材质表面\",\"texture\":\"重建的材质纹理方向密度与周围完全一致\",\"smooth\":\"消除接缝处的高低不平和色差\"},\"surface_continuity\":{\"curvature\":\"跨越原接缝区域的曲面弧度连续光滑\",\"paint\":\"如有喷漆表面，消除接缝处的漆面不均匀和起泡\",\"reflection\":\"接缝区域的反光与周围一致无断裂\"}},\"quality_control\":{\"invisible\":\"消除痕迹完全不可见\",\"light_match\":\"修复区域光影与周围一致\",\"noise_match\":\"噪点一致\"},\"constraints\":{\"严禁\":\"改变道具设计造型\",\"禁止\":\"修复区域出现涂抹模糊\"}}",
+  "category": "accessory",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,426 @@
+/* ============================================================
+ * tile-scene.css — 场景包磁贴样式
+ * ============================================================ */
+
+.scene-panel {
+  padding: 12px 14px;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--text);
+  max-height: 100%;
+  overflow-y: auto;
+}
+.scene-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.scene-tip {
+  font-size: 10px;
+  color: var(--text-sub);
+  margin-bottom: 10px;
+}
+.scene-empty {
+  text-align: center;
+  padding: 30px 12px;
+  color: var(--text-sub);
+}
+.scene-empty-sub {
+  font-size: 9px;
+  color: var(--text-faint, #666);
+  display: inline-block;
+  margin-top: 6px;
+}
+
+/* ===== 模式选择 ===== */
+.scene-mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+.scene-mode-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 14px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.scene-mode-card:hover {
+  background: rgba(255,255,255,0.07);
+  border-color: var(--accent, #4fc3f7);
+}
+.scene-mode-card-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.scene-mode-card-disabled:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.08);
+}
+.scene-mode-icon { font-size: 28px; margin-bottom: 6px; }
+.scene-mode-name { font-size: 13px; font-weight: 600; }
+.scene-mode-desc { font-size: 9px; color: var(--text-sub); margin-top: 3px; }
+
+/* ===== 场景包网格 ===== */
+.scene-pack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+.scene-pack-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  padding: 12px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, transform 0.15s;
+}
+.scene-pack-card:hover {
+  background: rgba(0,120,212,0.1);
+  border-color: var(--accent, #4fc3f7);
+  transform: translateY(-1px);
+}
+.scene-pack-icon { font-size: 28px; margin-bottom: 4px; }
+.scene-pack-name { font-size: 12px; font-weight: 600; }
+.scene-pack-desc { font-size: 9px; color: var(--text-sub); margin-top: 3px; line-height: 1.4; }
+
+/* ===== 配置面板顶部 ===== */
+.scene-config-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.scene-back-btn {
+  width: 22px; height: 22px;
+  font-size: 16px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 3px;
+  color: var(--text);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.scene-back-btn:hover { background: rgba(255,255,255,0.05); }
+.scene-title-line {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ===== Section 标题 ===== */
+.scene-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent, #4fc3f7);
+  margin: 12px 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.scene-section-val {
+  font-size: 10px;
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ===== Chip (灯光) ===== */
+.scene-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.scene-chip {
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  font-size: 10px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.scene-chip:hover {
+  background: rgba(0,120,212,0.08);
+}
+.scene-chip-active {
+  background: var(--accent, #4fc3f7);
+  color: #000;
+  font-weight: 600;
+  border-color: transparent;
+}
+
+/* ===== Slider (焦段) ===== */
+.scene-slider {
+  width: 100%;
+  height: 4px;
+}
+.scene-slider-hint {
+  display: flex;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-faint, #666);
+  margin-top: 2px;
+}
+
+/* ===== Segmented (俯仰) ===== */
+.scene-seg-row {
+  display: inline-flex;
+  background: rgba(0,0,0,0.25);
+  border-radius: 4px;
+  padding: 2px;
+  font-size: 10px;
+}
+.scene-seg {
+  padding: 4px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--text-sub);
+  user-select: none;
+  transition: all 0.15s;
+}
+.scene-seg:hover { color: var(--text); }
+.scene-seg-active {
+  background: var(--accent, #4fc3f7);
+  color: #000;
+  font-weight: 600;
+}
+
+/* ===== 区域输入 ===== */
+.scene-input {
+  width: 100%;
+  padding: 5px 8px;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 3px;
+  color: var(--text);
+  font-size: 11px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+.scene-input:focus {
+  outline: none;
+  border-color: var(--accent, #4fc3f7);
+}
+
+/* ===== 子分类 tabs ===== */
+.scene-subtabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+  font-size: 10px;
+}
+.scene-subtab {
+  padding: 3px 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--text-sub);
+  user-select: none;
+  transition: all 0.15s;
+}
+.scene-subtab:hover {
+  color: var(--text);
+  background: rgba(255,255,255,0.06);
+}
+.scene-subtab-active {
+  background: rgba(0,120,212,0.15);
+  color: var(--accent, #4fc3f7);
+  border-color: var(--accent, #4fc3f7);
+  font-weight: 600;
+}
+
+/* ===== 物品网格 ===== */
+.scene-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 4px;
+  margin-bottom: 6px;
+}
+.scene-item-card {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 4px;
+  padding: 6px 4px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.scene-item-card:hover {
+  background: rgba(0,120,212,0.1);
+  border-color: var(--accent, #4fc3f7);
+  transform: scale(1.03);
+}
+.scene-item-icon { font-size: 18px; }
+.scene-item-label { font-size: 10px; margin-top: 2px; line-height: 1.3; }
+
+/* ===== 篮子 ===== */
+.scene-basket {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 6px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 4px;
+  margin-bottom: 4px;
+  min-height: 28px;
+}
+.scene-basket-empty {
+  color: var(--text-faint, #666);
+  font-size: 10px;
+  text-align: center;
+  padding: 8px;
+}
+.scene-basket-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 4px 3px 6px;
+  background: rgba(0,120,212,0.15);
+  border: 1px solid rgba(0,120,212,0.3);
+  border-radius: 12px;
+  font-size: 10px;
+  user-select: none;
+}
+.scene-basket-icon { font-size: 12px; }
+.scene-basket-label { font-weight: 600; }
+.scene-basket-count {
+  color: var(--accent, #4fc3f7);
+  font-weight: 600;
+  margin: 0 2px;
+  font-variant-numeric: tabular-nums;
+}
+.scene-basket-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  transition: background 0.15s;
+}
+.scene-basket-btn:hover { background: rgba(255,255,255,0.18); }
+.scene-basket-remove { color: #ff8a8a; }
+.scene-basket-remove:hover { background: rgba(255,82,82,0.25); }
+
+/* ===== 人物参考 ===== */
+.scene-ref-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.scene-ref-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+  font-size: 11px;
+}
+.scene-ref-toggle input[type="checkbox"] {
+  width: 13px; height: 13px;
+}
+.scene-ref-hint {
+  font-size: 9px;
+  color: var(--text-sub);
+  line-height: 1.5;
+}
+
+/* ===== 生成按钮 ===== */
+.scene-actions {
+  margin-top: 14px;
+}
+.scene-go-btn {
+  width: 100%;
+  padding: 9px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ===== 生成参数 ===== */
+.scene-gen-params {
+  background: rgba(0,0,0,0.18);
+  padding: 8px 10px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+.scene-gen-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 3px 0;
+}
+.scene-gen-label {
+  font-size: 10px;
+  color: var(--text-sub);
+  flex-shrink: 0;
+  width: 44px;
+  text-align: right;
+}
+.scene-gen-row .scene-gen-label:not(:first-child) {
+  width: auto;
+}
+.scene-gen-select {
+  flex: 1;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 3px;
+  color: var(--text);
+  font-size: 11px;
+  padding: 3px 6px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.scene-gen-select:focus {
+  outline: none;
+  border-color: var(--accent, #4fc3f7);
+}
+
+/* ===== 张数 stepper ===== */
+.scene-batch-stepper {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 4px;
+  height: 22px;
+  user-select: none;
+}
+.scene-batch-btn {
+  width: 22px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  font-size: 14px;
+  font-family: inherit;
+  padding: 0;
+}
+.scene-batch-btn:hover { background: rgba(255,255,255,0.08); }
+.scene-batch-val {
+  width: 26px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--accent, #4fc3f7);
+  border-left: 1px solid rgba(255,255,255,0.06);
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+.scene-batch-hint {
+  font-size: 9px;
+  color: var(--text-faint, #666);
+  margin-left: 6px;
+}

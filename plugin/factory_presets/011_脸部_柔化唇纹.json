@@ -1,0 +1,9 @@
+{
+  "id": "f_010",
+  "title": "柔化唇纹",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_lip_shape\":\"严格锁定嘴唇形状、大小、唇峰位置不变\",\"preserve_lip_color\":\"保持原有唇色色相不变\",\"preserve_expression\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析模特唇纹深度和分布、原有唇色和妆容状态、面部光源方向、嘴唇干湿程度\"},\"lip_refinement\":{\"texture_smoothing\":{\"wrinkle_reduction\":\"将唇纹沟壑深度降低60-75%，保留纹理走向但大幅弱化凹陷感\",\"preserve_natural\":\"保留15-25%的自然唇纹作为真实感基底，禁止完全消除变成塑料质感\",\"method\":\"使用高低频分离逻辑：低频层平滑唇部整体光影起伏，高频层保留微细纹理方向\"},\"moisture_gloss\":{\"hydration\":\"嘴唇表面呈现水润饱满质感(smooth, hydrated, moist)，如同刚涂完润唇膏\",\"gloss_highlight\":\"在唇珠和下唇中央添加柔和的玻璃光泽(glossy highlight)，高光形状为水平拉长的椭圆\",\"gloss_intensity\":\"光泽度适中(Specular约0.3-0.5)，呈现水润而非油腻的质感\",\"fresnel\":\"唇部边缘微弱的Fresnel反射，增加嘴唇的立体圆润感\"},\"color_uniformity\":{\"even_tone\":\"统一唇色，消除唇部暗沉色差(如唇角暗沉、上下唇色差)\",\"lip_line\":\"唇线清晰但柔和，唇色与周围皮肤过渡自然\",\"inner_gradient\":\"嘴唇内侧(接近唇缝处)颜色略深，外侧略浅，形成自然渐变\"}},\"constraints\":{\"严禁\":\"改变唇形唇色色相、完全消除唇纹呈现塑料/蜡像感、改变嘴巴开合程度\",\"禁止\":\"光泽过强呈现油腻感、唇色过饱和偏离原色\"},\"integration\":{\"lip_skin_boundary\":\"唇线处与周围皮肤自然过渡，无硬边\",\"light_consistency\":\"唇部光泽方向与面部光源一致\",\"noise_match\":\"修改区域噪点与原图一致\"}}",
+  "category": "head",
+  "subCategory": "mouth",
+  "refImages": [],
+  "_isFactory": true
+}

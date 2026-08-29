@@ -1,0 +1,23 @@
+{
+  "id": "ff_013",
+  "name": "2腿部优化（有黑丝）",
+  "displayName": "腿部优化（有黑丝）",
+  "category": "legs",
+  "data": {
+    "model": "xxmix9realistic_v40.safetensors [5f41c4861c]",
+    "lora": "5D左右薄黑丝纹理优化,权重请开到1以上",
+    "loraWeight": "0.6",
+    "redrawAmount": "0.35",
+    "imageCount": "3",
+    "resolution": "768",
+    "positivePrompt": "8k RAW,best quality, ultra high res, extreme_detail,soft focus, (photorealistic:1.4), masterpiece,((Slender legs, female legs, smooth skin, no muscle lines)), (Black stockings, female thighs)",
+    "negativePrompt": "paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, glans, anime, watermark, username, signature, text",
+    "selectedControlNetModule": "lineart_realistic",
+    "controlNetModel": "control_v11p_sd15_lineart [43d4be0d]",
+    "controlNetWeight": "0.7",
+    "step": "20",
+    "selectedName": "DPM++ 2M",
+    "selectedScheduler": "automatic"
+  },
+  "_isFactory": true
+}

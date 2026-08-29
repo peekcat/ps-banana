@@ -1,0 +1,9 @@
+{
+  "id": "f_022",
+  "title": "亮闪闪头发",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":\"STRICTLY RETAIN面部不做任何修改\",\"preserve_hairstyle\":\"保持原有发型结构流向长度\",\"preserve_body\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析头发当前材质(假发/真发)、光泽状态、杂发分布、打卷缠绕区域\"},\"hair_processing\":{\"cleanup\":{\"flyaways\":\"移除所有飞散杂发和毛躁\",\"tangles\":\"消除缠绕打结区域\",\"stray_on_body\":\"清除遮挡面部/手臂/肩部的散落发丝\",\"split_ends\":\"修复干枯分叉的发尾\"},\"material_override\":{\"surface\":\"消除假发合成纤维的塑料高光，替换为Matte CG texture哑光CG质感\",\"sheen\":\"表面呈现柔和的丝缎光泽(Roughness 0.35-0.5)而非廉价的镜面反光\"},\"micro_shimmer\":{\"selection\":\"随机选取20-30根极细发丝作为亮点发丝\",\"effect\":\"在这些细丝上添加微观的多色闪烁光点(microscopic multi-colored shimmering points)\",\"color\":\"闪烁点颜色为白色/浅金/浅蓝/浅粉的随机微弱色彩(Opacity 20-40%)\",\"distribution\":\"闪光点沿发丝均匀分布，每根亮丝3-8个光点\",\"appearance\":\"手绘luminous aesthetic发光美学质感，如同发丝上镶嵌了极微小的碎钻\"}},\"constraints\":{\"严禁\":\"改变面部/身体/背景、改变发型结构颜色发量\",\"禁止\":\"闪光过强过密导致整体廉价感\"},\"integration\":{\"light_match\":\"闪光高光方向与原图光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "hair",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

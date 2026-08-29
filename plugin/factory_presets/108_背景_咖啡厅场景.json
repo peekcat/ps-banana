@@ -1,0 +1,9 @@
+{
+  "id": "f_107",
+  "title": "咖啡厅场景",
+  "content": "{\"role\":\"场景重构合成师\",\"base_rules\":{\"preserve_model\":\"严禁改变模特动作表情服装\",\"preserve_viewing_angle\":\"保持画面拍摄角度和透视不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify_model\":\"识别模特的位置、姿势和占据的画面区域\",\"identify_costume\":\"分析模特服装风格(如女仆装)以匹配场景互动逻辑\",\"identify_original_light\":\"分析原图光源方向和色温\"},\"scene_construction\":{\"environment\":{\"style\":\"欧式咖啡厅室内环境\",\"elements\":\"暖色调木质家具、复古灯饰、墙面装饰画、花瓶、窗帘等\",\"floor\":\"木地板或瓷砖地面\",\"perspective\":\"场景透视与原图消失点一致\"},\"chaos_storytelling\":{\"narrative\":\"塑造手忙脚乱的女仆打翻物品的瞬间\",\"overturned_table\":\"增加一张被掀翻或倾斜的木质桌子\",\"spilled_water\":\"翻倒的水桶溅起水花，水体具有真实的流体模拟效果(折射/焦散)\",\"flying_cups\":\"被打飞的咖啡杯在空中旋转，杯中咖啡液体甩出形成弧线\",\"scattered_pastries\":\"飞起来的点心/甜点散落在空中和地面\",\"dynamic_freeze\":\"所有动态元素呈现瞬间冻结的高速摄影效果\"},\"lighting\":{\"reset\":\"重置场景灯光\",\"composite\":\"新增复合灯光系统：暖色主光(模拟咖啡厅吊灯/壁灯，色温3200-3800K)+窗户侧光(自然光，色温5500K)\",\"rim\":\"为模特添加轮廓光增强层次\",\"object_light\":\"所有物体(桌椅/杯碟/食物)受光面和阴影与新灯光一致\"}},\"quality_control\":{\"material\":\"所有物体呈现3D建模CG质感，PBR材质\",\"physics\":\"物体运动轨迹和碎片分布符合物理逻辑\",\"visual_center\":\"模特仍是画面视觉中心\",\"noise_match\":\"噪点一致\"},\"constraints\":{\"严禁\":\"改变模特任何特征\",\"禁止\":\"场景元素遮挡模特面部、场景风格与角色不搭\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

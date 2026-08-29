@@ -1,0 +1,9 @@
+{
+  "id": "f_045",
+  "title": "腿部勒肉感",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"在丝袜/袜带/绑带/服装边缘添加真实的勒肉效果，增加肉感和性感度\",\"detection\":{\"identify\":\"分析全身服装边缘位置：丝袜袜口(大腿处)、袜带/吊带袜扣、绑带/缎带/皮带、服装领口/袖口/腰带等束缚边缘的位置和材质\"},\"@param:勒肉程度\":0.6,\"@param:勒肉程度_desc\":\"0=无勒肉效果保持原样;0.2=极微弱的皮肤微隆起(0.5mm)几乎不可见;0.4=轻微勒肉皮肤微微隆起(1mm)自然柔和;0.6=明显的勒肉效果皮肤隆起(2mm)可见软肉溢出;0.8=强烈的勒肉深陷皮肤隆起(3mm)束缚感强;1=极致深陷勒痕皮肤大幅隆起(4mm+)强烈的肉感溢出\",\"operations\":{\"meat_bulge\":{\"action\":\"在每处服装/丝袜/绑带边缘两侧生成柔和的皮肤隆起\",\"shape\":\"隆起呈柔和的半圆弧状，从勒痕中心向两侧渐变消失\",\"height\":\"隆起高度根据参数值从0到4mm递增\",\"width\":\"隆起影响范围约勒痕两侧各5-15mm\"},\"skin_reaction\":{\"redness\":\"勒痕处皮肤微微泛红(Hue偏红约5-15%)，红晕程度与参数成正比\",\"indent\":\"勒痕处皮肤有轻微凹陷压痕，深度与参数成正比\",\"texture\":\"隆起处皮肤纹理保持自然，可见微弱的拉伸纹理方向\"},\"shadow_highlight\":{\"shadow\":\"勒痕凹陷处产生微弱阴影(束缚物遮挡)\",\"highlight\":\"隆起的肉丘顶部有皮肤高光(匹配光源方向)\",\"softness\":\"所有光影过渡柔和自然呈现真实肉感弹性\"},\"application_zones\":{\"thigh\":\"丝袜袜口处→大腿肉微微溢出袜口上方\",\"garter\":\"吊带袜扣/袜带→勒入大腿皮肤微陷\",\"ribbon\":\"绑带/缎带→皮肤从绑带两侧微微鼓出\",\"collar\":\"领口/袖口→皮肤在边缘微微隆起\"}},\"constraints\":{\"严禁\":\"改变服装位置、勒肉处皮肤呈现疼痛红肿感(应为性感柔和)\",\"禁止\":\"勒肉效果不自然呈硬边切割感\"},\"integration\":{\"bilateral\":\"左右对称位置勒肉程度一致\",\"light_match\":\"光影匹配\",\"noise_match\":\"噪点一致\"}}",
+  "category": "legs",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

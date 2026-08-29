@@ -1,0 +1,9 @@
+{
+  "id": "f_103",
+  "title": "白棚处理",
+  "content": "{\"role\":\"摄影棚后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":\"严禁改变模特的动作、表情、服装、肤色\",\"preserve_global_hsl_gamma\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_equipment\":\"自动识别画面中的摄影设备穿帮：灯架/灯罩/反光板/柔光箱/C架/旗板/线缆/插座/地面胶带标记\",\"identify_ground\":\"分析白棚地面状态：划痕位置和方向、污渍区域、色温不均匀区域、地面与墙面的过渡曲线(无影墙弧面)\"},\"equipment_removal\":{\"action\":\"完全移除画面内所有灯架、灯罩、反光板等摄影设备穿帮元素\",\"light_preservation\":\"移除设备实体后，保留其原有光照效果不变\",\"inpaint\":\"被设备遮挡的区域使用白色背景+正确的光影渐变填充\"},\"ground_restoration\":{\"scratch_removal\":\"消除白色地面上所有可见的黑色/灰色划痕、轮子碾压痕迹\",\"stain_removal\":\"移除地面污渍(脚印/水渍/灰尘积累/油漆斑驳)\",\"repaint\":\"将地面重新涂刷为干净均匀的白色，保持原有光影渐变(中心亮边缘暗的自然衰减)\",\"seamless_curve\":\"白棚无影墙的地面到背景墙弧面过渡保持平滑连续，无可见折痕\"},\"color_correction\":{\"white_balance\":\"确保白色背景在画面各区域的色温一致(消除偏黄/偏蓝区域)\",\"gradient\":\"保持白棚自然的光影渐变：模特正面和中心区域最亮，向边缘和角落自然衰减\"},\"constraints\":{\"严禁\":\"改变模特任何特征、改变画面整体色温风格\",\"禁止\":\"地面处理后出现明显的修补痕迹、白色区域过曝(clipping)\"},\"integration\":{\"noise_match\":\"修补区域噪点与原图白色背景区域完全一致\",\"edge_blend\":\"所有修补边缘无缝融合\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

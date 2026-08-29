@@ -1,0 +1,9 @@
+{
+  "id": "f_091",
+  "title": "火焰特效(画笔引导)",
+  "content": "{\"role\":\"VFX特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"preserve_background_structure\":true,\"no_scale_rotate_translate\":true},\"brush_interpretation\":{\"marker_type\":\"红色画笔引导线\",\"marker_purpose\":\"仅为指令引导标记，非画面内容\",\"semantics\":{\"stroke_path\":\"红色笔触路径=火焰蔓延方向和轨迹\",\"stroke_curvature\":\"笔触弧度=火焰弯曲程度，直线笔触产生直冲火柱，弯曲笔触产生卷曲火舌\",\"stroke_thickness\":\"笔触粗细≈火焰宽度的参考\",\"stroke_length\":\"笔触长度=火焰延伸范围\"},\"scope\":\"仅标记覆盖区域生成火焰，未标记区域严禁出现火焰实体\"},\"flame_generation\":{\"structure\":\"火焰底部为蓝白色高温核心(色温约3000-4000K)，中段过渡为明亮橙黄，顶部为橙红色并逐渐透明消散\",\"fluid_dynamics\":\"使用Volume Rendering模拟真实火焰流体行为，火舌呈现Perlin Noise驱动的湍流形态(频率0.8-1.5)，顶部有Turbulence Field扰动产生的不规则撕裂\",\"heat_distortion\":\"火焰周围空气产生热扭曲折射效果(heat haze)，扭曲强度从火焰中心向外衰减，影响范围约为火焰宽度的1.5倍\",\"particles\":\"火焰顶部释放上升的橙色火星粒子(embers)，粒子随机大小0.5-3px，Lifespan 0.3-0.8秒后熄灭变暗\",\"illumination\":{\"self_glow\":\"火焰本体自发光，核心区域过曝(Bloom效果)\",\"mapped_light\":\"火焰对周围物体产生暖色映射光(色温2800K)，光照强度按Inverse Square Falloff衰减\",\"shadow_cast\":\"火焰作为光源在对侧产生动态投影，投影边缘柔和\"},\"smoke\":\"火焰上方生成少量半透明灰黑色烟雾，密度低(Opacity 15-30%)，随热气上升扩散\"},\"brush_removal\":{\"priority\":\"MANDATORY\",\"action\":\"在最终输出前完全移除所有红色引导线痕迹及色彩残留，修复被标记覆盖的原始画面内容\"},\"integration\":{\"depth_occlusion\":\"火焰遮挡关系正确：模特身体前方的火焰覆盖身体，身体后方的火焰被身体遮挡\",\"noise_match\":\"特效区域噪点与原图一致\",\"color_space\":\"火焰光照不改变画面整体色相饱和度伽马值，仅在火焰影响范围内产生局部光照变化\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

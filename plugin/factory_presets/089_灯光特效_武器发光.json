@@ -1,0 +1,9 @@
+{
+  "id": "f_088",
+  "title": "武器发光",
+  "content": "{\"role\":\"VFX特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"preserve_weapon_shape\":\"严格保持武器形状轮廓不变，仅添加发光效果\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify_weapon\":\"识别模特手中/身上的武器类型(剑/刀/枪/杖/弓/锤/镰/扇等)和材质\",\"identify_color\":\"根据角色IP属性和武器原色判断发光颜色：火属性=橙红、冰=冰蓝、雷=蓝紫、风=翠绿、暗=深紫、光=金黄、毒=黄绿\",\"identify_light\":\"分析原图光源方向和整体色温，确保新增光效与场景协调\"},\"weapon_glow\":{\"core_emission\":{\"source\":\"武器的刃面/枪口/宝石/符文等功能区域作为发光源\",\"intensity\":\"核心发光区域亮度高于武器表面50-100%，边缘区域轻微Bloom过曝\",\"color\":\"发光颜色与角色属性对应，核心区域偏白(高色温)，外围渐变为对应的属性色\"},\"aura_glow\":{\"inner\":\"武器表面笼罩一层贴合轮廓的属性色辉光(Opacity 30-50%)，距武器表面约2-5mm\",\"outer\":\"外层辉光更柔和(Opacity 10-25%)，向外扩散约武器宽度的2-4倍后衰减消散\",\"pulsation\":\"辉光边缘呈现微弱的不规则波动感，模拟能量脉动\"},\"mapped_illumination\":{\"action\":\"武器光对周围物体产生对应色系的映射光\",\"targets\":\"映射光照亮模特手部/手臂皮肤、衣物表面、附近道具\",\"falloff\":\"映射光强度按Inverse Square Falloff衰减，影响范围约武器长度的1-2倍\",\"color_cast\":\"被照亮表面呈现微弱的属性色色偏\"},\"magic_particles\":{\"emitter\":\"武器发光区域释放飘散的魔法粒子\",\"behavior\":\"粒子沿武器轮廓向外飘散，受微弱上升气流影响，速度缓慢\",\"appearance\":\"粒子大小1-5px，颜色为属性色，具有微弱自发光(Bloom)\",\"count\":\"10-30个粒子自然分布，Lifespan后渐隐消失\",\"energy_wave\":\"武器挥动方向生成半透明的能量气浪残影(Opacity 10-20%)\"}},\"constraints\":{\"严禁\":\"改变武器形状轮廓、光效遮挡模特面部、改变画面整体色相饱和度伽马值\",\"禁止\":\"光效过强导致画面过曝、粒子过多导致画面杂乱\"},\"integration\":{\"depth_occlusion\":\"武器光效与模特身体遮挡关系正确\",\"render_quality\":\"整体呈现高精度游戏建模CG质感，真实3D渲染引擎效果\",\"noise_match\":\"特效区域噪点与原图一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

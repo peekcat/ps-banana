@@ -1,0 +1,9 @@
+{
+  "id": "f_102",
+  "title": "场照去背景",
+  "content": "{\"role\":\"摄影后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":\"严禁改变模特动作表情服装肤色\",\"preserve_background_structure\":\"保证背景除杂物外的框架结构不变\",\"preserve_global_hsl_gamma\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_clutter\":\"识别背景中的穿帮元素：路人/围观者/工作人员、摄影灯/灯架/灯罩/反光板/柔光箱/C架、地面线缆/胶带标记/水瓶/摄影包等个人物品\",\"identify_background\":\"分析背景材质(墙面/地面/植被/建筑/天空)的纹理模式和光影分布\"},\"removal_operations\":{\"people\":{\"action\":\"完全移除背景所有路人和工作人员\",\"inpaint\":\"使用周围背景材质智能填充，纹理方向透视比例光影明暗完全一致\"},\"equipment\":{\"action\":\"移除所有摄影设备穿帮\",\"light_preserve\":\"移除灯具实体但保留其光照效果不变\",\"inpaint\":\"设备遮挡区域使用场景原有材质精确重建\"},\"misc\":{\"action\":\"移除地面零散杂物(水瓶/包/线缆/胶带)\",\"ground_rebuild\":\"重建地面原始材质纹理\"}},\"quality_control\":{\"texture_match\":\"修补区域材质纹理方向密度与周围完全匹配\",\"perspective_match\":\"修补纹理透视缩放与场景消失点一致\",\"light_match\":\"修补区域光影渐变无突兀亮斑暗区\",\"edge_blend\":\"修补边缘无缝融合无AI修补痕迹\",\"noise_match\":\"噪点一致\"},\"constraints\":{\"严禁\":\"改变模特任何特征、改变保留背景的结构\",\"禁止\":\"修补区域出现涂抹模糊或重复纹理pattern\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,135 @@
+/* === groups.css — 文件夹磁贴系统 === */
+
+/* === 主grid === */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(var(--cols),1fr);
+  grid-auto-rows:var(--cell);
+  gap:var(--gap);
+  position:relative;
+  min-height:100%;
+}
+.grid.editing::before{
+  content:'';position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0;
+  background-image:radial-gradient(circle 1px at center,rgba(255,255,255,0.06) 0%,transparent 100%);
+  background-size:calc(100%/var(--cols)) calc(var(--cell) + var(--gap));
+}
+
+/* === 文件夹磁贴 === */
+.tile-folder{
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.08);
+  overflow:hidden;
+}
+
+/* === 文件夹内部网格 === */
+.folder-grid-inner{
+  display:grid!important;
+  padding:3px!important;
+  gap:1px;
+  align-items:stretch;
+  justify-items:stretch;
+  width:100%;height:100%;
+  pointer-events:auto!important;
+}
+.folder-grid-2{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}
+.folder-grid-3{grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr}
+
+/* === 文件夹内单元格 === */
+.folder-cell{
+  display:flex;align-items:center;justify-content:center;
+  border-radius:2px;
+  transition:background 0.15s;
+  overflow:hidden;
+  pointer-events:auto;
+}
+.folder-cell-filled{
+  cursor:pointer;
+  background:rgba(255,255,255,0.04);
+  pointer-events:auto;
+}
+.folder-cell-filled:hover{
+  background:rgba(255,255,255,0.1);
+}
+.folder-cell-filled:active{
+  transform:scale(0.9);
+  transition:transform 0.1s;
+}
+.folder-cell-icon{
+  font-size:12px;line-height:1;
+  pointer-events:none;
+}
+/* 3x3模式下图标更小 */
+.folder-grid-3 .folder-cell-icon{font-size:9px}
+
+/* === 编辑模式下文件夹内图标 === */
+.tile-folder.edit-mode .folder-cell-filled{
+  cursor:grab;
+  animation:wobble 0.2s ease-in-out infinite;
+}
+.tile-folder.edit-mode .folder-cell-filled:active{
+  animation:none;transform:scale(0.85);cursor:grabbing;
+}
+.tile-folder.edit-mode .resize-handle{display:none!important}
+
+/* === 空文件夹删除按钮 === */
+.folder-delete-btn{
+  position:absolute;top:-4px;right:-4px;width:16px;height:16px;
+  background:rgba(220,38,38,0.8);border-radius:50%;
+  display:none;align-items:center;justify-content:center;
+  font-size:9px;color:#fff;cursor:pointer;z-index:5;
+  transition:transform 0.15s;pointer-events:auto;
+}
+.folder-delete-btn:hover{transform:scale(1.2)}
+.tile-folder.edit-mode .folder-delete-btn{display:flex}
+
+/* === 底栏编辑菜单 === */
+.edit-toolbar{
+  position:fixed;bottom:0;left:0;right:0;z-index:600;
+  background:rgba(30,30,30,0.95);
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,255,255,0.06);
+  padding:8px 12px;
+  display:flex;gap:8px;justify-content:center;
+  flex-wrap:wrap;
+  transform:translateY(100%);
+  transition:transform 0.3s cubic-bezier(.22,1,.36,1);
+}
+.edit-toolbar.show{transform:translateY(0)}
+.edit-toolbar-btn{
+  padding:6px 16px;font-size:10px;border-radius:4px;cursor:pointer;
+  border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);
+  color:var(--text);transition:all 0.15s;font-weight:500;
+  display:flex;align-items:center;gap:4px;
+  white-space:nowrap;
+  flex-shrink:0;
+}
+.edit-toolbar-btn:hover{background:rgba(255,255,255,0.1)}
+.edit-toolbar-btn:active{transform:scale(0.97)}
+
+/* 颜色按钮上的当前色预览点 */
+.tb-color-dot{
+  display:inline-block;width:10px;height:10px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.25);
+  background:rgba(255,255,255,0.08);
+  vertical-align:middle;margin-left:2px;
+}
+.edit-toolbar-input{
+  display:flex;align-items:center;gap:4px;
+}
+.edit-toolbar-text{
+  width:120px;height:28px;padding:0 8px;font-size:10px;
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+  border-radius:4px;color:var(--text);outline:none;
+  font-family:inherit;
+}
+.edit-toolbar-text:focus{border-color:var(--accent)}
+.edit-toolbar-separator{
+  width:1px;height:20px;background:rgba(255,255,255,0.1);flex-shrink:0;
+}
+
+/* === drop indicator === */
+.drop-ind{
+  position:absolute;border:1.5px solid var(--accent);border-radius:var(--tile-radius);
+  pointer-events:none;z-index:0;opacity:0.35;transition:all 0.12s cubic-bezier(.16,1,.3,1);
+}

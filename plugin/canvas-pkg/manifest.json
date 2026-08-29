@@ -1,0 +1,27 @@
+{
+  "id": "com.xiasanqi.ps.wheelchair.canvas",
+  "name": "轮椅幕布",
+  "version": "1.0.0",
+  "main": "index.html",
+  "manifestVersion": 5,
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "canvasPanel",
+      "label": { "default": "轮椅幕布" },
+      "minimumSize": { "width": 400, "height": 300 },
+      "maximumSize": { "width": 4000, "height": 4000 },
+      "preferredDockedSize": { "width": 720, "height": 720 },
+      "preferredFloatingSize": { "width": 1100, "height": 760 }
+    }
+  ],
+  "host": {
+    "app": "PS",
+    "minVersion": "24.0.0"
+  },
+  "requiredPermissions": {
+    "localFileSystem": "fullAccess",
+    "allowCodeGenerationFromStrings": true,
+    "network": { "domains": "all" }
+  }
+}

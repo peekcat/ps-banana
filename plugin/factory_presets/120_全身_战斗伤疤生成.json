@@ -1,0 +1,9 @@
+{
+  "id": "f_119",
+  "title": "战斗伤疤生成",
+  "content": "{\"role\":\"特效化妆后期师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"在人物皮肤上生成真实的战斗伤疤效果——刀伤/剑伤/抓痕等线性伤疤，可控制伤疤新旧程度从新鲜血淋淋到古老苍白疤痕\",\"detection\":{\"analyze\":\"分析人物裸露皮肤区域位置、肤色色调、光源方向、适合添加伤疤的部位(面颊/手臂/肩膀/胸口/背部)\"},\"@param:伤口新旧\":0.3,\"@param:伤口新旧_desc\":\"0=极新鲜的伤口(鲜红色开放性伤口边缘微翻有鲜血渗出刺痛感强烈);0.15=较新的伤口(暗红色开始结痂边缘红肿发炎);0.3=半愈合伤疤(深红褐色痂皮形成周围皮肤微红);0.5=基本愈合(粉红色新生疤痕组织凸起光滑微凸);0.7=较旧伤疤(浅粉色到白色的成熟疤痕微凸有纹理);0.85=老旧伤疤(白色/银白色平坦光滑的旧疤与周围肤色差异明显);1=极古老伤疤(苍白近乎与肤色融合的陈年旧疤仅在侧光下可见微弱凹凸)\",\"operations\":{\"scar_shape\":{\"action\":\"在适当部位生成1-3条线性伤疤\",\"length\":\"伤疤长度3-15cm随机\",\"width\":\"伤疤宽度2-8mm\",\"pattern\":\"直线或微弧线模拟刀剑伤\"},\"color_stage\":{\"action\":\"根据新旧参数设置伤疤颜色\",\"fresh\":\"新伤(值0-0.2): 鲜红/暗红色高饱和\",\"healing\":\"愈合中(值0.3-0.5): 红褐/粉红色中饱和\",\"old\":\"旧疤(值0.6-0.8): 浅粉/白色低饱和\",\"ancient\":\"古旧(值0.9-1): 银白/与肤色接近极低饱和\"},\"texture\":{\"action\":\"伤疤表面纹理\",\"relief\":\"凸起程度从新伤鼓起到旧疤平坦递减\",\"surface\":\"新伤粗糙有痂旧疤光滑\"},\"skin_reaction\":{\"action\":\"伤疤周围皮肤反应\",\"redness\":\"新伤周围红肿发炎范围大旧疤无\",\"swelling\":\"肿胀程度随新鲜度递减\"}},\"constraints\":{\"严禁\":\"伤疤出现在不合理位置(如手心脚底)\",\"禁止\":\"伤疤破坏面部辨识度(面部伤疤需避开核心五官)\"},\"integration\":{\"light_match\":\"伤疤凹凸的高光阴影匹配光源\",\"skin_blend\":\"伤疤边缘与周围皮肤自然过渡\",\"bilateral\":\"面部伤疤不对称更真实\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

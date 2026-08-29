@@ -1,0 +1,68 @@
+{
+  "id": "com.xiasanqi.ps.wheelchair.v4",
+  "name": "夏三七的修图轮椅 v6",
+  "version": "6.6.3",
+  "main": "index.html",
+  "manifestVersion": 5,
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "mainPanel",
+      "label": { "default": "修图轮椅 v6" },
+      "minimumSize": { "width": 240, "height": 400 },
+      "maximumSize": { "width": 2000, "height": 2000 },
+      "preferredDockedSize": { "width": 280, "height": 650 },
+      "preferredFloatingSize": { "width": 320, "height": 650 },
+      "icons": [
+        {
+          "width": 23,
+          "height": 23,
+          "path": "icons/icon_24.png",
+          "scale": [1, 2],
+          "theme": ["darkest", "dark", "medium"]
+        },
+        {
+          "width": 23,
+          "height": 23,
+          "path": "icons/icon_24.png",
+          "scale": [1, 2],
+          "theme": ["lightest", "light"]
+        }
+      ]
+    }
+  ],
+  "host": { "app": "PS", "minVersion": "26.0.0" },
+  "icons": [
+    {
+      "width": 23,
+      "height": 23,
+      "path": "icons/icon_24.png",
+      "scale": [1, 2],
+      "theme": ["darkest", "dark", "medium"],
+      "species": ["pluginList"]
+    },
+    {
+      "width": 23,
+      "height": 23,
+      "path": "icons/icon_24.png",
+      "scale": [1, 2],
+      "theme": ["lightest", "light"],
+      "species": ["pluginList"]
+    }
+  ],
+  "requiredPermissions": {
+    "localFileSystem": "fullAccess",
+    "allowCodeGenerationFromStrings": true,
+    "launchProcess": {
+      "schemes": ["https", "http", "file"],
+      "extensions": [".bat", ".cmd", ""]
+    },
+    "network": { "domains": "all" },
+    "webview": {
+      "allow": "yes",
+      "allowLocalRendering": "yes",
+      "domains": "all",
+      "enableMessageBridge": "localAndRemote"
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_011",
+  "title": "精致眉形",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face_position\":true,\"preserve_expression\":true,\"preserve_skin_color\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析角色IP属性和人设，判断适合的眉形风格（剑眉/柳叶眉/一字眉/挑眉/弯月眉/野生眉），同时识别模特原有眉形基础和面部光源方向\"},\"eyebrow_refinement\":{\"shape_optimization\":\"根据角色人设选择对应眉形，调整眉峰位置和眉尾走向，确保左右对称度误差不超过1mm\",\"hair_texture\":\"逐根绘制眉毛纹理，每根眉毛具有从眉根到眉尖的自然渐变粗细，根根分明，生长方向从眉头向眉尾自然过渡\",\"color_matching\":\"眉色与发色协调统一：黑发配深棕/黑眉，浅色发配浅棕/灰棕眉，彩色假发则眉色偏向角色原设或深灰色中性色\",\"cleanup\":\"清除眉形轮廓外的所有杂毛、汗毛，眉心区域彻底清理，眉骨周围皮肤保持干净通透\",\"gradient\":\"眉头颜色最浅呈羽化渐变，眉腰颜色最实，眉尾自然收尖渐隐，禁止出现截断感\",\"light_shadow\":\"眉毛下方根据原图光源方向生成细微投影，增强眉骨立体感，眉弓高光与面部光影逻辑一致\"},\"constraints\":{\"严禁\":\"改变眼睛大小形状、改变五官间距、改变面部表情、改变皮肤质感\"},\"integration\":{\"edge_blend\":\"眉毛边缘与皮肤过渡自然，无硬边无AI笔触痕迹\",\"noise_match\":\"修改区域噪点颗粒度与原图皮肤区域完全一致\"}}",
+  "category": "head",
+  "subCategory": "eyebrows",
+  "refImages": [],
+  "_isFactory": true
+}

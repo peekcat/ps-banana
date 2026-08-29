@@ -1,0 +1,9 @@
+{
+  "id": "f_061",
+  "title": "道具金属化(可调参数)",
+  "content": "{\"role\":\"资深道具后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"保持物体结构颜色花纹不变，将道具材质从塑料/树脂/泡沫升级为真实金属制品。通过4个参数精确控制金属类型、光泽度、磨损和锈蚀程度\",\"detection\":{\"identify\":\"识别道具当前材质(塑料/树脂/EVA/纸板)和表面处理(喷漆/贴纸)\",\"identify_shape\":\"分析道具形状结构和表面细节\"},\"@param:金属类型\":0.5,\"@param:金属类型_desc\":\"0=冷色钢铁(蓝灰色调Metalness0.85+冷色环境反射);0.25=银色不锈钢(亮银色高反射);0.5=铜合金/青铜(暖黄铜色中等反射绿锈倾向);0.75=红铜/紫铜(暖红铜色柔和反射);1=黄金(高饱和金黄色极高反射率暖色高光)\",\"@param:金属光泽\":0.7,\"@param:金属光泽_desc\":\"0=完全哑光磨砂(Roughness0.8+无可见环境反射);0.25=磨砂金属(Roughness0.6柔和反射);0.5=缎面光泽(Roughness0.4中等反射);0.75=光亮金属(Roughness0.2清晰反射);1=镜面抛光(Roughness0.05完美镜面反射环境清晰可辨)\",\"@param:磨损程度\":0.2,\"@param:磨损程度_desc\":\"0=全新无任何使用痕迹表面完美;0.2=微弱使用痕迹极浅划痕;0.5=中度磨损边缘磨亮握把区域光滑;0.7=重度磨损大面积划痕磨损边缘磨圆;1=极度磨损包浆深厚划痕密布表面粗糙\",\"@param:锈蚀程度\":0,\"@param:锈蚀程度_desc\":\"0=无锈蚀金属表面干净;0.2=微弱锈点散布在凹槽和边缘;0.5=中度锈蚀表面30%覆盖铁锈/铜绿;0.7=大面积锈蚀60%覆盖质感粗糙;1=严重锈蚀几乎全覆盖铁锈层厚实\",\"operations\":{\"material_swap\":\"移除塑料/树脂的质感(消除合模线塑料光泽)替换为金属PBR材质\",\"surface\":\"根据金属类型设置基础色和Metalness\",\"reflection\":\"根据光泽参数设置Roughness和环境反射清晰度\",\"wear\":\"根据磨损参数添加划痕/磨损贴图\",\"rust\":\"根据锈蚀参数叠加铁锈/铜绿纹理\"},\"constraints\":{\"严禁\":\"改变道具形状/花纹/图案位置\",\"禁止\":\"金属质感呈现2D喷漆感而非真实金属PBR\"},\"integration\":{\"light_match\":\"金属反射方向与光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "accessory",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

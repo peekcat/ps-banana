@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #14141b; }
+  /* 画布挂载点: tile-canvas 的 .cv-root 是绝对定位填满父级, 这里给它一个定位父级 */
+  #cvMount { position: relative; width: 100%; height: 100%; }
+</style>
+<link rel="stylesheet" href="tile-canvas.css">
+</head>
+<body>
+  <div id="cvMount"></div>
+
+  <!-- 顺序要紧: 先替身(定义 TileAPI), 再 PS 能力 / 生成委托(定义 CV_PSIO / CV_GEN), 再本地 host 表(CV_HOST), 最后画布(末尾会 registerTile) -->
+  <script src="cv-shim.js"></script>
+  <script src="cv-psio.js"></script>
+  <script src="cv-gen.js"></script>
+  <script src="cv-host.js"></script>
+  <script src="tile-canvas.js"></script>
+</body>
+</html>

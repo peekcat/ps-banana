@@ -1,0 +1,9 @@
+{
+  "id": "f_110",
+  "title": "日系胶片清新",
+  "content": "{\"role\":\"日系色调后期师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析当前色调状态和画面亮度分布\"},\"style_conversion\":{\"exposure\":{\"action\":\"轻微过曝处理整体提亮\",\"highlights\":\"高光区域柔和溢出(Bloom，模拟胶片过曝特征)\",\"shadows\":\"暗部大幅提亮(+30-50%)，保持暗部细节可见，无死黑区域\",\"overall\":\"整体呈通透空气感\"},\"color_grade\":{\"saturation\":\"色彩低饱和度(-15-30%)\",\"warmth\":\"整体偏暖黄(色温+300-600K)\",\"green_tint\":\"暗部微偏绿(模拟富士胶片特征)\",\"skin\":\"肤色保持健康红润通透，不过度去饱和\",\"highlight_color\":\"高光区域偏暖黄/奶白\"},\"film_texture\":{\"grain\":\"添加胶片颗粒感(Film Grain)，颗粒大小中等(约0.5-1.5px)\",\"grain_intensity\":\"颗粒强度适中(Opacity 8-18%)，暗部颗粒略粗亮部略细\",\"chromatic\":\"微弱的色差/色散(Chromatic Aberration)在画面边缘可见(1-2px)\"},\"tone_curve\":{\"shadows\":\"暗部不完全到黑(黑色级别提升至RGB 15-25)，模拟胶片的灰雾感\",\"highlights\":\"高光不完全到白(白色级别降至RGB 240-250)\",\"midtone\":\"中间调微微S曲线增加对比\"}},\"constraints\":{\"严禁\":\"改变模特身体动作、过度处理导致画面失真\",\"禁止\":\"肤色发灰发绿不健康\"},\"integration\":{\"consistency\":\"全图色调处理统一\",\"noise_match\":\"胶片颗粒均匀分布\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

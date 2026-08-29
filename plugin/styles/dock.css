@@ -1,0 +1,268 @@
+/* ============================================================
+ *  dock.css —— 右侧固定快捷栏 (Dock)
+ *  默认关闭(无 body.dock-on 时零影响)。开启后右侧出现固定图标栏,
+ *  主视口 .vp 让出 --dock-w 宽度, tile-engine 的 updCell() 自动适配。
+ * ============================================================ */
+
+:root {
+  --dock-w: 0px;          /* 关闭时 0; 开启时由 dock.js 设为 半个标准磁贴 × Dock大小 */
+  --dock-opacity: 0.92;   /* Dock 背景不透明度 (Dock 设置磁贴可调) */
+  --dock-blur: 6px;       /* Dock 背景模糊 (Dock 设置磁贴可调) */
+  --dock-icon-scale: 1;   /* Dock 内图标大小 (独立于 Dock 宽度, Dock 设置磁贴可调) */
+}
+
+/* 开启时主视口让出 Dock 宽度 —— .vp 变窄 → _vp.clientWidth 变小 → 磁贴自动缩窄 */
+body.dock-on .vp {
+  width: calc(100% - var(--dock-w));
+}
+/* Dock 放左侧时, 主视口整体右移让出左边那条 */
+body.dock-on.dock-left .vp {
+  margin-left: var(--dock-w);
+}
+
+/* Dock 容器: 固定在右侧, 宽度 = 0.5 个标准磁贴 (--dock-w 由 dock.js 按 _cell/2 计算) */
+#dockHost {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: var(--dock-w);
+  height: 100%;
+  z-index: 500;                 /* 遮罩(400)之上, 顶栏(600)/展开磁贴(700)之下 */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 0;
+  background: rgba(24, 24, 36, var(--dock-opacity, 0.92));
+  backdrop-filter: blur(var(--dock-blur, 6px));
+  border-left: 1px solid rgba(255, 255, 255, 0.07);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Dock 放左侧 */
+body.dock-left #dockHost {
+  right: auto;
+  left: 0;
+  border-left: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* 关闭时彻底不显示(零 DOM 影响) */
+body:not(.dock-on) #dockHost {
+  display: none;
+}
+
+/* Dock 按钮: 正方形, 边长 = 0.5 个标准磁贴 (= 容器宽度) */
+.dock-btn {
+  flex: 0 0 auto;
+  width: var(--dock-w);
+  height: var(--dock-w);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s, transform 0.08s;
+}
+.dock-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.dock-btn:active {
+  transform: scale(0.9);
+}
+
+/* Dock 按钮内的图标(字号 = 半磁贴比例 × 独立图标缩放) */
+.dock-btn .tile-icon {
+  margin: 0 !important;
+  font-size: calc(var(--dock-w) * 0.42 * var(--dock-icon-scale, 1));
+  line-height: 1;
+}
+.dock-btn .tile-icon .emoji-img {
+  width: calc(var(--dock-w) * 0.5 * var(--dock-icon-scale, 1));
+  height: calc(var(--dock-w) * 0.5 * var(--dock-icon-scale, 1));
+}
+/* 中文文字图标(参数 +/- 那类): 小字号 + 单行紧排, 不要巨大汉字/折行 */
+.dock-btn .tile-icon.dock-ico-text {
+  font-size: calc(var(--dock-w) * 0.26 * var(--dock-icon-scale, 1));
+  font-weight: 600;
+  white-space: nowrap;
+  letter-spacing: -1px;
+  color: var(--text, #eee);
+}
+
+/* toggle 处于"开"状态时高亮 */
+.dock-btn.dock-btn-on {
+  background: var(--accent, #4f7cff);
+}
+.dock-btn.dock-btn-on:hover {
+  background: var(--accent-hover, #6a90ff);
+}
+
+/* ===== 参数步进器组(糖葫芦: 名+值 / ＋ / －) ===== */
+.dock-stepper {
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--dock-w);
+  display: flex;
+  flex-direction: column;
+  border-radius: 6px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.05);
+}
+.dock-step-cell {
+  width: var(--dock-w);
+  height: var(--dock-w);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+.dock-step-cell.dock-step-inc,
+.dock-step-cell.dock-step-dec { border-top: 1px solid rgba(255, 255, 255, 0.08); }
+.dock-step-inc:hover, .dock-step-dec:hover { background: rgba(255, 255, 255, 0.12); }
+.dock-step-inc:active, .dock-step-dec:active { transform: scale(0.9); }
+/* 顶格: 参数名(小) + 当前值(大), 竖排不拥挤 */
+.dock-step-head {
+  flex-direction: column;
+  cursor: default;
+  line-height: 1.05;
+  padding: 0 2px;
+}
+.dock-step-name {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: calc(var(--dock-w) * 0.20 * var(--dock-icon-scale, 1));
+  color: var(--text-sub, #aaa);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dock-step-val {
+  display: block;
+  width: 100%;
+  text-align: center;
+  font-size: calc(var(--dock-w) * 0.26 * var(--dock-icon-scale, 1));
+  color: var(--text, #fff);
+  font-weight: 600;
+  line-height: 1.04;
+  white-space: normal;        /* 允许换行, 长名(模型)不再被单行截断 */
+  word-break: break-all;
+  overflow: hidden;
+  max-height: calc(var(--dock-w) * 0.66);   /* 最多约两行, 超出裁掉(完整名见 hover 提示) */
+}
+.dock-step-sign {
+  font-size: calc(var(--dock-w) * 0.5 * var(--dock-icon-scale, 1));
+  color: var(--text, #eee);
+  line-height: 1;
+}
+
+/* 分组分隔线(内置常用组与各磁贴组之间) */
+.dock-sep {
+  flex: 0 0 auto;
+  width: 60%;
+  height: 1px;
+  margin: 5px 0;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ===== 编辑模式(复用插件编辑模式): 拖拽排序 / 增删 ===== */
+body.dock-editing #dockHost {
+  outline: 1px dashed rgba(120, 160, 255, 0.5);
+  outline-offset: -1px;
+}
+.dock-item-editing {
+  position: relative;
+  cursor: grab;
+  animation: wobble 0.2s ease-in-out infinite;   /* 复用磁贴编辑态抖动 */
+}
+.dock-item-editing:active { cursor: grabbing; }
+/* 拖拽重排进行中: 暂停抖动, 让 FLIP 的位移动画干净显示 */
+#dockHost.dock-reordering .dock-item-editing { animation: none; }
+.dock-dragging {
+  opacity: 0.96;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  animation: none !important;
+  z-index: 5;
+}
+/* 删除小角标 */
+.dock-rm {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #e05555;
+  color: #fff;
+  font-size: 11px;
+  line-height: 14px;
+  text-align: center;
+  cursor: pointer;
+  z-index: 2;
+}
+.dock-rm:hover { background: #ff6b6b; }
+/* 添加按钮(＋) */
+.dock-add {
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  opacity: 0.8;
+}
+.dock-add:hover { opacity: 1; }
+
+/* ===== 动作库选择器 ===== */
+.dock-picker-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+}
+.dock-picker {
+  width: 280px;
+  max-width: 86%;
+  max-height: 80%;
+  display: flex;
+  flex-direction: column;
+  background: #1e1e2e;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+.dock-picker-title {
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text, #fff);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.dock-picker-list { flex: 1; overflow-y: auto; padding: 6px 0; }
+.dock-picker-group {
+  padding: 6px 14px 2px;
+  font-size: 11px;
+  color: var(--text-sub, #999);
+}
+.dock-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+.dock-picker-item:hover { background: rgba(255, 255, 255, 0.06); }
+.dock-picker-item.on { background: rgba(80, 124, 255, 0.12); }
+.dock-picker-ico { min-width: 24px; text-align: center; font-size: 14px; white-space: nowrap; }
+.dock-picker-lbl { flex: 1; font-size: 12px; color: var(--text, #eee); }
+.dock-picker-chk { font-size: 13px; color: var(--accent, #4f7cff); }
+.dock-picker-foot {
+  padding: 10px 14px;
+  text-align: right;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_056",
+  "title": "旗袍去白色打底",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_costume_design\":\"保持旗袍整体款式、花纹、颜色不变\",\"preserve_pose\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_lining\":\"识别旗袍开叉处可见的白色不透明内衬/打底，确定内衬与旗袍面料的分界线\",\"identify_hosiery\":\"识别旗袍下方的丝袜类型(白丝/肉色/黑丝)和质感\",\"identify_skin\":\"分析模特腿部皮肤颜色，用于生成透肉效果参考\"},\"replacement_operations\":{\"lining_removal\":{\"action\":\"完全移除旗袍开叉处可见的白色不透明内衬面料\",\"scope\":\"移除范围覆盖整个可见内衬区域\"},\"hosiery_rebuild\":{\"texture\":\"将移除区域替换为白色丝袜质感：20-30旦尼尔半透明尼龙材质\",\"skin_visibility\":\"皮肤色透过丝袜隐约可见(Opacity 70-85%)，呈现自然的透肉效果\",\"sheen\":\"丝袜表面具有柔和的各向异性光泽(Anisotropic highlight)，沿腿部纵向分布\",\"seamless_transition\":\"新生成的丝袜质感与旗袍下方原有丝袜区域完全一致，消除材质断层\"},\"extended_blend\":{\"action\":\"涂抹修改范围向下延伸5-10cm，覆盖到正常丝袜区域\",\"purpose\":\"让AI能读取到正确的丝袜纹理参考，确保新生成区域与原有丝袜无缝衔接\"}},\"constraints\":{\"严禁\":\"改变旗袍款式剪裁、改变开叉高度、改变腿部姿势\",\"禁止\":\"丝袜质感不统一出现色差、透明度突变产生明显接缝线\"},\"integration\":{\"light_match\":\"新生成区域的光影与原图腿部光影一致\",\"noise_match\":\"修改区域噪点与原图一致\"}}",
+  "category": "clothing",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

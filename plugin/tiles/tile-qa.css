@@ -1,0 +1,182 @@
+/* === tile-qa.css — 「帮助」磁贴样式 ===
+   只用 CSS 变量，不写死颜色（红/绿等 semantic 除外）。
+   命名空间 .qa-*；最外层沿用 .w10-panel。 */
+
+.qa-panel{
+  display:flex;flex-direction:column;
+  min-height:0;
+}
+
+/* 列表 / 详情切换：瞬间切换，不做任何过渡
+   毛玻璃面板上做内容动画会在收尾整块重绘“刷一下”（原作者在 tiles.css 里也因此
+   把面板内容入场动画关掉了），故此处与插件其它面板保持一致，瞬切。 */
+.qa-view{ display:flex;flex-direction:column;min-height:0; }
+
+/* ============================================================
+ * 搜索框
+ * ============================================================ */
+.qa-search-wrap{
+  position:relative;
+  display:flex;align-items:center;
+  margin-bottom:8px;
+}
+.qa-search-icon{
+  position:absolute;left:8px;
+  font-size:11px;opacity:0.5;
+  pointer-events:none;
+}
+.qa-search{
+  flex:1;min-width:0;
+  padding:7px 26px 7px 26px;
+  font-size:12px;
+  color:var(--text);
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--tile-border, rgba(255,255,255,0.08));
+  border-radius:4px;
+  outline:none;
+  transition:border-color 0.15s, background 0.15s;
+}
+.qa-search::placeholder{ color:var(--text-sub); }
+.qa-search:focus{
+  border-color:var(--accent);
+  background:rgba(255,255,255,0.07);
+}
+.qa-search-clear{
+  position:absolute;right:6px;
+  width:18px;height:18px;line-height:18px;text-align:center;
+  font-size:10px;color:var(--text-sub);
+  cursor:pointer;border-radius:50%;
+}
+.qa-search-clear:hover{ background:rgba(255,255,255,0.08);color:var(--text); }
+
+/* ============================================================
+ * 目录 / 列表
+ * ============================================================ */
+.qa-list{ overflow-y:auto;min-height:0; }
+
+.qa-cat-title{
+  font-size:10px;font-weight:600;
+  letter-spacing:0.5px;
+  color:var(--accent);
+  text-transform:uppercase;
+  padding:8px 2px 4px;
+  margin-top:2px;
+}
+.qa-cat-title:first-child{ margin-top:0; }
+
+.qa-result-count{
+  font-size:10px;color:var(--text-sub);
+  padding:2px 2px 6px;
+}
+
+.qa-item{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 8px;
+  border-radius:4px;
+  cursor:pointer;
+  transition:background 0.15s;
+}
+.qa-item:hover{ background:rgba(255,255,255,0.05); }
+.qa-item-q{
+  flex:1;min-width:0;
+  font-size:12px;line-height:1.4;
+  color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.qa-arrow{
+  flex-shrink:0;
+  font-size:14px;color:var(--text-sub);
+  opacity:0.6;
+}
+.qa-item:hover .qa-arrow{ opacity:1;color:var(--accent); }
+
+/* 搜索命中高亮 */
+.qa-mark{
+  background:var(--accent-glow, rgba(0,120,212,0.25));
+  color:var(--text);
+  border-radius:2px;
+  padding:0 1px;
+}
+
+.qa-empty{
+  font-size:11px;color:var(--text-sub);
+  text-align:center;padding:24px 0;
+}
+
+/* ============================================================
+ * 详情
+ * ============================================================ */
+.qa-view-detail{ overflow-y:auto;min-height:0; }
+
+.qa-detail-head{
+  display:flex;align-items:center;gap:8px;
+  padding-bottom:8px;
+  margin-bottom:8px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.qa-back{
+  flex-shrink:0;
+  padding:4px 10px;
+  font-size:11px;
+  color:var(--text);
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--tile-border, rgba(255,255,255,0.08));
+  border-radius:4px;
+  cursor:pointer;
+  transition:background 0.15s, border-color 0.15s;
+}
+.qa-back:hover{ background:rgba(255,255,255,0.1);border-color:var(--accent); }
+.qa-detail-title{
+  flex:1;min-width:0;
+  font-size:13px;font-weight:600;
+  color:var(--text);
+  line-height:1.4;
+}
+
+/* ============================================================
+ * 答案 markdown 渲染
+ * ============================================================ */
+.qa-md{
+  font-size:12px;line-height:1.7;
+  color:var(--text);
+}
+.qa-md-h2{
+  font-size:12px;font-weight:700;
+  color:var(--text);
+  margin:10px 0 4px;
+}
+.qa-md-h2:first-child{ margin-top:0; }
+.qa-md-h3{
+  font-size:11px;font-weight:600;
+  color:var(--text-sub);
+  margin:8px 0 3px;
+}
+.qa-md-li{
+  position:relative;
+  padding:2px 0 2px 16px;
+}
+.qa-md-li::before{
+  content:'·';
+  position:absolute;left:4px;
+  color:var(--accent);
+  font-weight:700;
+}
+.qa-md-li-num{ padding-left:4px; }
+.qa-md-li-num::before{ content:none; }
+.qa-md strong{ color:var(--text);font-weight:700; }
+.qa-md-code{
+  font-family:'Cascadia Code','Consolas',monospace;
+  font-size:11px;
+  padding:1px 5px;
+  background:rgba(255,255,255,0.08);
+  border-radius:3px;
+  color:var(--accent);
+}
+.qa-md-img{
+  display:block;
+  max-width:100%;
+  height:auto;
+  margin:8px 0;
+  border-radius:4px;
+  border:1px solid rgba(255,255,255,0.08);
+}

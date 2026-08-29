@@ -1,0 +1,9 @@
+{
+  "id": "f_070",
+  "title": "宝石镶嵌物优化",
+  "content": "{\"role\":\"资深道具后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"优化道具上的宝石/水晶/镶嵌物视觉效果——增加通透度和内部发光感。让树脂/塑料宝石看起来如真正的宝石\",\"detection\":{\"identify\":\"识别道具上宝石/水晶/琉璃等镶嵌物位置、形状、当前材质状态和光源方向\"},\"@param:通透度\":0.7,\"@param:通透度_desc\":\"0=完全不透明保持原样;0.2=微弱的半透明感边缘微透光;0.4=轻微通透可隐约看到内部;0.6=明显通透光线穿透折射可见;0.7=非常通透如天然宝石般清澈;0.8=极其通透晶莹剔透;1=极致通透如钻石般完美折射\",\"@param:内发光\":0.5,\"@param:内发光_desc\":\"0=无内发光保持原样;0.2=极微弱的内部光晕;0.4=轻微的内部柔和发光;0.5=明显的内发光宝石自身散发光芒;0.7=强烈的内发光魔法宝石感;0.8=非常强的内发光照亮周围;1=极致炽热的内发光如能量核心\",\"operations\":{\"transparency\":{\"action\":\"增加宝石表面的透明感和折射\",\"refraction\":\"根据通透度添加内部折射线条和色散\",\"depth\":\"增加宝石深度感内部可见分层\",\"surface\":\"表面添加镜面高光点和棱面反射\"},\"glow\":{\"action\":\"从宝石中心向外添加柔和的发光效果\",\"color\":\"发光色基于宝石本色(红宝石红光/蓝宝石蓝光/翡翠绿光)\",\"radius\":\"发光范围根据内发光参数从宝石边缘延伸2-15px\",\"falloff\":\"发光强度从中心到边缘二次衰减\"},\"facets\":{\"action\":\"增强宝石切面棱线的可见度\",\"highlight\":\"每个切面根据光源角度产生不同亮度的反射\"}},\"constraints\":{\"严禁\":\"改变宝石形状位置大小\",\"禁止\":\"发光效果遮挡人物主体\"},\"integration\":{\"light_match\":\"宝石反射匹配光源\",\"color_harmony\":\"发光色与画面色调和谐\",\"noise_match\":\"噪点一致\"}}",
+  "category": "accessory",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

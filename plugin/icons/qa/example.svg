@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="200" viewBox="0 0 480 200">
+  <rect width="480" height="200" rx="8" fill="#2a2a3a"/>
+  <rect x="0.5" y="0.5" width="479" height="199" rx="8" fill="none" stroke="rgba(255,255,255,0.12)"/>
+  <rect x="32" y="70" width="416" height="40" rx="6" fill="rgba(255,255,255,0.06)" stroke="rgba(0,120,212,0.6)"/>
+  <text x="48" y="95" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="15" fill="rgba(255,255,255,0.45)">sk-xxxxxxxxxxxxxxxxxxxx</text>
+  <text x="240" y="150" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="13" fill="rgba(255,255,255,0.35)">把 API Key 粘到这里（占位示意图）</text>
+  <text x="240" y="48" text-anchor="middle" font-family="Segoe UI, Microsoft YaHei, sans-serif" font-size="13" fill="rgba(255,255,255,0.6)">设置 · 连接</text>
+</svg>

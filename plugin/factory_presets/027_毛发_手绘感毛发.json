@@ -1,0 +1,9 @@
+{
+  "id": "f_026",
+  "title": "手绘感毛发",
+  "content": "{\"role\":\"日系插画后期处理师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":true,\"preserve_hairstyle\":\"保持发型轮廓和颜色不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析头发当前状态：发型结构、发色、光源方向、发量分布\"},\"stylization\":{\"cel_shading\":{\"technique\":\"将照片级写实头发转换为日系手绘/赛璐璐(Cel Shading)风格\",\"base_color\":\"将发色概括为2-3个大色块区域，色块内颜色均匀扁平\",\"simplification\":\"消除照片级的微观纹理和毛孔细节，用简洁的色面概括发束走向\"},\"light_dark_separation\":{\"levels\":\"明暗分为2-3级明度：受光面(最亮)、中间调(固有色)、背光面(阴影色)\",\"boundary\":\"明暗分界线清晰锐利(非柔和渐变)，呈现典型的赛璐璐二维打光\",\"shadow_color\":\"阴影为固有色加深(色相微偏冷/偏暖，不是单纯变黑)\"},\"highlight\":{\"shape\":\"高光为锐利的白色/浅色条带状光斑，沿发束方向分布\",\"edge\":\"高光边缘清晰硬朗，非摄影级的柔和反光\",\"position\":\"高光位置与原图光源方向一致\"},\"hair_strand\":{\"grouping\":\"头发以大发束为单位概括(5-15根为一束)\",\"outline\":\"每束发丝边缘有微弱的深色轮廓线(Line Art感)\",\"tip\":\"发尾收尖为简洁的尖角或弧形\"}},\"constraints\":{\"严禁\":\"改变发型轮廓和发色色相、改变面部(面部保持写实不做风格化)\",\"禁止\":\"手绘效果粗糙呈低质量涂抹感\"},\"integration\":{\"face_boundary\":\"手绘风格头发与写实面部的边界过渡自然\",\"noise_match\":\"风格化区域的画面质感统一\"}}",
+  "category": "hair",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

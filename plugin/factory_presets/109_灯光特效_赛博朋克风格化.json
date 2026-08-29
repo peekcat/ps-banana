@@ -1,0 +1,9 @@
+{
+  "id": "f_108",
+  "title": "赛博朋克风格化",
+  "content": "{\"role\":\"特效后期师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"将画面转换为赛博朋克视觉风格——高对比度、霓虹色彩(品红/青色/紫色)、科技感光效、城市夜景氛围\",\"detection\":{\"analyze\":\"分析画面当前色调、光源、人物和环境元素、暗部和高光分布\"},\"@param:霓虹强度\":0.6,\"@param:霓虹强度_desc\":\"0=保持原始色调不做风格化;0.2=极微弱的赛博色调暗部微微偏紫/青(日常中隐约的科技感);0.4=轻微赛博风霓虹色彩开始显现(高光偏青阴影偏品红);0.6=明显的赛博朋克风格强烈霓虹分色(品红青色对比鲜明科技感浓);0.8=强烈赛博风格极度饱和的霓虹色彩画面如同霓虹灯照射;1=极致赛博朋克全画面被霓虹色彩支配如同置身赛博城市核心区\",\"operations\":{\"color_grade\":{\"split_tone\":\"高光偏青色(H180)阴影偏品红(H300)\",\"contrast\":\"增加对比度20-60%(随参数)\",\"saturation\":\"霓虹色彩饱和度提升30-80%(随参数)\"},\"neon_light\":{\"action\":\"在边缘和高光区域添加霓虹色光线\",\"color\":\"品红/青/紫三色交替\",\"glow\":\"霓虹光晕bloom效果随参数增强\"},\"atmosphere\":{\"grain\":\"添加微弱胶片颗粒增加氛围\",\"vignette\":\"轻微暗角集中视觉\",\"haze\":\"参数>0.5时添加微弱的光雾/烟雾感\"}},\"constraints\":{\"严禁\":\"人物面部完全被霓虹色覆盖失去辨识度\",\"禁止\":\"色彩溢出导致画面脏乱\"},\"integration\":{\"face_protect\":\"面部肤色保持相对自然(霓虹色主要影响环境和边缘光)\",\"noise_match\":\"噪点一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

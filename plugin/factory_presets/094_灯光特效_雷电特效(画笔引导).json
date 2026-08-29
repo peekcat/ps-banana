@@ -1,0 +1,9 @@
+{
+  "id": "f_093",
+  "title": "雷电特效(画笔引导)",
+  "content": "{\"role\":\"VFX特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"preserve_background_structure\":true,\"no_scale_rotate_translate\":true},\"brush_interpretation\":{\"marker_type\":\"蓝色画笔引导线\",\"marker_purpose\":\"仅为指令引导标记，非画面内容\",\"semantics\":{\"stroke_path\":\"蓝色笔触路径=主电弧的大致走向和轨迹\",\"stroke_origin\":\"笔触起始端=电弧放电源头\",\"stroke_end\":\"笔触结尾端=电弧击中目标位置\",\"stroke_curvature\":\"笔触弯曲方向=电弧偏折方向的参考\"},\"scope\":\"电弧主体沿标记路径生成，分支电弧可向两侧自然延伸但范围不超过主路径宽度的3倍\"},\"lightning_generation\":{\"main_arc\":{\"path\":\"主电弧沿引导线走向生成，但不完全跟随引导线——电弧具有锯齿状不规则折线路径\",\"zigzag\":\"主电弧每隔约5-15px产生一次随机方向的急转折(角度30-90°)，模拟真实闪电的阶梯先导(stepped leader)\",\"width\":\"主电弧核心宽度约2-6px，从源头到末端略有衰减\",\"core_color\":\"电弧核心为过曝纯白/蓝白色(色温约15000-20000K)，Bloom效果强烈\"},\"branching\":{\"count\":\"从主电弧随机分叉出5-15条细小分支电弧\",\"branch_angle\":\"分支与主弧的夹角约20-60°，分支越远越细越短\",\"fractal\":\"分支电弧同样具有锯齿折线特征，但频率更高折角更小\",\"fade\":\"分支末端逐渐变细变暗直至消失\"},\"glow_aura\":{\"inner_glow\":\"电弧周围有强烈的蓝紫色辉光(electric blue/violet glow)，Opacity 40-70%\",\"outer_glow\":\"外层辉光呈柔和扩散的淡蓝色(Opacity 10-25%)，扩散范围约主弧宽度的8-15倍\",\"color_gradient\":\"核心白→内层蓝白→中层电蓝→外层蓝紫→边缘消散\"},\"illumination\":{\"flash\":\"电弧在整个场景产生强烈的蓝白色映射闪光(flash illumination)，模拟闪电照亮环境的效果\",\"flash_intensity\":\"映射光使面向电弧的物体表面亮度提升30-60%，光色偏冷蓝(色温10000K+)\",\"shadow_cast\":\"电弧作为强光源在对侧产生清晰硬边投影，投影颜色偏深蓝\",\"specular_hit\":\"金属/光滑表面产生电弧形状的高光反射\"},\"particles\":{\"sparks\":\"电弧交汇点和末端击中点释放白蓝色火花粒子，粒子沿随机方向飞溅\",\"ionization\":\"电弧附近空气呈现微弱的紫色电离辉光(plasma glow)\"}},\"brush_removal\":{\"priority\":\"MANDATORY\",\"action\":\"在最终输出前完全移除所有蓝色引导线痕迹及色彩残留，修复被标记覆盖的原始画面内容\"},\"integration\":{\"depth_occlusion\":\"电弧遮挡关系正确，前景电弧覆盖物体，背景电弧被前景遮挡\",\"noise_match\":\"特效区域噪点与原图一致\",\"color_space\":\"电弧映射光不改变画面整体色相饱和度伽马值，仅在影响范围内产生局部光照\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,236 @@
+/* defaults/default-layout.js — 插件默认布局
+ * v6.5.8: 取自用户手工配置的「6.5.8新测试布局」+ Dock 配置(2026-08-02)
+ * 含磁贴位置/尺寸/颜色/展开模式/外观 + Dock(钉选按钮/位置/大小/透明度)
+ * 已剔除开发工具磁贴(perftest); 用户有任何存储值都会覆盖这些默认
+ */
+(function() {
+'use strict';
+window._DEFAULT_LAYOUT = {
+  "__tile_layout_v6": {
+    "prompt": {
+      "col": 3,
+      "row": 4,
+      "w": 2,
+      "h": 4,
+      "group": "main"
+    },
+    "params": {
+      "col": 1,
+      "row": 4,
+      "w": 2,
+      "h": 1,
+      "group": "main"
+    },
+    "refimages": {
+      "col": 1,
+      "row": 5,
+      "w": 2,
+      "h": 1,
+      "group": "main"
+    },
+    "batchworks": {
+      "col": 2,
+      "row": 7,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "records": {
+      "col": 1,
+      "row": 7,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "center": {
+      "col": 1,
+      "row": 8,
+      "w": 4,
+      "h": 4,
+      "group": "main"
+    },
+    "presets": {
+      "col": 3,
+      "row": 1,
+      "w": 2,
+      "h": 3,
+      "group": "main"
+    },
+    "bodypreset": {
+      "col": 1,
+      "row": 1,
+      "w": 2,
+      "h": 3,
+      "group": "main"
+    },
+    "light": {
+      "col": 1,
+      "row": 6,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "hemisynth": {
+      "col": 2,
+      "row": 6,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "scope": {
+      "col": 2,
+      "row": 13,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "log": {
+      "col": 2,
+      "row": 12,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "drawer": {
+      "col": 3,
+      "row": 13,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "settings": {
+      "col": 4,
+      "row": 12,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "billing": {
+      "col": 1,
+      "row": 12,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "aistatus": {
+      "col": 4,
+      "row": 13,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "dock": {
+      "col": 3,
+      "row": 12,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    },
+    "netdoctor": {
+      "col": 1,
+      "row": 13,
+      "w": 1,
+      "h": 1,
+      "group": "main"
+    }
+  },
+  "__tile_expand_modes": {
+    "settings": "full",
+    "update": "full",
+    "info": "full",
+    "chat": "full",
+    "presets": "inline",
+    "forge": "full",
+    "translate": "full",
+    "camera": "full",
+    "welcome": "full",
+    "params": "inline",
+    "sync": "full",
+    "prompt": "inline",
+    "balance": "full",
+    "light": "full",
+    "history": "full",
+    "refimages": "inline",
+    "batch": "full",
+    "cloud": "full",
+    "poster": "full",
+    "recyclebin": "full",
+    "community-mock": "full",
+    "scope": "full",
+    "kao": "full",
+    "colorgrade": "full",
+    "tiled": "full",
+    "partition": "full",
+    "comfyui": "full",
+    "support": "full",
+    "scene": "full",
+    "run": "full",
+    "aistatus": "full",
+    "satellite": "full",
+    "drawer": "inline",
+    "perf-monitor": "full",
+    "hemisynth": "full",
+    "canvas": "full"
+  },
+  "__tile_colors": {},
+  "__tile_folders_v6": {},
+  "__tile_drawer_stash_v6": [
+    "dev-ruler",
+    "perftest",
+    "community-mock",
+    "prompt-optimizer",
+    "tiled",
+    "partition",
+    "batch",
+    "colorgrade",
+    "qa",
+    "forge",
+    "comfyui",
+    "camera",
+    "update",
+    "support",
+    "sync",
+    "poster",
+    "scene",
+    "run",
+    "chat",
+    "info",
+    "kao",
+    "satellite",
+    "perf-monitor",
+    "browser",
+    "canvas",
+    "codex",
+    "tutorial",
+    "stitch"
+  ],
+  "appearance.themeColor": "#ba24ff",
+  "appearance.blur": 3,
+  "appearance.opacity": 88,
+  "appearance.tileColorOpacity": 9,
+  "dock.items": [
+    "common:gen",
+    "common:repeatLast",
+    "common:stop",
+    "common:savePreset",
+    "common:anti",
+    "common:autoReturn",
+    "common:autoGroup",
+    "common:openPrompt",
+    "common:openSettings",
+    "common:openCacheFolder",
+    "common:openPresetFolder",
+    "common:colorMatchWavelet",
+    "common:colorMatchGlobal",
+    "common:provider",
+    "open:records",
+    "open:stitch",
+    "common:collapseGroups"
+  ],
+  "dock.side": "right",
+  "dock.scale": 1.15,
+  "dock.iconScale": 1.3,
+  "dock.opacity": 0.92,
+  "dock.blur": 6
+};
+})();

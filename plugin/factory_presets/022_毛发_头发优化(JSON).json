@@ -1,0 +1,9 @@
+{
+  "id": "f_021",
+  "title": "头发优化(JSON)",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":\"strict_no_modification严禁改变面部\",\"preserve_hairstyle\":\"keep_original_shape_and_flow保持原有发型结构和流向\",\"preserve_hair_color\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析头发当前状态：毛躁程度、假发质感(合成纤维/真发)、杂发碎发分布、打卷缠绕区域、光泽是否过于廉价\"},\"hair_enhancement\":{\"positive_targets\":{\"texture\":\"升级为ultra-realistic超写实人类头发纹理，每根发丝可辨的精细CG质感(参考XGen毛发)\",\"surface\":\"silky and hydrated丝滑水润质感，healthy cuticle alignment健康的毛鳞片排列，表面光滑\",\"sheen\":\"soft natural sheen柔和自然光泽，各向异性高光(Anisotropic)沿发丝方向分布\",\"finish\":\"salon-grade finish沙龙级精修效果，perfectly smoothed surface完美顺滑表面\"},\"negative_removal\":{\"flyaways\":\"移除所有飞散杂发(flyaways)\",\"frizz\":\"消除毛躁(frizz)和电电的蓬乱感\",\"stray\":\"清除遮挡面部/肩部/手臂的散落发丝(stray hairs on face/shoulders/arms)\",\"tangles\":\"解开缠绕打结(tangled knots)的区域\",\"split_ends\":\"修复/移除分叉干枯的发尾(split ends/dry tips)\"},\"synthetic_fix\":{\"action\":\"如果识别到假发，消除合成纤维的塑料光泽和过亮反光\",\"replace\":\"将假发质感升级为真发级别的哑光丝滑质感(Roughness 0.35-0.55)\"}},\"constraints\":{\"严禁\":\"改变发型结构/长度/颜色、改变发量(不增不减)\",\"禁止\":\"头发过于规整呈现假发感、高光过强呈塑料感\"},\"integration\":{\"face_boundary\":\"头发与面部/颈部边界自然过渡\",\"light_match\":\"头发高光方向与光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "hair",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

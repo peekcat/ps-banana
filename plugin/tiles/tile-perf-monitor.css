@@ -1,0 +1,6 @@
+/* tile-perf-monitor.css — 性能监测磁贴样式 */
+/* (大部分样式 inline 写在 JS 里, 这里只留 hover/transition 兜底) */
+
+.tile[data-id="perf-monitor"] .tile-icon {
+  transition: color 0.3s ease;
+}

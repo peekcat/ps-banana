@@ -1,0 +1,9 @@
+{
+  "id": "f_077",
+  "title": "水流水体生成",
+  "content": "{\"role\":\"VFX液体特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_scene\":\"分析场景环境和光源方向，判断水体生成的合理位置和交互方式\"},\"water_generation\":{\"main_flow\":{\"shape\":\"生成多个高度逼真的动态水弧/水流，形态呈流体力学的自然弧线\",\"simulation\":\"Houdini FLIP级别的详细液体模拟，水体具有真实的惯性、重力和表面张力\",\"variety\":\"每道水弧的粗细、方向、曲率各不相同，增加动态随机感\"},\"material_properties\":{\"transparency\":\"水体高度透明(IOR 1.33)，可看到背后物体的折射变形\",\"surface\":\"表面微弱的Fresnel反射，水体边缘反射率增高\",\"caustics\":\"光线穿过水体在下方/后方产生焦散(Caustics)光斑\",\"color\":\"清澈无色透明，厚层区域微弱偏蓝\"},\"splash_detail\":{\"high_pressure_splash\":\"主水流冲击点产生高压飞溅，水花向四周迸射\",\"droplets\":\"飞溅的独立水滴(2-10px)保持球形，表面有独立镜面高光\",\"mist\":\"高速水流区域产生白色水雾(water mist，Opacity 10-25%)\",\"sheet\":\"薄层水幕区域呈现半透明的水膜效果\"},\"illumination\":{\"refraction\":\"水体折射扭曲背后的画面，折射偏移量与水体厚度成正比\",\"mapped_light\":\"水体对周围物体产生湿润反射光\",\"self_highlight\":\"水面根据光源方向产生明亮的镜面高光(Specular)\"}},\"constraints\":{\"严禁\":\"改变模特身体、水体遮挡面部过多\",\"禁止\":\"水体呈现不透明的蓝色液体感\"},\"integration\":{\"depth_occlusion\":\"水体遮挡关系正确\",\"cinematic\":\"电影般照明超锐利细节\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

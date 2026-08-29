@@ -1,0 +1,621 @@
+/* === tile-params.css — 生成参数磁贴紧凑布局 ===
+ *
+ * 视觉语言对齐 Win10 (expand-panels.css):
+ *   label  → var(--accent) + uppercase + letter-spacing,迷你版 section-title
+ *   控件边框/底色 → 与 .w10-select / .w10-btn 同源
+ *   入场动画 → w10SlideIn stagger
+ * 信息密度不变(原 mini-box / cgrid / toolbar 布局保持)
+ */
+
+/* ========== 通用容器 ========== */
+.params-minibox,
+.params-cgrid,
+.params-toolbar{
+  height:100%;box-sizing:border-box;
+  padding:6px 8px!important;
+}
+
+/* ========== 极小条状布局 ========== */
+.params-strip{
+  height:100%;box-sizing:border-box;
+  padding:4px 6px!important;
+  gap:4px;
+}
+
+.params-strip-v{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-content:stretch;
+}
+.params-strip-v > *{ width:100%;box-sizing:border-box;min-width:0;min-height:24px; }
+.params-strip-v > .w10-select{ padding:2px 6px; }
+.params-strip-v > .params-strip-batch{ justify-content:space-between;padding:0 4px; }
+.params-strip-v > .params-mini-btns{
+  display:flex;
+  background:rgba(255,255,255,0.05);
+  border-color:rgba(255,255,255,0.1);
+  border-radius:var(--tile-radius);
+}
+.params-strip-v > .params-mini-btns > *{ flex:1 1 0;min-width:0; }
+
+.params-strip-h{ display:grid;gap:4px;align-items:stretch; }
+
+/* ========== 2x2 mini-box ========== */
+.params-minibox{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:6px;
+}
+.params-minibox-cell,
+.params-cg-cell,
+.params-toolbar-cell{
+  display:flex;flex-direction:column;justify-content:center;gap:3px;
+  min-width:0;min-height:0;
+}
+
+/* ========== 2x2 mini-box 7 件版(全部参数) ========== */
+.params-minibox.params-minibox-7{
+  display:flex;flex-direction:column;
+  gap:4px;
+  padding:5px 6px!important;
+}
+.params-minibox-row{
+  display:flex;align-items:center;gap:4px;flex:1 1 0;
+  min-height:0;
+}
+.params-minibox-row > .w10-select,
+.params-minibox-row > .params-strip-batch,
+.params-minibox-row > .params-strip-timeout,
+.params-minibox-row > .params-mini-btns{
+  flex:1 1 0;
+  min-width:0;
+}
+.params-minibox-row-split > *{
+  width:50%;
+}
+
+/* ========== 紧凑按钮组(provider mini / anti mini) ========== */
+.params-mini-btns{
+  display:inline-flex;
+  align-items:center;
+  gap:1px;
+  min-height:20px;
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:3px;
+  background:rgba(0,0,0,0.18);
+  overflow:hidden;
+  box-sizing:border-box;
+}
+.params-mini-btn{
+  flex:1 1 0;
+  min-width:0;
+  height:100%;
+  padding:0;
+  border:none;
+  background:transparent;
+  color:rgba(220,220,220,0.7);
+  font-size:10px;
+  font-weight:600;
+  font-family:'Segoe UI', 'Microsoft YaHei', monospace;
+  cursor:pointer;
+  letter-spacing:0;
+  line-height:1;
+  transition:background 0.12s, color 0.12s;
+  white-space:nowrap;
+}
+.params-mini-btn:hover{
+  background:rgba(255,255,255,0.08);
+  color:#fff;
+}
+.params-mini-btn.is-active{
+  background:var(--accent);
+  color:#000;
+}
+.params-mini-btn.is-active:hover{
+  filter:brightness(1.1);
+}
+/* mini-btns 之间分隔细线 */
+.params-mini-btn + .params-mini-btn{
+  box-shadow:inset 1px 0 0 rgba(255,255,255,0.06);
+}
+
+/* ========== compact 顶部 provider 条 ========== */
+.params-cgrid-wrap{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:5px 6px;
+  box-sizing:border-box;
+}
+.params-cgrid-wrap > .params-cgrid{
+  flex:1 1 0;
+  padding:0!important;
+  min-height:0;
+}
+.params-cgrid-provstrip{
+  flex:0 0 auto;
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  height:18px;
+}
+.params-cgrid-provstrip .params-mini-btns{
+  width:90px;
+  min-height:18px;
+}
+
+/* ========== 2x3/3x2 compact-grid ========== */
+.params-cgrid{ display:grid;gap:6px;align-items:stretch; }
+/* v6.5.4: 超时删除后 5 件 — 末件(抗截断)横跨补满, 不留空洞 */
+.params-cgrid > .params-cg-cell:last-child{ grid-column:span 2; }
+.params-cgrid > .params-cg-cell{ min-width:0;min-height:0; }
+.params-cgrid-portrait{
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr 1fr;
+}
+.params-cgrid-landscape{
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:1fr 1fr;
+}
+
+/* ========== 4x2/5x2 toolbar ========== */
+.params-toolbar{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:6px;
+  align-items:stretch;
+}
+/* v6.5.4: 5 件塞 3x2 — 末件(抗截断)横跨两格补满 */
+.params-toolbar > .params-toolbar-cell:last-child{ grid-column:span 2; }
+.params-toolbar > .params-toolbar-cell{ min-width:0;min-height:0; }
+
+/* ============================================================
+ * Win10 视觉语言统一部分
+ * ============================================================ */
+
+/* ---- 标签:迷你 section-title ---- */
+.params-minibox-label,
+.params-cg-label,
+.params-toolbar-label{
+  font-size:9px;
+  color:var(--accent);
+  font-weight:600;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  line-height:1;
+  padding:0 0 3px 0;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  margin-bottom:1px;
+}
+
+/* ---- 原生 select fallback ---- */
+.params-strip-select.w10-select{
+  min-width:0!important;
+  width:100%;
+  font-size:10px;
+  padding:2px 6px;
+  height:24px;
+  line-height:1;
+  cursor:pointer;
+  text-overflow:ellipsis;
+  overflow:hidden;
+  white-space:nowrap;
+}
+
+/* ---- UIKit select trigger —— 贴合 .w10-select 底色/边框 ---- */
+.params-strip .uik-sel-wrap,
+.params-minibox-cell .uik-sel-wrap,
+.params-cg-cell .uik-sel-wrap,
+.params-toolbar-cell .uik-sel-wrap{
+  width:100%;min-width:0;
+}
+.params-strip .uik-sel-trigger,
+.params-minibox-cell .uik-sel-trigger,
+.params-cg-cell .uik-sel-trigger,
+.params-toolbar-cell .uik-sel-trigger{
+  font-size:10px!important;
+  gap:0!important;
+  padding:2px 4px!important;
+  min-height:24px!important;
+  height:24px!important;
+  background:rgba(255,255,255,0.05)!important;
+  border:1px solid rgba(255,255,255,0.1)!important;
+  border-radius:var(--tile-radius)!important;
+  color:var(--text)!important;
+  transition:border-color 0.15s,background 0.15s!important;
+}
+.params-strip .uik-sel-trigger:hover,
+.params-minibox-cell .uik-sel-trigger:hover,
+.params-cg-cell .uik-sel-trigger:hover,
+.params-toolbar-cell .uik-sel-trigger:hover{
+  background:rgba(255,255,255,0.08)!important;
+  border-color:rgba(255,255,255,0.2)!important;
+}
+.params-strip .uik-sel-trigger.uik-sel-open,
+.params-minibox-cell .uik-sel-trigger.uik-sel-open,
+.params-cg-cell .uik-sel-trigger.uik-sel-open,
+.params-toolbar-cell .uik-sel-trigger.uik-sel-open{
+  border-color:var(--accent)!important;
+}
+.params-strip .uik-sel-label,
+.params-minibox-cell .uik-sel-label,
+.params-cg-cell .uik-sel-label,
+.params-toolbar-cell .uik-sel-label{
+  flex:1 1 auto;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+/* compact 布局一律隐藏箭头,把空间全让给文字 */
+.params-strip .uik-sel-arrow,
+.params-minibox-cell .uik-sel-arrow,
+.params-cg-cell .uik-sel-arrow,
+.params-toolbar-cell .uik-sel-arrow{
+  display:none!important;
+}
+
+/* ---- 步进器 —— 与 .w10-select 同源的容器;值用 tabular-nums ---- */
+.params-strip-batch,
+.params-strip-timeout{
+  display:flex;align-items:center;justify-content:center;gap:2px;
+  user-select:none;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--tile-radius);
+  height:24px;box-sizing:border-box;
+  transition:border-color 0.15s,background 0.15s;
+}
+.params-strip-batch:hover,
+.params-strip-timeout:hover{
+  background:rgba(255,255,255,0.08);
+  border-color:rgba(255,255,255,0.2);
+}
+
+.params-strip-stepbtn{
+  flex:0 0 auto;width:20px;height:22px;
+  background:transparent;border:none;
+  color:var(--text-sub);
+  font-size:13px;line-height:1;cursor:pointer;padding:0;
+  border-radius:3px;
+  transition:color 0.1s,background 0.1s;
+}
+.params-strip-stepbtn:hover{
+  color:var(--accent);
+  background:rgba(255,255,255,0.08);
+}
+.params-strip-stepbtn:active{ transform:scale(0.95); }
+
+.params-strip-batch-val{
+  flex:1;text-align:center;font-size:11px;font-weight:600;
+  color:var(--text);font-variant-numeric:tabular-nums;
+  min-width:18px;
+}
+.params-strip-timeout-val{
+  flex:1;text-align:center;font-size:10px;
+  color:var(--text-sub);font-variant-numeric:tabular-nums;
+  min-width:28px;
+}
+
+/* ---- 抗截断 3 按钮(工具栏/cgrid 内) ---- */
+.params-toolbar-anti{
+  display:flex;gap:2px;width:100%;margin:0;
+}
+.params-toolbar-anti .w10-btn{
+  flex:1;min-width:0;padding:3px 2px!important;
+  font-size:9px!important;height:24px;line-height:1;
+  border-radius:var(--tile-radius);
+}
+
+/* 栅格单元的 batch/timeout 始终撑满 */
+.params-minibox-cell .params-strip-batch,
+.params-cg-cell .params-strip-batch,
+.params-cg-cell .params-strip-timeout,
+.params-toolbar-cell .params-strip-batch,
+.params-toolbar-cell .params-strip-timeout{ width:100%; }
+
+/* ============================================================
+ * 入场动画 —— 与 .w10-panel 一致的 w10SlideIn stagger
+ * ============================================================ */
+.params-strip > *,
+.params-minibox > *,
+.params-cgrid > *,
+.params-toolbar > *{
+  animation:w10SlideIn 0.25s cubic-bezier(.4,0,.2,1) backwards;
+}
+.params-strip > :nth-child(1),
+.params-minibox > :nth-child(1),
+.params-cgrid > :nth-child(1),
+.params-toolbar > :nth-child(1){ animation-delay:0.05s; }
+.params-strip > :nth-child(2),
+.params-minibox > :nth-child(2),
+.params-cgrid > :nth-child(2),
+.params-toolbar > :nth-child(2){ animation-delay:0.09s; }
+.params-strip > :nth-child(3),
+.params-minibox > :nth-child(3),
+.params-cgrid > :nth-child(3),
+.params-toolbar > :nth-child(3){ animation-delay:0.13s; }
+.params-strip > :nth-child(4),
+.params-minibox > :nth-child(4),
+.params-cgrid > :nth-child(4),
+.params-toolbar > :nth-child(4){ animation-delay:0.17s; }
+.params-cgrid > :nth-child(5),
+.params-toolbar > :nth-child(5){ animation-delay:0.21s; }
+.params-cgrid > :nth-child(6),
+.params-toolbar > :nth-child(6){ animation-delay:0.25s; }
+
+/* ============================================================
+ * inline 就地展开专用 —— Win10 行式,紧凑,覆盖全部关键参数
+ * ============================================================ */
+.params-inline{ padding:0!important; }
+.params-inline .params-inline-row{
+  padding:4px 20px 4px 4px!important;    /* 右边给 close 按钮让 20px */
+  min-height:28px!important;
+  gap:6px;
+}
+.params-inline .w10-row-left{ flex:0 0 auto; }
+.params-inline .w10-row-label{
+  font-size:10px!important;
+  color:var(--text-sub)!important;
+  font-weight:500!important;
+  white-space:nowrap;
+}
+.params-inline .w10-row-right{
+  margin-left:auto;
+  gap:4px;
+  min-width:0;
+  flex:1;
+  justify-content:flex-end;
+}
+/* select */
+.params-inline .w10-select{
+  min-width:0!important;
+  font-size:10px!important;
+  padding:2px 6px!important;
+  height:22px!important;
+  border-radius:var(--tile-radius)!important;
+}
+.params-inline .uik-sel-wrap{ width:auto;min-width:100px;max-width:60%; }
+.params-inline .uik-sel-trigger{
+  font-size:10px!important;
+  gap:2px!important;
+  padding:2px 6px!important;
+  min-height:22px!important;
+  height:22px!important;
+  border-radius:var(--tile-radius)!important;
+  background:rgba(255,255,255,0.05)!important;
+  border:1px solid rgba(255,255,255,0.1)!important;
+}
+.params-inline .uik-sel-arrow{ display:none!important; }
+
+/* 分段按钮组 (引擎 / 抗截断) */
+.params-inline-segs{
+  display:flex;gap:2px;
+}
+.params-inline-seg.w10-btn{
+  padding:2px 8px!important;
+  font-size:9px!important;
+  height:22px;line-height:1;
+  border-radius:var(--tile-radius)!important;
+  min-width:0;
+}
+
+/* 批次/超时步进器紧凑 */
+.params-inline .params-strip-batch,
+.params-inline .params-strip-timeout{
+  height:22px;border-radius:var(--tile-radius);
+  min-width:90px;
+}
+
+.params-inline-hint{
+  font-size:9px;color:var(--text-sub);font-style:italic;
+}
+
+/* 入场动画:沿用 w10SlideIn */
+.params-inline > *{
+  animation:w10SlideIn 0.2s cubic-bezier(.4,0,.2,1) backwards;
+}
+.params-inline > :nth-child(1){ animation-delay:0.02s; }
+.params-inline > :nth-child(2){ animation-delay:0.05s; }
+.params-inline > :nth-child(3){ animation-delay:0.08s; }
+.params-inline > :nth-child(4){ animation-delay:0.11s; }
+.params-inline > :nth-child(5){ animation-delay:0.14s; }
+.params-inline > :nth-child(6){ animation-delay:0.17s; }
+.params-inline > :nth-child(7){ animation-delay:0.20s; }
+
+
+
+
+/* ============================================================
+ * v6.5.5 条形档统一(全部 6 件: 算力/模型/比例/尺寸/批次/抗截断单钮)
+ * 横条(2x1~4x1) = 3列2行; 竖条(1x2~1x4) = 2列3行。1x2 也全参数。
+ * 三层皮控件(uik-sel-wrap>trigger)全部 flex 撑满, 修宽度塌陷。
+ * ============================================================ */
+.params-strip-h.params-strip-6{
+  /* 第1列(算力/模型)稍宽, 其余等宽稍窄 */
+  grid-template-columns:1.4fr 1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  align-items:stretch;
+}
+/* 件序: 1算力 2尺寸 3比例 4模型 5批次 6抗 → 行1: 算力 尺寸 比例 / 行2: 模型 批次 抗 */
+.params-strip-h.params-strip-6 > *:nth-child(1){ grid-column:1;grid-row:1; }
+.params-strip-h.params-strip-6 > *:nth-child(2){ grid-column:2;grid-row:1; }
+.params-strip-h.params-strip-6 > *:nth-child(3){ grid-column:3;grid-row:1; }
+.params-strip-h.params-strip-6 > *:nth-child(4){ grid-column:1;grid-row:2; }
+.params-strip-h.params-strip-6 > *:nth-child(5){ grid-column:2;grid-row:2; }
+.params-strip-h.params-strip-6 > *:nth-child(6){ grid-column:3;grid-row:2; }
+.params-strip-v.params-strip-6{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr 1fr;
+  align-items:stretch;
+}
+/* 竖条件位(新件序1算力2尺寸3比例4模型5批次6抗): 算力整行/尺寸+比例并排/模型整行/批次+抗并排 */
+.params-strip-v.params-strip-6 > *:nth-child(1){ grid-column:1 / -1; }
+.params-strip-v.params-strip-6 > *:nth-child(2){ grid-column:1; }
+.params-strip-v.params-strip-6 > *:nth-child(3){ grid-column:2; }
+.params-strip-v.params-strip-6 > *:nth-child(4){ grid-column:1 / -1; }
+.params-strip-v.params-strip-6 > *:nth-child(5){ grid-column:1; }
+.params-strip-v.params-strip-6 > *:nth-child(6){ grid-column:2; }
+/* —— 以下横竖共用: 所有格子成员撑满 —— */
+.params-strip.params-strip-6 > *{
+  width:100%;height:100%;
+  box-sizing:border-box;
+  min-width:0;min-height:0;margin:0;
+}
+/* 三层皮下拉框: 外壳 flex + 触发器 flex:1 才真撑满(宽高都是) */
+.params-strip.params-strip-6 > .uik-sel-wrap{
+  display:flex;
+  align-items:stretch;
+}
+.params-strip.params-strip-6 > .uik-sel-wrap .uik-sel-trigger{
+  flex:1 1 0;
+  width:100%;
+  height:100%!important;
+  min-height:0!important;
+}
+.params-strip.params-strip-6 > select.w10-select{
+  height:100%!important;min-height:0;
+}
+/* 步进器 / 算力键组 / 抗截断单钮: 同外观基线 */
+.params-strip.params-strip-6 > .params-mini-btns,
+.params-strip.params-strip-6 > .params-strip-batch{
+  display:flex;align-items:stretch;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--tile-radius);
+  padding:0;
+}
+.params-strip.params-strip-6 > .params-mini-btns > *,
+.params-strip.params-strip-6 > .params-strip-batch > button{
+  flex:1 1 0;min-width:0;height:100%;min-height:0;
+}
+.params-strip.params-strip-6 > .params-strip-batch > span{
+  flex:1 1 0;display:flex;align-items:center;justify-content:center;
+}
+.params-strip.params-strip-6 > .params-anti-cycle{
+  font-size:10px;
+  padding:0 4px;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+/* ============================================================
+ * v6.5.5: 控件内文字统一居中 + 等距边框
+ * 下拉框文字原是左对齐, 批次数字是居中 → 视觉错位。全部居中对齐,
+ * padding 统一 2px 6px, 所有控件文字到边框距离一致。
+ * ============================================================ */
+.params-strip .uik-sel-label,
+.params-minibox-cell .uik-sel-label,
+.params-cg-cell .uik-sel-label,
+.params-toolbar-cell .uik-sel-label{
+  text-align:center;
+}
+.params-strip .uik-sel-trigger,
+.params-minibox-cell .uik-sel-trigger,
+.params-cg-cell .uik-sel-trigger,
+.params-toolbar-cell .uik-sel-trigger{
+  justify-content:center!important;
+  padding:2px 6px!important;
+}
+/* 原生 select 兜底同样居中 */
+.params-strip select.w10-select,
+.params-cg-cell select.w10-select,
+.params-toolbar-cell select.w10-select{
+  text-align:center;
+  text-align-last:center;
+  padding:2px 6px;
+}
+/* 抗截断单钮与批次步进器已居中; 算力键组文字也居中(原本就是) */
+
+/* v6.5.5: 圆角统一 */
+.params-strip.params-strip-6 > *,
+.params-strip.params-strip-6 > .uik-sel-wrap .uik-sel-trigger{
+  border-radius:var(--tile-radius)!important;
+}
+
+/* ============================================================
+ * v6.5.5c 条形档最终收口(放文件末尾, 覆盖一切先前规则)
+ * 用户规则: 行1=算力/分辨率/比例 行2=模型/张数/抗截断;
+ * 第1列(算力+模型)稍宽且等宽, 其余四件等宽稍窄; 圆角一致。
+ * 行高设上限 36px — 磁贴很高时按钮不再拉成大空盒。
+ * ============================================================ */
+.params-strip-h.params-strip-6{
+  display:grid!important;
+  grid-template-columns:1.5fr 1fr 1fr!important;
+  grid-template-rows:minmax(24px,44px) minmax(24px,44px)!important;
+  align-content:center!important;   /* 高磁贴时两行垂直居中, 不拉伸 */
+  gap:4px!important;
+}
+.params-strip-v.params-strip-6{
+  display:grid!important;
+  grid-template-columns:1.5fr 1fr!important;
+  grid-template-rows:repeat(3, minmax(24px,44px))!important;
+  align-content:center!important;
+  gap:4px!important;
+}
+.params-strip.params-strip-6 > *{
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  border-radius:3px!important;
+  font-size:10px;
+}
+.params-strip.params-strip-6 > .uik-sel-wrap{
+  display:flex!important;
+  align-items:stretch!important;
+  background:transparent!important;
+  border:none!important;
+  padding:0!important;
+}
+.params-strip.params-strip-6 > .uik-sel-wrap .uik-sel-trigger{
+  flex:1 1 0!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  border-radius:3px!important;
+  justify-content:center!important;
+  padding:0 6px!important;
+}
+.params-strip.params-strip-6 > select.w10-select{
+  height:100%!important;
+  min-height:0!important;
+  min-width:0!important;
+  text-align:center;text-align-last:center;
+  padding:0 6px!important;
+}
+.params-strip.params-strip-6 > .params-mini-btns,
+.params-strip.params-strip-6 > .params-strip-batch{
+  display:flex!important;
+  align-items:stretch!important;
+  height:100%!important;
+  min-height:0!important;
+  padding:0!important;
+  gap:0!important;
+  background:rgba(255,255,255,0.05)!important;
+  border:1px solid rgba(255,255,255,0.1)!important;
+  border-radius:3px!important;
+  overflow:hidden;
+}
+.params-strip.params-strip-6 > .params-mini-btns > *,
+.params-strip.params-strip-6 > .params-strip-batch > button{
+  flex:1 1 0!important;
+  min-width:0!important;
+  height:100%!important;
+  min-height:0!important;
+  border:none!important;
+  border-radius:0!important;   /* 组内按钮直角, 圆角由外框统一 */
+}
+.params-strip.params-strip-6 > .params-strip-batch > span{
+  flex:1 1 0;display:flex;align-items:center;justify-content:center;
+}
+.params-strip.params-strip-6 > .params-anti-cycle{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:0 4px!important;
+  white-space:nowrap;overflow:hidden;
+}

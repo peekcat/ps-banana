@@ -1,0 +1,9 @@
+{
+  "id": "f_047",
+  "title": "连体黑丝生成",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":true,\"preserve_leg_shape\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析腿部当前状态(裸腿/已有丝袜)和覆盖范围需求、肤色、光源方向\"},\"hosiery_generation\":{\"coverage\":\"连体黑色丝袜覆盖整个腿部至腰部(连裤袜/pantyhose)\",\"material\":{\"denier\":\"15-30旦尼尔半透明黑色尼龙\",\"color\":\"黑色半透明，皮肤色透过呈肉色底调(Opacity 65-80%)\",\"texture\":\"均匀细密的尼龙编织纹理\",\"sheen\":\"柔和的各向异性光泽(Anisotropic)，大腿和小腿正面最明显\"},\"construction\":{\"waist\":\"腰部弹性裤腰带(1-2cm)自然贴合\",\"crotch\":\"T型裆部加固区域(Opacity略高85-90%)，缝线细致自然\",\"inner_seam\":\"大腿内侧缝线细致笔直\",\"toe\":\"脚尖加固区域\"},\"fit\":{\"body_contour\":\"丝袜完美贴合腿部和臀部曲线，无褶皱无松垮\",\"wrinkle_free\":\"膝盖弯曲处允许微弱的自然聚集纹\"},\"skin_visibility\":{\"action\":\"透过黑丝可隐约看到皮肤色调和肌肉轮廓\",\"shadow\":\"大腿内侧和膝窝处阴影自然\"}},\"constraints\":{\"严禁\":\"改变腿部形状粗细姿势、丝袜出现破损\",\"禁止\":\"黑丝完全不透明呈黑色紧身裤感\"},\"integration\":{\"light_match\":\"丝袜光泽方向与光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "clothing",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

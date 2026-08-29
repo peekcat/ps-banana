@@ -1,0 +1,23 @@
+{
+  "id": "ff_008",
+  "name": "1毛发材质优化高精度有锁边",
+  "displayName": "毛发材质优化高精度有锁边",
+  "category": "hair",
+  "data": {
+    "model": "xxmix9realistic_v40.safetensors [5f41c4861c]",
+    "lora": "FAXING-SD1.5",
+    "loraWeight": "0.8",
+    "redrawAmount": "0.39",
+    "imageCount": "3",
+    "resolution": "1536",
+    "positivePrompt": "8k RAW, best quality, ultra high res, extreme_detail, sharp focus, (photorealistic:1.4), masterpiece, (ulzzang-6500:0.8),(masterpiece:1.2),((HD hair texture, hair, dynamic hair, broken hair, flying hair,layered hair,visible strands,black hair))",
+    "negativePrompt": "paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, glans, anime, watermark, username, signature, text",
+    "selectedControlNetModule": "lineart_realistic",
+    "controlNetModel": "control_v11p_sd15_lineart [43d4be0d]",
+    "controlNetWeight": "1.1",
+    "step": "20",
+    "selectedName": "DPM++ 2M",
+    "selectedScheduler": "automatic"
+  },
+  "_isFactory": true
+}

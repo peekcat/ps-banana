@@ -1,0 +1,9 @@
+{
+  "id": "f_117",
+  "title": "非人类特征优化",
+  "content": "{\"role\":\"ACG特征后期优化师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"preserve_feature_design\":\"保持非人类特征的设计造型不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别模特身上的ACG非人类特征类型：兽耳(猫耳/狐耳/兔耳/狼耳)、尾巴(猫尾/狐尾/恶魔尾)、角(恶魔角/鹿角/龙角)、精灵耳(尖耳)、翅膀(天使翼/恶魔翼/蝴蝶翼)、其他(触角/鳞片/爪)\"},\"material_upgrade\":{\"fur_features\":{\"target\":\"兽耳和毛发类尾巴\",\"texture\":\"增加真实的毛流纹理和方向感(短绒/长毛/蓬松)\",\"strand\":\"可辨识的独立毛丝(参考XGen毛发渲染)\",\"sheen\":\"自然的毛发光泽(Anisotropic highlight)，消除廉价合成毛绒感\"},\"horn_features\":{\"target\":\"角/骨质/甲壳类特征\",\"texture\":\"增加角质/骨质的纹理细节：环状生长纹、表面微裂纹、光泽渐变\",\"material\":\"Roughness 0.3-0.6，表面呈现角质蜡质光泽\"},\"wing_features\":{\"target\":\"翅膀类特征\",\"feather\":\"羽毛翼→增加羽毛层次感和边缘细节\",\"membrane\":\"膜翼(恶魔/蝙蝠)→半透明皮膜(SSS透光)+清晰脉络\",\"butterfly\":\"蝴蝶翼→鳞粉纹理+微弱虹彩色变\"},\"ear_features\":{\"target\":\"精灵耳\",\"skin\":\"耳朵皮肤与面部一致，耳轮耳垂结构清晰\",\"translucency\":\"耳尖区域微弱SSS透光效果(逆光时)\"}},\"body_junction\":{\"action\":\"非人类特征与人物身体的衔接处过渡自然无缝\",\"skin_to_fur\":\"皮肤到毛发的过渡从短绒渐变为长毛\",\"skin_to_horn\":\"角的根部与头部皮肤融合自然，周围皮肤有微弱隆起\"},\"constraints\":{\"严禁\":\"改变特征的设计造型/大小/位置\",\"禁止\":\"优化后特征呈现不自然的CG渲染过度感\"},\"integration\":{\"light_match\":\"特征材质反光方向与场景光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

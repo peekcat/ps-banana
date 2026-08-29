@@ -1,0 +1,9 @@
+{
+  "id": "f_023",
+  "title": "动态头发(画笔引导)",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":\"严禁改变面部五官、表情、肤色\",\"preserve_hairstyle_base\":\"保持原有发型的整体轮廓和长度，仅调整流向和质感\",\"preserve_hair_color\":\"保持原有发色不变\",\"no_scale_rotate_translate\":true},\"brush_interpretation\":{\"marker_type\":\"红色画笔引导线\",\"marker_purpose\":\"仅为指令引导标记，非画面内容。请先用红色画笔大概勾画头发期望的流向走势\",\"semantics\":{\"stroke_direction\":\"红色笔触方向=头发流向的目标方向\",\"stroke_curvature\":\"笔触弧度=头发弯曲的曲率，直线笔触→直发流向，弯曲笔触→卷曲飘逸\",\"stroke_area\":\"笔触覆盖的区域=需要调整流向的头发范围\"},\"scope\":\"仅标记区域的头发受影响，未标记区域头发保持原样\"},\"hair_processing\":{\"cleanup\":{\"remove\":\"移除标记区域内的杂发、碎发、缠绕打卷的头发\",\"defrizz\":\"消除毛躁飞散的发丝，让发束整洁有序\"},\"flow_generation\":{\"direction\":\"根据红色引导线的走势重新生成头发流向，发束跟随引导线弧度自然弯曲\",\"strand_grouping\":\"头发以3-8根为一组形成自然发束，每束末端收紧汇聚为一缕\",\"tip_treatment\":\"发尾末端自然收尖渐细，禁止出现齐切或毛糙断裂感\"},\"accent_strands\":{\"count\":\"生成5-15根飘逸的亮色发丝(比底色亮10-20%)\",\"length\":\"亮色发丝长度与原发型一致\",\"behavior\":\"自然飘逸感，符合物理重力和惯性，呈现动态瞬间的冻结感\"},\"material_upgrade\":{\"texture\":\"头发材质升级为精细CG质感，参考XGen毛发渲染\",\"remove_synthetic\":\"消除廉价合成纤维假发的塑料光泽和过亮反光\",\"surface\":\"表面呈现哑光丝滑质感(Roughness 0.35-0.55)，具有自然的各向异性高光(Anisotropic Highlight)\",\"strand_detail\":\"每根发丝可分辨独立的粗细变化和自然弯曲弧度\"}},\"brush_removal\":{\"priority\":\"MANDATORY\",\"action\":\"在最终输出前完全移除所有红色引导线痕迹及色彩残留，修复被标记覆盖的原始画面内容\"},\"integration\":{\"physics\":\"头发流向必须符合物理重力逻辑，垂下的头发受重力影响，飘起的头发需有合理的外力(风/动作惯性)\",\"light_match\":\"头发高光反射方向与原图光源一致\",\"edge_blend\":\"新生成的发丝边缘与背景/皮肤过渡自然，无硬边\",\"noise_match\":\"头发区域噪点与原图一致\"}}",
+  "category": "hair",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

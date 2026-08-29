@@ -1,0 +1,9 @@
+{
+  "id": "f_111",
+  "title": "中国风水墨意境",
+  "content": "{\"role\":\"中国风数字艺术后期师\",\"base_rules\":{\"preserve_model\":\"严禁改变模特的动作表情服装肤色\",\"preserve_model_detail\":\"模特本身保持写实质感不做水墨化\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify_background\":\"分析当前背景内容和布局\",\"identify_character\":\"识别角色的文化属性(仙侠/古风/国风/现代国潮)以匹配水墨风格浓淡\"},\"ink_wash_transformation\":{\"background_replace\":{\"action\":\"将背景转换为中国水墨山水画风格\",\"technique\":\"使用写意泼墨/破墨技法的数字模拟，浓淡干湿变化丰富\",\"elements\":\"可包含远山/云雾/松树/竹林/溪流/古建筑等传统元素，根据角色属性选择\"},\"color_palette\":{\"base\":\"整体色彩低饱和度水墨灰调(墨色五彩：焦浓重淡清)\",\"accent\":\"局部朱砂红/金色点缀作为画面亮点(如印章/花瓣/灯笼)\",\"harmony\":\"色调统一在冷灰或暖灰色系\"},\"composition\":{\"留白\":\"画面中保留大面积留白区域，体现东方美学的虚实对比\",\"focal\":\"留白烘托模特，模特仍是画面视觉中心\",\"ink_splash\":\"可在适当位置添加泼墨飞白效果增加动态张力\"},\"atmosphere\":{\"fog\":\"添加水墨云雾效果(Opacity 15-40%)，增加空灵缥缈感\",\"depth\":\"远处元素更淡更虚(空气透视)，近处墨色更浓\",\"transition\":\"水墨背景与模特边缘过渡柔和自然，无生硬抠图感\"}},\"constraints\":{\"严禁\":\"将模特本身也水墨化、改变模特任何特征\",\"禁止\":\"水墨效果廉价粗糙、中式元素堆砌不和谐\"},\"integration\":{\"edge_blend\":\"模特与水墨背景边缘自然融合\",\"light_harmony\":\"模特光影与水墨氛围协调\",\"noise_match\":\"噪点一致\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_007",
+  "title": "瞳孔提亮",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_eye_shape\":\"严格锁定眼睛大小、形状、位置不变\",\"preserve_iris_color\":\"保持瞳色色相不变，仅调整饱和度和明度\",\"preserve_expression\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析原图光源方向和数量、模特原本瞳色(棕/黑/蓝/绿/灰/美瞳色)、虹膜纹理清晰度、现有catchlights位置和形状\"},\"iris_enhancement\":{\"texture_refinement\":{\"iris_pattern\":\"增强虹膜放射状纤维纹理的清晰度和层次感，让虹膜图案更加精致可辨\",\"collarette\":\"强化虹膜领环(collarette)区域的纹理对比度，瞳孔周围环形结构更清晰\",\"saturation_boost\":\"在原有瞳色基础上提升饱和度15-25%，让眼睛颜色更通透鲜活\",\"depth_gradient\":\"虹膜外缘(limbal ring)加深形成深色环，中间区域适度提亮，制造眼眸深邃感\"},\"catchlights\":{\"primary\":\"根据原图主光源方向，在虹膜上添加主catchlight高光点，位置在10点钟或2点钟方向(匹配光源侧)\",\"shape\":\"catchlight形状匹配光源类型：柔光箱=圆角矩形，自然光=不规则圆形，环形灯=环形\",\"intensity\":\"catchlight核心接近纯白(RGB 245-255)，边缘柔和衰减\",\"secondary\":\"可选添加对侧微弱的次级catchlight(强度为主光的20-30%)，增加眼神灵动感\"},\"pupil_edge\":{\"sharpness\":\"瞳孔边缘锐利清晰，瞳孔与虹膜的交界线分明\",\"pupil_depth\":\"瞳孔中心保持深黑色(纯黑)，体现瞳孔的光学深度感\"}},\"sclera_cleanup\":{\"bloodshot_removal\":\"减少巩膜(眼白)区域的血丝，保留少量自然血丝避免假眼感\",\"whitening\":\"巩膜整体提亮5-10%，呈现健康清澈的白色\",\"moisture\":\"眼球表面添加微弱的湿润光泽感，下眼睑水线处可见泪膜反光\"},\"constraints\":{\"严禁\":\"改变瞳色色相、改变眼睛大小形状、改变眼间距、过度美化呈现美瞳/假眼感\",\"禁止\":\"巩膜过白呈现不自然的蓝白色、catchlight位置与光源方向不一致\"},\"integration\":{\"bilateral_symmetry\":\"双眼处理程度一致，左右对称\",\"skin_boundary\":\"眼周皮肤质感不受影响\",\"noise_match\":\"修改区域噪点与原图一致\"}}",
+  "category": "head",
+  "subCategory": "eyes",
+  "refImages": [],
+  "_isFactory": true
+}

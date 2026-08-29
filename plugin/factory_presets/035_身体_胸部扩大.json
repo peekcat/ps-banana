@@ -1,0 +1,9 @@
+{
+  "id": "f_034",
+  "title": "胸部扩大",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":true,\"preserve_pose\":\"不改变动作朝向\",\"preserve_costume_design\":\"保持衣服完整性和原本款式不变\",\"preserve_skin_color\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析当前胸部大小、服装类型(贴身/宽松)、服装覆盖情况、光源方向\"},\"bust_enhancement\":{\"enlargement\":{\"method\":\"对胸部区域进行向外液化扩大，增大幅度约15-30%\",\"shape\":\"胸部形态浑圆饱满，保持自然的水滴形或半球形轮廓\",\"symmetry\":\"双侧对称(根据视角做透视调整)\",\"cleavage\":\"胸部中线自然的沟壑深度与增大后的尺寸匹配\"},\"detail\":{\"skin\":\"胸部皮肤细腻光滑，肤色均匀与周围一致\",\"shadow\":\"胸部下方产生自然的阴影(与增大后的体积匹配)\",\"highlight\":\"胸部上沿受光面产生自然高光(匹配光源方向)\",\"contour\":\"胸部轮廓线条流畅，无不自然的棱角\"},\"clothing_integrity\":{\"action\":\"服装跟随增大后的胸部自然调整\",\"stretch\":\"服装在胸部区域可见合理的张力纹和拉伸\",\"buttons\":\"纽扣/拉链等维持原位，间距因拉伸略增大\",\"neckline\":\"领口位置随胸部增大微调但款式不变\",\"opacity\":\"服装保持完整覆盖，不变透明不破裂\"}},\"background_repair\":{\"action\":\"液化导致的背景变形必须完全修复\"},\"constraints\":{\"严禁\":\"改变动作姿势衣饰肤色、服装变透明/破裂、胸部形态不自然\",\"禁止\":\"液化导致背景可见变形\"},\"integration\":{\"light_match\":\"增大后光影与原图光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "torso",
+  "subCategory": "chest",
+  "refImages": [],
+  "_isFactory": true
+}

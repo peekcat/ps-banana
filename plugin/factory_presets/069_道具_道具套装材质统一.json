@@ -1,0 +1,9 @@
+{
+  "id": "f_068",
+  "title": "道具套装材质统一",
+  "content": "{\"role\":\"道具后期材质统一师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_prop_shape\":\"保持道具形状不变\",\"preserve_prop_color\":\"保持颜色方案不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别同一套装/道具组中材质不统一的问题：同类部件光泽度差异、色彩饱和度差异、纹理精度差异、不同批次的色差\",\"identify_set\":\"判断哪些道具属于同一套装(如铠甲的多个部件/配饰套装)\"},\"unification\":{\"reference_selection\":{\"action\":\"选取套装中质感最佳的部件作为参考基准\"},\"material_match\":{\"roughness\":\"统一同类材质部件的表面粗糙度(Roughness值)\",\"metalness\":\"统一金属部件的金属度(Metalness值)\",\"color\":\"统一同类部件的颜色色号(消除批次色差)\",\"saturation\":\"统一色彩饱和度\",\"texture\":\"统一表面纹理精度和细节水平\",\"sheen\":\"统一光泽度和反射强度\"},\"aging_consistency\":{\"action\":\"统一做旧/磨损/风化程度\",\"wear\":\"如有做旧效果，各部件的旧化程度协调一致\"}},\"constraints\":{\"严禁\":\"改变道具形状/设计/颜色方案\",\"禁止\":\"统一后呈现不自然的均匀完美\"},\"integration\":{\"light_match\":\"统一后所有部件在同一光源下反光一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "accessory",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

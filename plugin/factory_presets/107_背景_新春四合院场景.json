@@ -1,0 +1,9 @@
+{
+  "id": "f_106",
+  "title": "新春四合院场景",
+  "content": "{\"role\":\"场景重构合成师\",\"base_rules\":{\"preserve_model\":\"严禁改变模特动作表情服装\",\"preserve_viewing_angle\":\"保持画面拍摄角度透视不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify_model\":\"识别模特位置姿势和占据的画面区域\",\"identify_light\":\"分析原图光源方向和色温\"},\"scene_construction\":{\"environment\":{\"style\":\"新中式传统大门/四合院入口场景\",\"gate\":\"模特身后生成红色中式大门(朱红漆面木质)，门环铜制\",\"lanterns\":\"门口上方悬挂两个亮灯的红色灯笼，灯笼上有'倒福'字样，灯笼内自发光(暖黄色3000K)\",\"couplets\":\"门两侧贴红色春联(金色字体)\",\"fireworks\":\"身后散落红色碎纸屑和鞭炮纸花，呈现刚放完鞭炮的喜庆感\"},\"composition\":{\"layout\":\"画面元素精心排布，大门居中或偏侧作为主要背景\",\"balance\":\"灯笼/春联/装饰物左右视觉平衡\",\"depth\":\"前中后景层次分明，模特为视觉中心\"},\"lighting\":{\"reset\":\"重置场景灯光系统\",\"main\":\"主光模拟红灯笼暖黄色映射(色温2800-3200K)\",\"fill\":\"填充光柔和提亮阴影区域\",\"rim\":\"为模特添加轮廓光增强层次感\",\"lantern_glow\":\"红灯笼自发光照亮周围墙面和屋檐，产生暖红色映射\",\"volume\":\"灯笼周围有微弱的体积光雾(Opacity 10-20%)\"}},\"material_quality\":{\"wood\":\"木门呈现PBR红漆木质纹理(Roughness 0.3-0.5)\",\"metal\":\"门环和铆钉为青铜/黄铜材质(Metalness 0.8+)\",\"fabric\":\"灯笼红布半透明SSS透光效果\",\"paper\":\"春联和纸花纸质纹理\"},\"constraints\":{\"严禁\":\"改变模特任何特征\",\"禁止\":\"场景元素遮挡模特面部\"},\"integration\":{\"style_coherence\":\"所有元素统一在新春喜庆氛围中\",\"noise_match\":\"噪点一致\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

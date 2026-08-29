@@ -1,0 +1,9 @@
+{
+  "id": "f_086",
+  "title": "灯光微调",
+  "content": "{\"role\":\"影视级灯光后期师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":true,\"preserve_global_hsl\":\"不改变画面色相、饱和度、伽马值\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify_current_light\":\"分析原图现有灯光设置：主光方向/色温/强度、是否存在填充光/轮廓光、模特面部光比(亮侧:暗侧)、阴影硬度\",\"identify_material\":\"识别模特服装和道具的材质类型(金属/布料/皮革等)，用于准确呈现材质的光学响应\"},\"lighting_enhancement\":{\"rim_light\":{\"action\":\"在模特边缘添加轮廓光(rim light/back light)\",\"position\":\"轮廓光位于模特背后偏上方，从肩部、头发、手臂边缘勾勒出清晰的光边\",\"intensity\":\"轮廓光强度使边缘过曝约10-20%，形成明亮的光线勾边\",\"width\":\"光边宽度约1-3px，均匀分布在模特轮廓\",\"color\":\"轮廓光色温与原图主光源接近或略偏冷(+500K)\"},\"fill_light\":{\"action\":\"在模特暗面添加填充光，降低光比\",\"effect\":\"使阴影区域提亮15-25%，保持阴影仍可见但不死黑\",\"softness\":\"填充光产生极柔和的无方向性照明\"},\"face_softening\":{\"action\":\"柔化面部光线和投影\",\"nose_shadow\":\"鼻影柔化为渐变过渡，消除硬边\",\"eye_socket\":\"眼窝阴影适度提亮，保持深邃但不死黑\",\"face_shadow\":\"面部转折面阴影柔和化，呈现美化的蝴蝶光/环形光效果\"},\"material_highlight\":{\"action\":\"增强服装和道具的材质质感\",\"metal\":\"金属表面增强环境反射锐度和高光亮度\",\"fabric\":\"布料强化表面纹理的微光影起伏\",\"leather\":\"皮革增强光泽的各向异性反射\"}},\"constraints\":{\"严禁\":\"改变画面色相饱和度伽马值、添加过于夸张的舞台光效、改变光源色温超过±500K\",\"禁止\":\"轮廓光过强导致模特边缘过曝毛刺\"},\"integration\":{\"natural_feel\":\"所有灯光调整后画面看起来像是更好的打光条件下拍摄的，而非后期添加\",\"noise_match\":\"噪点一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_099",
+  "title": "岩石大地特效",
+  "content": "{\"role\":\"VFX特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析场景地面材质、模特脚部位置和光源方向\"},\"earth_fx\":{\"ground_crack\":{\"pattern\":\"地面从模特脚下向外放射状碎裂，裂缝宽度从中心(5-15px)向外递减\",\"depth\":\"裂缝内部有深度感，可见破碎的地层截面\",\"lava\":\"裂缝深处有橙红色熔岩发光(色温2200-2800K)，Bloom效果\"},\"levitation\":{\"rocks\":\"碎裂的地面隆起多块大小不一的岩石块(5-20块)悬浮在空中\",\"height\":\"悬浮高度从5cm到50cm不等，距离中心越近越高\",\"rotation\":\"每块岩石有微弱的随机旋转角度\",\"material\":\"岩石表面呈现PBR质感：粗糙纹理(Roughness 0.7-0.9)、裂纹、泥土附着\"},\"shockwave\":{\"pattern\":\"地面冲击波纹理从中心向外扩散的同心圆裂纹\",\"displacement\":\"冲击波经过区域地面微微隆起位移\",\"dust\":\"冲击波边缘扬起灰尘粒子云(Opacity 15-30%)\"},\"debris\":{\"particles\":\"碎石粒子(1-8px)在空中飞溅分布\",\"trajectory\":\"粒子轨迹从中心向外呈抛物线\",\"dust_cloud\":\"底部弥漫土黄色扬尘(Opacity 10-25%)\"}},\"illumination\":{\"lava_glow\":\"熔岩对周围岩石和模特腿部产生暖橙色映射光\",\"lava_flicker\":\"熔岩光线微弱闪烁不稳定\"},\"constraints\":{\"严禁\":\"改变模特身体、特效遮挡面部\",\"禁止\":\"岩石悬浮不符合物理(需有向上的力量感暗示)\"},\"integration\":{\"weight\":\"整体呈现力量感和重量感\",\"depth_occlusion\":\"遮挡关系正确\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_059",
+  "title": "服装破损修复",
+  "content": "{\"role\":\"服装后期修复师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_costume_design\":\"严格保持服装原有款式、剪裁、图案、配色不变，仅修复破损\",\"preserve_model\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_damage\":\"识别服装上所有破损类型：脱线/开线、破洞/裂口、掉色/褪色区域、污渍/水渍、磨损/起球、缺失配件(纽扣/拉链头/装饰片)\",\"identify_fabric\":\"分析服装材质类型(棉/丝/纱/皮革/合成纤维/蕾丝)、编织纹理方向、图案重复模式\"},\"repair_operations\":{\"tear_fix\":{\"seam\":\"脱线/开线处重新缝合，接缝线迹与服装原有工艺一致(明线/暗线/包边)\",\"hole\":\"破洞使用周围同材质布料纹理精确填补，织物纹理方向和密度对齐\"},\"color_restore\":{\"fade\":\"褪色区域恢复为与周围一致的原始颜色饱和度\",\"stain\":\"移除所有污渍(汗渍/水渍/灰尘/化妆品残留)，重建污渍下的原始布料颜色和纹理\"},\"texture_restore\":{\"pilling\":\"移除布料起球/毛球，恢复表面光滑\",\"wrinkle_damage\":\"修复非自然的损伤性折痕(区别于正常穿着褶皱)，布面恢复平整\",\"fraying\":\"修复毛边/抽丝，边缘重新收紧整齐\"},\"component_fix\":{\"action\":\"如果配件缺失(纽扣/装饰片)，参考同服装其他位置的配件样式补全\"}},\"quality_control\":{\"pattern_alignment\":\"修复区域的图案花纹与周围完全对齐，无断裂或偏移\",\"fabric_consistency\":\"修复区域织物纹理密度和方向与原有一致\",\"light_match\":\"修复区域反光/阴影与周围布料一致\",\"invisible_repair\":\"所有修复痕迹不可见，如同服装从未受损\"},\"constraints\":{\"严禁\":\"改变服装款式设计、改变剪裁轮廓、添加原来没有的装饰\",\"禁止\":\"修复区域出现涂抹感或模糊\"}}",
+  "category": "clothing",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

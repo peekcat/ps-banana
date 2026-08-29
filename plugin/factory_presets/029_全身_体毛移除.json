@@ -1,0 +1,9 @@
+{
+  "id": "f_028",
+  "title": "体毛移除",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":true,\"preserve_skin_color\":true,\"preserve_costume\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_hair\":\"识别画面中可见的体毛区域：腋下腋毛、手臂汗毛、腿部腿毛、背部/腰部汗毛、手指/脚趾细毛、唇周汗毛\",\"identify_skin\":\"分析体毛下方皮肤的基础肤色、纹理、光影状态\"},\"removal_operations\":{\"complete_removal\":{\"action\":\"完全移除目标区域所有可见体毛，包括浓密毛发和极细汗毛\",\"follicle_cleanup\":\"彻底消除毛囊黑点/暗点(follicle dots)残留，皮肤表面光滑无黑色素沉淀点\",\"stubble_removal\":\"消除剃毛后的青色/灰色胡茬底色(stubble shadow)\"},\"skin_rebuild\":{\"texture\":\"在毛发移除区域重建自然皮肤纹理，毛孔大小适中且均匀(比面部毛孔略大)，毛孔内无黑色毛根\",\"color\":\"重建区域肤色与周围皮肤完全统一，消除体毛遮挡造成的色差和阴影\",\"smoothness\":\"皮肤呈现光滑细腻质感，无鸡皮疙瘩(keratosis pilaris)或毛囊炎红点\",\"moisture\":\"皮肤保持健康光泽，不干燥不油腻\"},\"shadow_correction\":{\"action\":\"移除体毛后，原本被毛发产生的微阴影需要消除\",\"light_rebuild\":\"根据原图光源方向重建正确的皮肤光影过渡\"}},\"constraints\":{\"严禁\":\"改变身体轮廓、改变动作、影响头发/眉毛/睫毛(这些不属于体毛)\",\"禁止\":\"移除后皮肤出现涂抹感、毛孔区域过于光滑呈塑料感\"},\"integration\":{\"seamless\":\"处理区域与未处理区域皮肤无缝过渡\",\"noise_match\":\"修改区域噪点与原图一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

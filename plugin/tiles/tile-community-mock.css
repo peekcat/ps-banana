@@ -1,0 +1,246 @@
+/* ============================================================
+   tile-community-mock.css — 社区瀑布流测试磁贴 (mock)
+   ============================================================ */
+
+.cm-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 8px;
+}
+
+/* ---------- 指令栏 ---------- */
+.cm-controls {
+  flex: 0 0 auto;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 8px;
+}
+.cm-control-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+.cm-ctl-label {
+  font-size: 11px;
+  color: var(--text-sub);
+  margin-right: 4px;
+  min-width: 42px;
+}
+.cm-pill {
+  padding: 3px 10px;
+  font-size: 11px;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.cm-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.cm-pill.is-active {
+  background: rgba(74, 158, 255, 0.18);
+  color: var(--accent, #4a9eff);
+  border-color: rgba(74, 158, 255, 0.5);
+}
+.cm-pill-rerun {
+  margin-left: auto;
+  background: rgba(255, 165, 0, 0.1);
+  border-color: rgba(255, 165, 0, 0.35);
+  color: #ffcc66;
+}
+.cm-status {
+  font-size: 10px;
+  color: var(--text-sub);
+  margin-top: 4px;
+  padding: 4px 6px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 3px;
+}
+.cm-status b {
+  color: var(--accent, #4a9eff);
+  font-weight: 600;
+}
+
+/* ---------- 网格 ---------- */
+.cm-grid {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px 0;
+}
+.cm-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* ---------- 卡片 ---------- */
+.cm-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  flex: 0 0 auto;
+}
+.cm-card:hover {
+  border-color: rgba(74, 158, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+}
+.cm-card-thumb {
+  background-color: #333;
+  background-size: cover;
+  background-position: center;
+}
+.cm-card-body {
+  padding: 6px 8px 8px;
+}
+.cm-card-title {
+  font-size: 11px;
+  color: var(--text);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cm-card-stats {
+  display: flex;
+  gap: 8px;
+  font-size: 9px;
+  color: var(--text-sub);
+  margin-top: 4px;
+}
+.cm-card-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 6px;
+}
+.cm-btn-call,
+.cm-btn-tip {
+  flex: 1;
+  font-size: 10px;
+  padding: 3px 0;
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  cursor: pointer;
+}
+.cm-btn-call:hover {
+  background: rgba(74, 158, 255, 0.12);
+  border-color: rgba(74, 158, 255, 0.35);
+  color: var(--accent, #4a9eff);
+}
+.cm-btn-tip:hover {
+  background: rgba(255, 200, 80, 0.12);
+  border-color: rgba(255, 200, 80, 0.35);
+  color: #ffcc66;
+}
+
+/* ---------- 模态详情 ---------- */
+.cm-modal-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.cm-modal-card {
+  position: relative;
+  background: #1e1e1e;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.cm-modal-close {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border: 0;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 50%;
+  z-index: 2;
+}
+.cm-modal-img {
+  width: 100%;
+  max-height: 400px;
+  object-fit: contain;
+  background: #000;
+  display: block;
+}
+.cm-modal-info {
+  padding: 14px 16px 18px;
+}
+.cm-modal-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.cm-modal-stats {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-bottom: 12px;
+}
+.cm-modal-prompt {
+  font-size: 12px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.04);
+  padding: 8px 10px;
+  border-radius: 4px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.cm-modal-prompt b {
+  color: var(--accent, #4a9eff);
+}
+.cm-modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.cm-modal-actions .cm-btn-call,
+.cm-modal-actions .cm-btn-tip {
+  padding: 8px 14px;
+  font-size: 13px;
+}
+.cm-modal-comments-title {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-bottom: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+.cm-modal-comments {
+  max-height: 260px;
+  overflow-y: auto;
+}
+.cm-comment {
+  font-size: 11px;
+  color: var(--text);
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  line-height: 1.5;
+}
+.cm-comment b {
+  color: var(--accent, #4a9eff);
+  margin-right: 6px;
+}

@@ -1,0 +1,24 @@
+{
+  "_comment": "手绘灯光磁贴 — 9 个控光附件 + 8 档 CCT 色板",
+  "items": [
+    { "file": "light_01.png", "name": "深抛" },
+    { "file": "light_02.png", "name": "标准罩" },
+    { "file": "light_03.png", "name": "灯棒" },
+    { "file": "light_04.png", "name": "方形柔光箱" },
+    { "file": "light_05.png", "name": "雷达罩" },
+    { "file": "light_06.png", "name": "柔光球" },
+    { "file": "light_07.png", "name": "束光筒" },
+    { "file": "light_08.png", "name": "面板灯" },
+    { "file": "light_09.png", "name": "豆腐灯" }
+  ],
+  "colorPresets": [
+    { "label": "2700K 钨丝灯", "kelvin": 2700,  "hex": "#FF9329" },
+    { "label": "3200K 影室灯", "kelvin": 3200,  "hex": "#FFA85B" },
+    { "label": "4000K 暖白",   "kelvin": 4000,  "hex": "#FFC591" },
+    { "label": "5000K 中性",   "kelvin": 5000,  "hex": "#FFE0BC" },
+    { "label": "5600K 日光",   "kelvin": 5600,  "hex": "#FFF0DD" },
+    { "label": "6500K 冷白",   "kelvin": 6500,  "hex": "#FFFFFF" },
+    { "label": "8000K 阴天",   "kelvin": 8000,  "hex": "#D6E5FF" },
+    { "label": "10000K 蓝天",  "kelvin": 10000, "hex": "#A8C8FF" }
+  ]
+}

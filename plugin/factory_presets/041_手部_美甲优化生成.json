@@ -1,0 +1,9 @@
+{
+  "id": "f_040",
+  "title": "美甲优化生成",
+  "content": "{\"role\":\"美甲后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_hand_pose\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析指甲当前状态(有无甲油/形状/破损)、角色风格、手部姿势\"},\"nail_optimization\":{\"shape\":{\"options\":\"统一整齐的指甲形状：圆头(round)/方圆(squoval)/方头(square)/杏仁(almond)/棺材(coffin/ballerina)\",\"uniform\":\"十指甲形统一，大小比例与手指匹配\",\"length\":\"甲长适中统一(或根据角色风格调整)\",\"edge\":\"甲缘线条干净利落无毛边\"},\"surface\":{\"smooth\":\"甲面光滑平整无坑洼竖纹横纹\",\"gloss\":\"高光泽度表面(Roughness 0.05-0.15)，如同刚涂完甲油\",\"reflection\":\"甲面有清晰的镜面高光反射(匹配光源方向)\"},\"color\":{\"auto\":\"根据角色风格自动匹配甲色：古风=温柔裸粉/暗黑=深红黑/甜系=粉红/酷=黑色/自然=透明或裸色\",\"even\":\"颜色均匀无刷痕无气泡\",\"coat\":\"呈现2-3层涂层质感的通透光泽\"},\"detail\":{\"cuticle\":\"甲沟整洁无倒刺\",\"lunula\":\"半月痕自然可见(裸色甲时)\",\"cleanup\":\"消除指甲破裂/分层/断裂/不均匀\"}},\"constraints\":{\"严禁\":\"改变手指姿势、指甲数量变化\",\"禁止\":\"甲油呈现不自然的塑料贴片感\"},\"integration\":{\"light_match\":\"指甲高光方向与手部光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "hands",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_036",
+  "title": "腹肌线条",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":true,\"preserve_pose\":\"严禁改变模特动作姿势\",\"preserve_costume\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析模特腹部当前状态(平坦/微胖/已有线条)、体脂水平、光源方向、服装遮挡范围(露腹/半露/全遮)\"},\"abs_sculpting\":{\"line_definition\":{\"linea_alba\":\"在腹部中线(白线)绘制从胸骨剑突到肚脐的纵向分隔沟，深度自然适中\",\"transverse_lines\":\"绘制2-3条水平分隔线(腱划)，将腹直肌分为6-8块区域，线条清晰但不刻意\",\"oblique_contour\":\"腹外斜肌两侧轮廓线自然可见，从肋弓向髋骨方向呈V型收窄\"},\"shadow_highlight\":{\"muscle_shadow\":\"每块腹肌突起处根据光源方向产生自然的高光(凸面受光)和阴影(沟槽背光)\",\"shadow_intensity\":\"阴影深度适中(比周围肤色暗10-20%)，呈现运动型健美感而非过度健身的夸张肌肉\",\"light_consistency\":\"腹肌光影方向与面部和身体其他部位光影方向完全一致\"},\"skin_quality\":{\"texture\":\"腹部皮肤保持自然毛孔纹理，肌肉线条呈皮肤下的隆起而非画上去的线条\",\"skin_tightness\":\"皮肤紧致贴合肌肉轮廓，无松弛或褶皱\",\"color\":\"腹部肤色与周围躯干一致，无色差\"},\"natural_limit\":{\"intensity\":\"肌肉清晰可见但不过度夸张，呈现自然的运动型身材(体脂约12-18%的视觉效果)\",\"symmetry\":\"左右腹肌对称(轻微不对称属于自然现象可保留)\"}},\"constraints\":{\"严禁\":\"改变动作姿势、腹肌过于夸张呈健美运动员体型、改变腰围\",\"禁止\":\"肌肉线条呈现画上去的平面感、阴影方向与光源不一致\"},\"integration\":{\"seamless\":\"腹肌区域与周围皮肤过渡自然\",\"noise_match\":\"修改区域噪点与原图一致\"}}",
+  "category": "torso",
+  "subCategory": "abdomen",
+  "refImages": [],
+  "_isFactory": true
+}

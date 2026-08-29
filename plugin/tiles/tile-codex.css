@@ -1,0 +1,88 @@
+/* ============================================================
+ *  tile-codex.css — Codex 全自动修图磁贴
+ * ============================================================ */
+.cx-panel { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px; }
+
+.cx-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 3px 0; }
+.cx-row-label { font-size: 12px; color: var(--text, #ddd); }
+.cx-row-master .cx-row-label { font-size: 12.5px; }
+.cx-sub { font-size: 11px; color: var(--text-sub, #888); margin: 6px 0 2px; }
+.cx-hint { font-size: 10px; color: var(--text-sub, #888); line-height: 1.5; margin: 2px 0 6px; }
+.cx-hardoff {
+  font-size: 10px; color: #ff9800; line-height: 1.5;
+  background: rgba(255, 152, 0, 0.08); border: 1px dashed rgba(255, 152, 0, 0.3);
+  border-radius: 5px; padding: 6px 8px; margin: 6px 0;
+}
+
+/* ② 修图项 */
+.cx-items { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 8px; }
+.cx-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 9px; border-radius: 5px; cursor: pointer; user-select: none;
+  border: 1px solid rgba(255, 255, 255, 0.08); transition: all 0.12s;
+}
+.cx-item-name { font-size: 11px; color: var(--text, #ddd); }
+.cx-item-state { font-size: 10px; font-weight: 600; }
+.cx-item.is-allow { background: rgba(105, 240, 174, 0.1); border-color: rgba(105, 240, 174, 0.35); }
+.cx-item.is-allow .cx-item-state { color: #69f0ae; }
+.cx-item.is-block { background: rgba(255, 255, 255, 0.02); }
+.cx-item.is-block .cx-item-state { color: var(--text-sub, #888); }
+.cx-item:hover { border-color: rgba(255, 255, 255, 0.2); }
+
+/* 自由文本 */
+.cx-field { margin: 6px 0; }
+.cx-flabel { display: block; font-size: 11px; color: var(--text-sub, #999); margin-bottom: 3px; }
+.cx-textarea {
+  width: 100%; box-sizing: border-box; min-height: 48px; resize: vertical;
+  background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px; color: var(--text, #e0e0e0); font-size: 12px; line-height: 1.5;
+  padding: 7px 9px; outline: none; font-family: inherit;
+}
+.cx-textarea:focus { border-color: var(--accent, #4a9eff); }
+
+/* ③ 模型白名单 */
+.cx-models { display: flex; flex-direction: column; gap: 6px; }
+.cx-empty { font-size: 11px; color: var(--text-sub, #888); padding: 6px 0; }
+.cx-model { border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; padding: 7px 9px; }
+.cx-model-head { display: flex; align-items: center; gap: 8px; cursor: pointer; width: 100%; }
+.cx-model-chk { flex: 0 0 auto; width: 15px; height: 15px; margin: 0; }
+.cx-model-name { flex: 1 1 auto; min-width: 0; font-size: 12px; color: var(--text, #ddd); text-align: left; line-height: 1.3; overflow-wrap: anywhere; }
+.cx-model-eng {
+  flex: 0 0 auto; font-size: 10px; color: var(--accent, #4a9eff);
+  padding: 1px 7px; background: rgba(74, 158, 255, 0.12); border-radius: 8px;
+}
+.cx-model-body { margin-top: 7px; display: flex; flex-direction: column; gap: 6px; padding-left: 4px; }
+.cx-model-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cx-mini-label { font-size: 10px; color: var(--text-sub, #888); }
+.cx-sizes { display: flex; gap: 4px; flex-wrap: wrap; }
+.cx-size-chip {
+  font-size: 10px; padding: 2px 8px; border-radius: 10px; cursor: pointer;
+  background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-sub, #888); transition: all 0.12s; user-select: none;
+}
+.cx-size-chip.on { background: rgba(74, 158, 255, 0.18); border-color: rgba(74, 158, 255, 0.5); color: var(--accent, #4a9eff); }
+.cx-batch { width: 48px; box-sizing: border-box; }
+.cx-mini-tog { font-size: 10px; color: var(--text-sub, #999); display: inline-flex; align-items: center; gap: 3px; cursor: pointer; }
+
+/* ④⑥ 信息块 */
+.cx-info {
+  font-size: 10.5px; color: var(--text-sub, #999); line-height: 1.6;
+  background: rgba(255, 255, 255, 0.02); border-left: 2px solid var(--accent, #4a9eff);
+  border-radius: 0 4px 4px 0; padding: 7px 9px;
+}
+.cx-info code { font-size: 9.5px; }
+.cx-todo { color: #ffb74d; }
+
+/* ⑤ 工作流 */
+.cx-flow { margin: 2px 0; padding-left: 20px; }
+.cx-flow li { font-size: 10.5px; color: var(--text-sub, #999); line-height: 1.7; }
+
+/* 预览 */
+.cx-preview {
+  margin-top: 6px; max-height: 240px; overflow: auto;
+  background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 5px; padding: 8px; font-family: ui-monospace, monospace;
+  font-size: 10px; color: #b0bec5; white-space: pre; line-height: 1.45;
+}
+
+.cx-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; }

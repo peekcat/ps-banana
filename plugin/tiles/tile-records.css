@@ -1,0 +1,530 @@
+/* ============================================================
+   tile-recyclebin.css — 回收站磁贴样式
+   ============================================================ */
+
+.rb-panel { padding: 6px; }
+
+.rb-total {
+    color: #888;
+    font-size: 11px;
+    font-weight: normal;
+    margin-left: 6px;
+}
+
+/* 顶栏 */
+.rb-toolbar {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin: 8px 0;
+    flex-wrap: wrap;
+}
+.rb-toolbar .rb-filter { width: 100px; flex: 0 0 auto; }
+.rb-toolbar .rb-search { flex: 1; min-width: 100px; }
+.rb-toolbar .rb-clear-btn { flex: 0 0 auto; color: #ff9090; }
+
+/* 网格 — 顶层是按任务分组的"文件夹列表", 不再是图卡的网格 */
+.rb-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+}
+
+/* === 任务分组 (文件夹) === */
+.rb-group {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 6px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+}
+.rb-group.rb-group-open {
+    border-color: rgba(120,180,255,0.35);
+    background: rgba(255,255,255,0.035);
+}
+.rb-group-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px;
+    cursor: pointer;
+    transition: background 0.12s;
+    user-select: none;
+}
+.rb-group-head:hover {
+    background: rgba(255,255,255,0.05);
+}
+.rb-group-cover {
+    flex: 0 0 auto;
+    width: 44px;
+    height: 44px;
+    border-radius: 4px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.rb-group-info {
+    flex: 1;
+    min-width: 0;
+}
+.rb-group-prompt {
+    color: #ddd;
+    font-size: 12px;
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    word-break: break-all;
+}
+.rb-group-meta {
+    margin-top: 3px;
+    display: flex;
+    gap: 8px;
+    font-size: 10px;
+    color: #888;
+}
+.rb-group-count { font-weight: 600; }
+.rb-group-wf { color: #6aa; }
+.rb-group-time { margin-left: auto; }
+.rb-group-arrow {
+    flex: 0 0 auto;
+    color: #888;
+    font-size: 12px;
+    padding: 0 4px;
+    transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+    transform-origin: center center;
+}
+.rb-group.rb-group-open .rb-group-arrow {
+    transform: rotate(90deg);
+    color: #9cc8ff;
+}
+.rb-group-body {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 8px;
+    border-top: 1px solid transparent;
+    background: rgba(0,0,0,0.15);
+    /* 折叠态: 高度 0, 上下 padding 0, 透明 */
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+        max-height 0.26s cubic-bezier(.4,0,.2,1),
+        padding 0.26s cubic-bezier(.4,0,.2,1),
+        opacity 0.18s ease-out,
+        border-color 0.2s ease-out;
+}
+.rb-group.rb-group-open .rb-group-body {
+    /* 展开态: 上限高度给足 (单组卡片不会超过这个), padding/opacity 复位 */
+    max-height: 4000px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    opacity: 1;
+    border-top-color: rgba(255,255,255,0.06);
+}
+
+.rb-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.12s, border-color 0.12s;
+    user-select: none;
+}
+.rb-card:hover {
+    border-color: rgba(120,180,255,0.5);
+    transform: translateY(-1px);
+}
+
+.rb-card-thumb {
+    height: 110px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 6px;
+    position: relative;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.rb-card-status {
+    font-size: 11px;
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 4px rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.45);
+    padding: 2px 6px;
+    border-radius: 3px;
+    backdrop-filter: blur(2px);
+}
+
+.rb-card-meta {
+    padding: 6px 8px;
+    font-size: 11px;
+}
+.rb-card-prompt {
+    color: #ddd;
+    line-height: 1.3;
+    height: 28px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+.rb-card-foot {
+    display: flex;
+    justify-content: space-between;
+    color: #888;
+    font-size: 10px;
+    margin-top: 4px;
+}
+.rb-card-wf {
+    background: rgba(120,180,255,0.15);
+    color: #9cc8ff;
+    padding: 1px 5px;
+    border-radius: 3px;
+}
+
+.rb-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #888;
+    padding: 40px 20px;
+    font-size: 12px;
+    line-height: 1.6;
+    background: rgba(255,255,255,0.02);
+    border-radius: 6px;
+}
+
+.rb-loadmore {
+    margin-top: 10px;
+    text-align: center;
+}
+
+/* ============================================================
+   预览模态框
+   ============================================================ */
+.rb-preview-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 999999;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 20px;
+    backdrop-filter: blur(2px);
+    overflow-y: auto;
+}
+
+.rb-preview-card {
+    background: #1c1f28;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    width: 96vw;                 /* 窄面板优先, 桌面也只用面板宽度 */
+    max-width: 520px;
+    max-height: 95vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+    overflow: hidden;
+}
+
+.rb-preview-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.02);
+}
+.rb-preview-title { color: #ddd; font-size: 13px; }
+.rb-preview-close {
+    background: transparent;
+    color: #888;
+    border: none;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+}
+.rb-preview-close:hover { color: #fff; }
+
+/* 竖排面板: 图在上, 信息在下, 整块可滚 */
+.rb-preview-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.rb-preview-img-wrap {
+    background: #0e1014;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    width: 100%;
+    /* v6.5.0 防抖动: 高度固定(不随小图/大图分辨率差异跳变), 图片在框内 contain */
+    height: 50vh;
+    min-height: 180px;
+}
+.rb-preview-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+.rb-preview-loading,
+.rb-preview-fail {
+    color: #888;
+    font-size: 12px;
+    padding: 30px;
+    text-align: center;
+}
+.rb-preview-fail { color: #ff8080; }
+
+.rb-preview-info {
+    padding: 12px 14px;
+    font-size: 12px;
+    color: #ccc;
+    background: rgba(255,255,255,0.015);
+    border-top: 1px solid rgba(255,255,255,0.05);
+}
+.rb-info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px dashed rgba(255,255,255,0.06);
+}
+.rb-info-row span { color: #888; }
+.rb-info-row b { color: #ddd; font-weight: 500; text-align: right; max-width: 60%; word-break: break-all; }
+.rb-info-err b { color: #ff8080; }
+
+.rb-info-context {
+    margin: 8px 0;
+    padding: 8px;
+    background: rgba(120,180,255,0.06);
+    border-radius: 4px;
+}
+
+.rb-info-prompt-label {
+    margin-top: 12px;
+    color: #888;
+    font-size: 11px;
+}
+.rb-info-prompt-box {
+    margin-top: 4px;
+    padding: 8px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 4px;
+    font-size: 11px;
+    line-height: 1.5;
+    max-height: 160px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: #ddd;
+}
+
+.rb-preview-actions {
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.2);
+    flex-wrap: wrap;
+}
+.rb-preview-actions .w10-btn { flex: 1 1 auto; min-width: 80px; }
+.rb-act-place { color: #5be37b !important; border-color: rgba(91,227,123,0.3) !important; }
+.rb-act-del   { color: #ff7a7a !important; border-color: rgba(255,122,122,0.3) !important; }
+
+/* === pending 占位卡片 (生成中) === */
+.rb-card-pending .rb-card-thumb {
+    background: linear-gradient(135deg, #3a4255, #2a3040) !important;
+    animation: rb-pending-pulse 1.6s ease-in-out infinite;
+}
+@keyframes rb-pending-pulse {
+    0%, 100% { opacity: 0.55; }
+    50%      { opacity: 1; }
+}
+
+/* === 生成记录(v6.4.8 合并版)新增: 组头上的动作按钮 === */
+.rb-group-acts {
+  display: flex;
+  gap: 4px;
+  flex: 0 0 auto;
+  align-items: center;
+}
+.rb-act-mini {
+  font-size: 10px;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+.rb-act-mini[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* === 就地展开修复: 面板高度在数据回来前就被引擎量定,
+   列表区必须有保底高度占位, 否则就地面板只剩工具栏一条 === */
+.inline-panel .rb-panel .rb-grid {
+    min-height: 340px;
+}
+.rb-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    color: var(--text-sub);
+    font-size: 11px;
+}
+
+/* === v6.4.9: 项目(PS文档)一级分组 === */
+.rb-proj {
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.rb-proj-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.03);
+    user-select: none;
+}
+.rb-proj-head:hover { background: rgba(255,255,255,0.06); }
+.rb-proj-icon { font-size: 13px; flex: 0 0 auto; }
+.rb-proj-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.rb-proj-count { font-size: 10px; color: var(--text-sub); flex: 0 0 auto; }
+.rb-proj-head .rb-group-arrow { transition: transform 0.2s; }
+.rb-proj-open > .rb-proj-head .rb-group-arrow { transform: rotate(90deg); }
+/* v6.5.9: 项目层折叠动画 — 照组层(rb-group-body)的 max-height 方案, 不再 display 硬切。
+   首次展开是懒渲插入(插入即带 open 态, 由 keyframe 淡入); 之后的开合走 transition。 */
+.rb-proj-body {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0 6px;
+    transition:
+        max-height 0.26s cubic-bezier(.4,0,.2,1),
+        padding 0.26s cubic-bezier(.4,0,.2,1),
+        opacity 0.18s ease-out;
+}
+.rb-proj-open > .rb-proj-body {
+    max-height: 8000px;
+    opacity: 1;
+    padding: 6px;
+    /* ⚠ 这里不要叠 animation: 开合动画由上面的 transition 负责,
+       首开的懒渲插入走 JS 的"插入→下一帧加类"(见 tile-records.js), 同样走 transition。
+       transition+animation 双写会在 UXP 上表现为"闪两次"。 */
+}
+
+/* === v6.4.9b: 项目封面缩略图 + 预览 ←/→ 导航 === */
+.rb-proj-cover {
+    width: 34px;
+    height: 34px;
+    flex: 0 0 auto;
+    border-radius: 3px;
+    background: linear-gradient(135deg,#404659,#2a2f3d);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    overflow: hidden;
+}
+.rb-preview-img-zone {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+.rb-preview-img-zone .rb-preview-img-wrap { flex: 1; }
+.rb-preview-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    width: 34px;
+    height: 56px;
+    border: none;
+    border-radius: 4px;
+    background: rgba(0,0,0,0.45);
+    color: var(--text, #eee);
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.6;
+    transition: opacity 0.15s, background 0.15s;
+}
+.rb-preview-arrow:hover { opacity: 1; background: rgba(0,0,0,0.7); }
+.rb-preview-arrow-l { left: 6px; }
+.rb-preview-arrow-r { right: 6px; }
+.rb-preview-nav-pos { color: var(--text-sub); font-size: 11px; }
+
+/* v6.5.0: 项目开销标签 */
+.rb-proj-cost {
+    flex: 0 0 auto;
+    font-size: 10px;
+    color: #ffcc80;
+    background: rgba(255,204,128,0.08);
+    border-radius: 3px;
+    padding: 1px 6px;
+}
+
+/* v6.5.5: 行内加载更多(贴最后一条记录) */
+.rb-loadmore-inline {
+    text-align: center;
+    padding: 8px;
+    font-size: 11px;
+    color: var(--text-sub);
+    background: rgba(255,255,255,0.03);
+    border: 1px dashed rgba(255,255,255,0.1);
+    border-radius: 4px;
+    cursor: pointer;
+    user-select: none;
+}
+.rb-loadmore-inline:hover {
+    background: rgba(255,255,255,0.06);
+    color: var(--text);
+}
+
+/* === v6.5.9 体感: 缩略图到达时淡入 + 未到时微光占位 === */
+.rb-card-thumb{background-color:rgba(255,255,255,0.04)}
+.rb-card-thumb:not([style*="url"])::before{
+    content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+    background:linear-gradient(100deg,transparent 30%,rgba(255,255,255,0.05) 50%,transparent 70%);
+    background-size:200% 100%;
+    animation:rbShimmer 1.4s ease infinite;
+}
+@keyframes rbShimmer{from{background-position:180% 0}to{background-position:-80% 0}}
+@keyframes rbThumbIn{from{opacity:0.25}to{opacity:1}}
+.rb-thumb-in{animation:rbThumbIn 0.25s ease}
+
+/* === v6.5.9 点按确认: 卡片/组头按下轻缩 === */
+.rb-card:active { transform: scale(0.98); }
+.rb-group-head:active, .rb-proj-head:active { background: rgba(255,255,255,0.07); }

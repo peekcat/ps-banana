@@ -1,0 +1,9 @@
+{
+  "id": "f_057",
+  "title": "服装杂物移除",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_costume_design\":\"保持服装原有款式材质花纹不变\",\"preserve_model\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别服装上不属于角色设计的杂物：别针/安全扣/发夹固定夹(用于临时固定服装)、标签/吊牌/价格牌、线头/多余线缆、临时缝补的白线/胶带\",\"distinguish\":\"区分角色服装设计元素(如装饰性别针/胸针)和临时固定杂物——仅移除后者\"},\"removal_operations\":{\"pin_removal\":{\"action\":\"移除所有临时固定用的安全别针/回形针/发夹/夹子\",\"inpaint\":\"移除位置重建原始服装面料纹理\"},\"tag_removal\":{\"action\":\"移除露出的服装标签/洗标/吊牌/价格牌\",\"inpaint\":\"标签位置重建服装内衬或面料\"},\"thread_cleanup\":{\"action\":\"移除多余线头/断线/临时缝补痕迹\",\"surface\":\"修复区域布面平整干净\"},\"tape_removal\":{\"action\":\"移除用于临时固定的胶带/双面胶痕迹\",\"clean\":\"消除胶带残留的粘性光泽痕迹\"}},\"quality_control\":{\"texture_match\":\"修补区域织物纹理方向密度与周围完全匹配\",\"pattern_continuity\":\"如有图案花纹，修补区域图案无断裂\",\"light_match\":\"修补区域反光与周围一致\",\"invisible\":\"所有移除修补痕迹不可见\"},\"constraints\":{\"严禁\":\"移除属于角色服装设计的装饰性配件\",\"禁止\":\"修补区域出现涂抹感\"},\"integration\":{\"noise_match\":\"噪点一致\"}}",
+  "category": "clothing",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_008",
+  "title": "精致眼妆",
+  "content": "{\"role\":\"Cosplay人像后期化妆师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_eye_shape\":\"严格锁定眼睛大小、形状、位置不变\",\"preserve_expression\":true,\"preserve_skin_base\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_character\":\"分析模特Cos角色的IP属性，判断角色风格(日系/中式/欧美/暗黑/甜美)以匹配妆容风格\",\"identify_existing_makeup\":\"识别模特现有眼妆基础(有无眼线/眼影/睫毛膏)，在此基础上优化而非完全覆盖\",\"identify_light\":\"分析面部光源方向，确保妆容光泽与光源一致\"},\"eyelash_enhancement\":{\"upper_lash\":\"绘制精致手绘感上睫毛，根根分明可辨，从睫毛根部自然生长向外弯曲上翘\",\"lash_texture\":\"睫毛呈现纤细顺滑质感，从根部较粗到尖端极细的自然渐变\",\"lash_length\":\"外眼角睫毛最长(约8-12mm)，内眼角最短(约4-6mm)，形成自然的扇形展开\",\"lower_lash\":\"下睫毛细而短(约3-5mm)，稀疏自然分布，禁止过密过长\",\"lash_shadow\":\"睫毛在上眼睑投射极细微的阴影，增加真实感\"},\"eye_makeup\":{\"eyeshadow\":\"根据角色风格添加对应色系眼影：暗黑角色=深紫/烟熏；甜美角色=粉橘/珠光；仙侠角色=浅金/渐变红\",\"eyeliner\":\"精致眼线贴合睫毛根部，线条流畅均匀，眼尾根据角色风格选择上挑/平拉/下垂\",\"sparkle\":\"眼影区域可添加细微闪光粒子(shimmer)，模拟珠光眼影质感\"},\"aegyo_sal\":{\"卧蚕\":\"在下眼睑紧贴睫毛处生成自然饱满的卧蚕，宽度约3-5mm\",\"highlight\":\"卧蚕中央添加柔和提亮(比肤色亮10-15%)，增加眼神亲和力\",\"shadow\":\"卧蚕下方添加极浅的自然阴影，制造立体蓬松感\"},\"pupil_enhancement\":{\"shimmer\":\"虹膜呈现闪烁光泽感(shimmering pupils)，增强catchlights高光点的亮度和清晰度\",\"depth\":\"瞳孔深邃有神，虹膜纹理丰富通透\"},\"constraints\":{\"严禁\":\"改变眼睛大小位置形状、改变五官间距、妆容过浓遮盖原有特征\",\"禁止\":\"左右眼妆不对称(除非角色设定如此)、眼妆边缘有硬边\"},\"integration\":{\"makeup_blend\":\"所有妆容边缘与皮肤自然融合，无明显涂抹痕迹\",\"bilateral_symmetry\":\"双眼妆容程度一致\",\"noise_match\":\"修改区域噪点与原图一致\"}}",
+  "category": "head",
+  "subCategory": "eyes",
+  "refImages": [],
+  "_isFactory": true
+}

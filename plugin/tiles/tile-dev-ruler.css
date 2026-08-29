@@ -1,0 +1,121 @@
+/* === tile-dev-ruler.css — 开发用宽度尺子磁贴 === */
+
+.dvr-panel {
+  padding: 10px 12px;
+  font-size: 11px;
+  color: var(--text, #d9dde6);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-y: auto;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+.dvr-section {
+  font-size: 10px;
+  color: var(--accent, #6fb3ff);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  margin-top: 6px;
+  padding-bottom: 3px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.dvr-section:first-child {
+  margin-top: 0;
+}
+
+.dvr-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 0;
+  gap: 8px;
+}
+.dvr-label {
+  color: var(--text-sub, #99a);
+  font-size: 11px;
+}
+.dvr-value {
+  font-family: 'Consolas', 'Courier New', monospace;
+  font-variant-numeric: tabular-nums;
+  color: #e6eaf2;
+  font-size: 12px;
+  font-weight: 600;
+}
+.dvr-value-big {
+  font-size: 18px;
+  color: #6fb3ff;
+}
+
+.dvr-layout {
+  padding: 1px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.dvr-layout-narrow    { background: rgba(255, 107, 107, 0.18); color: #ff7a7a; }
+.dvr-layout-tall      { background: rgba(255, 167, 38, 0.18); color: #ffb74d; }
+.dvr-layout-square    { background: rgba(105, 240, 174, 0.18); color: #69f0ae; }
+.dvr-layout-wideshort { background: rgba(156, 200, 255, 0.18); color: #9cc8ff; }
+.dvr-layout-wide      { background: rgba(120, 180, 255, 0.18); color: #78b4ff; }
+
+/* 阈值参考条 */
+.dvr-bar-wrap {
+  margin-top: 4px;
+}
+.dvr-bar {
+  position: relative;
+  height: 18px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.dvr-bar-seg {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  opacity: 0.45;
+}
+.dvr-seg-narrow   { background: #ff6b6b; }
+.dvr-seg-square   { background: #69f0ae; }
+.dvr-seg-square2  { background: #69f0ae; opacity: 0.65; }
+.dvr-seg-wide     { background: #78b4ff; }
+
+.dvr-bar-marker {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 3px;
+  background: #fff;
+  box-shadow: 0 0 6px rgba(255,255,255,0.8);
+  transform: translateX(-1px);
+  transition: left 0.08s linear;
+}
+
+.dvr-bar-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 3px;
+  font-size: 9px;
+  color: var(--text-sub, #99a);
+  font-family: 'Consolas', monospace;
+}
+.dvr-bar-scale span {
+  flex: 0 0 auto;
+}
+
+.dvr-hint {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(255,255,255,0.025);
+  border: 1px dashed rgba(255,255,255,0.08);
+  border-radius: 4px;
+  font-size: 10px;
+  color: #aab;
+  line-height: 1.6;
+}
+.dvr-hint b {
+  color: #e6eaf2;
+}

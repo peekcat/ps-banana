@@ -1,0 +1,9 @@
+{
+  "id": "f_051",
+  "title": "脚部清洁美化",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_foot_shape\":\"保持脚部整体形状和大小不变\",\"preserve_pose\":\"保持脚部姿势角度不变\",\"preserve_nail_polish\":\"如果有涂指甲油，保持颜色不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析脚部当前状态：老茧/死皮位置(脚跟/脚掌/大脚趾侧)、皮肤粗糙程度、趾甲状态、脚部整洁度、肤色与腿部的色差、光源方向\"},\"cleaning_operations\":{\"callus_removal\":{\"action\":\"移除脚跟、脚掌、大脚趾侧面的老茧和硬化死皮\",\"rebuild\":\"重建为柔软光滑的皮肤质感，保留自然的脚底纹路(掌纹)但消除粗糙龟裂\"},\"skin_refinement\":{\"texture\":\"脚背和脚趾皮肤纹理精致均匀，毛孔细小\",\"color\":\"统一脚部肤色与腿部一致，消除暗沉/泛黄/发灰区域\",\"redness\":\"脚部皮肤呈现健康红润的血色感，脚趾尖端微微粉嫩\",\"moisture\":\"皮肤呈现水润光泽，如同刚做过足部护理\"},\"toenail_refinement\":{\"shape\":\"趾甲形状整齐，边缘光滑无毛刺无劈裂\",\"surface\":\"趾甲表面光滑有自然光泽，无竖纹/横纹/灰指甲\",\"color\":\"自然粉色健康趾甲色(或保持原有甲油颜色)\",\"cuticle\":\"甲沟干净整洁，无倒刺无红肿\"},\"dirt_removal\":{\"action\":\"移除脚趾缝/趾甲缝的灰尘污垢\",\"stain\":\"消除脚底可能的地面污渍/墨迹\"}},\"ankle_beautify\":{\"bone_contour\":\"脚踝骨(内外踝)轮廓清晰优美\",\"skin_smooth\":\"脚踝周围皮肤光滑无皱纹无暗沉\",\"transition\":\"脚踝到小腿的过渡自然流畅\"},\"constraints\":{\"严禁\":\"改变脚部大小形状、改变脚趾数量或排列、过度美化呈现不真实的塑料感\",\"禁止\":\"脚底完全光滑无纹路(需保留自然掌纹)\"},\"integration\":{\"color_continuity\":\"脚部肤色与腿部/整体肤色协调统一\",\"noise_match\":\"修改区域噪点与原图一致\"}}",
+  "category": "feet",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

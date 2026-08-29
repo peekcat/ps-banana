@@ -1,0 +1,9 @@
+{
+  "id": "f_082",
+  "title": "白色粘液(画笔引导)",
+  "content": "{\"role\":\"ACG液体特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"preserve_clothing_design\":true,\"no_scale_rotate_translate\":true},\"brush_interpretation\":{\"marker_type\":\"蓝色画笔引导线\",\"marker_purpose\":\"仅为指令引导标记，非画面内容\",\"semantics\":{\"stroke_position\":\"蓝色笔触位置=粘液出现的区域\",\"stroke_path\":\"笔触方向=粘液流淌方向\",\"stroke_curvature\":\"笔触弧度=液体流动的弯曲程度，受重力和表面张力共同影响\",\"stroke_thickness\":\"笔触粗细≈粘液流体宽度的参考\"},\"scope\":\"仅标记区域生成粘液效果，未标记区域严禁出现液体\"},\"liquid_generation\":{\"material_properties\":{\"color\":\"乳白色，不透明度85-95%\",\"translucency\":\"边缘极薄处呈半透明状(Opacity降至40-60%)，可隐约透出底层皮肤/服装颜色\",\"viscosity\":\"高粘度流体，流速缓慢，形态保持性强\",\"surface_tension\":\"液体边缘有明显表面张力导致的凸起边缘和弧形轮廓\"},\"flow_behavior\":{\"gravity_drip\":\"液体受重力影响向下流淌，在垂直面形成缓慢垂坠的液滴\",\"stringing\":\"液体断开处产生粘连拉丝效果，丝径约0.5-2mm，长度3-15mm\",\"pooling\":\"在凹陷处或水平面积聚形成小液洼，中心较厚边缘较薄渐变过渡\",\"surface_conformity\":\"液体贴合皮肤/服装表面轮廓流动，而非浮在表面\"},\"optical_properties\":{\"specular\":\"表面呈现高光泽镜面反射(Roughness 0.05-0.15)，高光形状为拉长的各向异性光斑\",\"refraction\":\"厚层区域有微弱的SSS次表面散射效果\",\"highlight\":\"根据原图光源方向，液体表面产生明亮的镜面高光点，核心高光接近纯白\"}},\"brush_removal\":{\"priority\":\"MANDATORY\",\"action\":\"在最终输出前完全移除所有蓝色引导线痕迹及色彩残留，修复被标记覆盖的原始画面内容，确保引导线下方的皮肤/服装纹理被正确重建\"},\"integration\":{\"depth_occlusion\":\"液体遮挡关系正确，贴合在物体表面\",\"light_mapping\":\"液体反射光与原图光源方向一致\",\"noise_match\":\"液体区域噪点与原图一致\",\"anti_pasted_look\":\"液体必须看起来是真实附着在表面上的，禁止出现平面贴图感\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

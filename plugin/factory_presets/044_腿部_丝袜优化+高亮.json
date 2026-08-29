@@ -1,0 +1,9 @@
+{
+  "id": "f_043",
+  "title": "丝袜优化+高亮",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":true,\"preserve_leg_shape\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析当前黑丝状态、光源方向、腿部曲面朝向\"},\"hosiery_enhancement\":{\"material_upgrade\":{\"denier\":\"优化为20-40旦尼尔半透明黑色尼龙\",\"transparency\":\"皮肤透过丝袜隐约可见(Opacity 65-80%)\",\"texture\":\"丝袜纹理均匀细腻无破损\"},\"highlight_enhancement\":{\"technique\":\"增强各向异性(Anisotropic)光泽突出腿部三维体积感\",\"shape\":\"高光呈宽幅柔和渐变的光带(非锐利点状)沿腿部圆柱体纵向分布\",\"intensity\":\"高光强度40-60%，增强Specular呈现丝滑光泽\",\"primary_zones\":\"大腿前侧中心线和小腿前侧中心线为主高光区域(最亮)\",\"secondary\":\"大腿外侧和小腿外侧为次高光区域(略弱)\",\"falloff\":\"高光从腿部中心向两侧柔和渐变衰减\",\"direction\":\"所有高光方向与原图光源一致\"},\"volume_sculpting\":{\"action\":\"通过高光和阴影强化腿部圆柱体积感和立体感\",\"thigh\":\"大腿处高光宽幅(体现大腿的圆润饱满)\",\"calf\":\"小腿处高光较窄(体现小腿的修长纤细)\",\"knee\":\"膝盖处有独立的微弱高光凸起\"}},\"constraints\":{\"严禁\":\"改变腿部形状粗细、丝袜颜色变化\",\"禁止\":\"高光过强呈塑料/乳胶感\"},\"integration\":{\"light_match\":\"光泽方向与光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "legs",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

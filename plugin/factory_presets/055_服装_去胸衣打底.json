@@ -1,0 +1,9 @@
+{
+  "id": "f_054",
+  "title": "去胸衣打底",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_costume_design\":\"保持外层服装款式完全不变\",\"preserve_pose\":true,\"preserve_costume_opacity\":\"保持服装100%不透明度不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别画面中可见的肉色打底衣/网纱痕迹：网纱接缝线、打底衣领口/袖口边缘、肉色内衬造成的色差(偏黄/偏粉的合成色)、网纱编织纹理\",\"identify_skin\":\"分析模特面部和手臂等裸露区域的真实肤色作为参考\"},\"removal_operations\":{\"seam_removal\":{\"action\":\"完全移除所有可见的网纱接缝线/缝合痕迹\",\"edge\":\"接缝位置重建为光滑连续的皮肤/服装面\"},\"mesh_to_skin\":{\"action\":\"将网纱质感的区域平滑替换为高质量自然皮肤纹理\",\"texture\":\"重建区域皮肤毛孔大小与面部/手臂裸露皮肤一致\",\"quality\":\"皮肤呈现细腻通透质感，无编织纹理残留\"},\"color_unification\":{\"action\":\"统一胸部腰部区域肤色\",\"target\":\"消除打底衣造成的黄色/粉色/灰色合成色差\",\"reference\":\"肤色以面部和手臂的真实肤色为准进行统一\",\"gradient\":\"肤色过渡自然柔和，无硬边色块\"}},\"constraints\":{\"严禁\":\"改变服装款式轮廓、服装变透明暴露不该暴露的区域、改变动作\",\"禁止\":\"重建区域皮肤出现涂抹感、肤色过渡不自然\"},\"integration\":{\"light_match\":\"重建区域光影与周围一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "clothing",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

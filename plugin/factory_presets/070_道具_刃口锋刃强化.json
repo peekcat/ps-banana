@@ -1,0 +1,9 @@
+{
+  "id": "f_069",
+  "title": "刃口锋刃强化",
+  "content": "{\"role\":\"资深道具后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"强化道具刀剑刃口的锋利感——增加刃口反光亮线和锐利度视觉效果。让塑料/树脂道具的刃部看起来如同真正锻造打磨的锋利金属刀刃\",\"detection\":{\"identify\":\"识别道具上所有刃口/刀锋/剑刃/斧刃的位置和走向方向\",\"analyze\":\"分析当前刃口的高光状况、锐利度、光源方向和角度\"},\"@param:刃口亮度\":0.7,\"@param:刃口亮度_desc\":\"0=无额外高光保持原样;0.2=极微弱的刃口亮线隐约可辨;0.4=轻微的反光线亮度+15%金属初现;0.6=明显的高光亮线亮度+30%锋利感强;0.8=强烈镜面反光亮度+50%刺眼夺目;1=极致白光如真正锻造利刃反射阳光\",\"@param:锐利度\":0.8,\"@param:锐利度_desc\":\"0=保持原始刃口模糊不锐利;0.2=微弱锐化刃口边缘;0.4=轻微锐化刃口轮廓变清晰;0.6=明显锐利的刃口线条如真金属锻造;0.8=非常锐利的刃口边缘极其清晰如同剃刀;1=极致锐利的刃口可感觉到锋利的危险感\",\"operations\":{\"edge_highlight\":{\"action\":\"沿刃口走向添加细长条形镜面高光\",\"width\":\"高光条宽度1-3px随刃口亮度参数值递增\",\"color\":\"纯白偏冷色调匹配画面光源色温\",\"gradient\":\"高光强度沿刃口方向根据光源入射角度自然渐变\",\"continuity\":\"高光线条沿整条刃口连续不断\"},\"sharpen\":{\"action\":\"对刃口边缘进行局部USM锐化处理\",\"radius\":\"锐化半径1-3px精确控制\",\"amount\":\"锐化量根据锐利度参数从50%到300%递增\"},\"micro_detail\":{\"action\":\"在刃口表面添加极细微的研磨纹理(模拟磨刀石留下的平行细纹)\",\"visibility\":\"纹理可见度与锐利度参数值成正比\",\"direction\":\"纹理方向沿刃口方向平行排列\"}},\"constraints\":{\"严禁\":\"刃口高光扩散到非刃部区域、改变道具整体形状轮廓\",\"禁止\":\"高光方向与画面光源方向不一致\"},\"integration\":{\"light_direction\":\"所有高光方向必须精确匹配画面主光源方向\",\"noise_match\":\"处理区域噪点与原图一致\"}}",
+  "category": "accessory",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

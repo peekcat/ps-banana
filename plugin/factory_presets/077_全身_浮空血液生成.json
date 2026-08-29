@@ -1,0 +1,9 @@
+{
+  "id": "f_076",
+  "title": "浮空血液生成",
+  "content": "{\"role\":\"VFX液体特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"no_scale_rotate_translate\":true},\"brush_interpretation\":{\"marker_type\":\"红色画笔引导线\",\"marker_purpose\":\"仅为指令引导标记，非画面内容\",\"semantics\":{\"stroke_path\":\"红色笔触路径=血弧飞溅的运动轨迹\",\"stroke_curvature\":\"笔触弧度=血弧的曲率，直线产生直喷效果，弧线产生抛物线飞溅\",\"stroke_origin\":\"笔触起始端=血液喷出的源头位置\",\"stroke_thickness\":\"笔触粗细≈血流主体宽度\"},\"scope\":\"仅标记覆盖区域生成血液效果，未标记区域严禁出现血迹\"},\"blood_generation\":{\"main_arc\":{\"shape\":\"根据引导线轨迹生成动态血弧，主体呈流体抛物线形态，边缘有离心力甩出的细小分支\",\"fluid_simulation\":\"使用Houdini FLIP级别的液体模拟逻辑，血液流体具有真实的惯性和表面张力\",\"thickness_variation\":\"血弧源头处最粗最密，沿轨迹逐渐变细分散，末端碎裂为飞溅液滴\"},\"material_properties\":{\"color\":\"深红色至暗红色(RGB约140,15,15至80,5,5)，厚层区域颜色更深\",\"translucency\":\"薄层边缘呈半透明状，光线穿透时呈现SSS次表面散射的暖红色(类似红宝石透光)\",\"surface\":\"表面湿润高光泽(Roughness 0.05-0.12)，镜面高光反射原图环境光\",\"viscosity\":\"中等粘度，比水浓稠但比糖浆稀薄，可产生细丝状拉伸\"},\"splash_particles\":{\"high_pressure\":\"主血弧周围散布高压飞溅的微小血滴(1-5px)，飞溅方向与血弧运动方向一致\",\"mist\":\"血弧高速运动区域产生极细的血雾(blood mist)，Opacity 10-25%，呈雾化暗红色\",\"droplets\":\"末端碎裂产生大小不一的独立液滴(3-15px)，每个液滴保持球形/椭球形，表面有独立高光点\"},\"illumination\":{\"refraction\":\"血液厚层区域产生逼真的光线折射和焦散(Caustics)效果\",\"mapped_light\":\"血液对接触面产生红色映射光(微弱)，光照强度按距离衰减\",\"shadow\":\"浮空血液在下方表面投射半透明红色投影\"}},\"brush_removal\":{\"priority\":\"MANDATORY\",\"action\":\"在最终输出前完全移除所有红色引导线痕迹及色彩残留，修复被标记覆盖的原始画面内容\"},\"integration\":{\"depth_occlusion\":\"血液遮挡关系正确：模特前方的血液覆盖身体，后方被遮挡\",\"cinematic_lighting\":\"整体画面呈现电影级光影质感\",\"noise_match\":\"特效区域噪点与原图一致\",\"color_space\":\"血液效果不改变画面整体色相饱和度伽马值\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

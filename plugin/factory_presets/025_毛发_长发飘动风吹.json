@@ -1,0 +1,9 @@
+{
+  "id": "f_024",
+  "title": "长发飘动风吹",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":true,\"preserve_hair_color\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析头发长度方向、发型结构、风向暗示(衣物飘动方向)、光源方向\"},\"wind_hair\":{\"physics\":{\"root_fixed\":\"发根到中段保持固定不动(约发长前30%)\",\"mid_sway\":\"中段开始微弱跟随风向偏移(5-15度)\",\"tip_flow\":\"发梢轻盈飘散(15-45度偏移)，最大自由度\",\"gravity\":\"下垂的长发在风中呈自然的弧线抛物线形态\"},\"wind_direction\":{\"unified\":\"所有发丝跟随统一风向飘动\",\"consistency\":\"风向与场景其他飘动元素一致(如衣服裙摆)\"},\"detail\":{\"highlight_strands\":\"添加5-10根略亮于底色的单独发丝，增加空气感和层次感\",\"strand_separation\":\"飘起的发丝之间有自然的间隙透出背景\",\"tip_taper\":\"飘散的发梢收尖渐细\"},\"texture\":{\"quality\":\"飘动区域的发丝保持与原图一致的材质和光泽\",\"flyaway\":\"可有2-3根极细的飞散发丝增加动感\"}},\"background_repair\":\"发丝移动后原位置需重建背景\",\"constraints\":{\"严禁\":\"改变发色/发型结构、改变面部、头发飘动方向不统一\",\"禁止\":\"飘动幅度过大呈暴风效果\"},\"integration\":{\"light_match\":\"飘动发丝的高光方向与光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "hair",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

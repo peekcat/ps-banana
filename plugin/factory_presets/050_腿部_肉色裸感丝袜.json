@@ -1,0 +1,9 @@
+{
+  "id": "f_049",
+  "title": "肉色裸感丝袜",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":true,\"preserve_leg_shape\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析腿部当前状态：是否已有丝袜、皮肤瑕疵分布、肤色、光源方向\"},\"hosiery_generation\":{\"ultra_sheer\":{\"denier\":\"5-10旦尼尔极薄透明肉色丝袜\",\"visibility\":\"仅在特定光线角度下可见微弱光泽和色差，正常角度几乎透明不可见\",\"color\":\"丝袜颜色与模特肤色高度接近(色差ΔE<3)\"},\"material\":{\"texture\":\"极细密的尼龙编织纹理(几乎不可见)\",\"sheen\":\"微弱的各向异性光泽(Anisotropic)，仅在大腿前侧和小腿正面光线直射处可见淡淡的丝光\",\"surface\":\"Roughness 0.25-0.4，介于哑光和光泽之间\"},\"skin_effect\":{\"evenness\":\"丝袜下的皮肤呈现均匀化效果：小瑕疵被柔化但仍可隐约看到\",\"coverage\":\"遮盖腿部微小瑕疵(毛孔/细小色斑)但不遮盖大的特征(如痣)\",\"transition\":\"丝袜边缘(大腿根部/脚趾)过渡自然，无明显分界线\"}},\"subtlety\":{\"existence\":\"丝袜呈现若隐若现的存在感——看起来像'腿部皮肤变得更光滑了'而非'穿了丝袜'\",\"reinforcement\":\"腰部和脚尖可有微弱加固区域(Opacity+5-10%)\"},\"constraints\":{\"严禁\":\"改变腿部形状粗细、丝袜颜色与肤色差异过大呈明显穿袜感\",\"禁止\":\"丝袜光泽过强呈光腿神器效果\"},\"integration\":{\"light_match\":\"丝袜微光泽方向与光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "legs",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

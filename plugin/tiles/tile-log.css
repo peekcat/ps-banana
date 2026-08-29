@@ -1,0 +1,181 @@
+/* ============================================================
+ *  tile-log.css —— 日志磁贴样式
+ * ============================================================ */
+
+/* 磁贴正面未读徽标 */
+.log-tile-badge {
+  display: inline-block;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 4px;
+  margin-left: 4px;
+  background: #ff5555;
+  color: #fff;
+  border-radius: 7px;
+  font-size: 8px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 14px;
+  vertical-align: middle;
+}
+
+/* ============================================================
+ *  面板布局
+ * ============================================================ */
+.log-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 180px;
+  gap: 6px;
+}
+
+/* 工具栏 */
+.log-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.log-filter-group {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.log-filter-btn {
+  font-size: 10px;
+  padding: 3px 8px;
+}
+.log-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  justify-content: flex-end;
+}
+.log-search {
+  max-width: 140px;
+  font-size: 10px;
+  padding: 3px 6px;
+}
+.log-clear-btn {
+  font-size: 10px;
+  padding: 3px 10px;
+  color: #ff6b6b;
+  border-color: rgba(255, 100, 100, 0.3);
+}
+
+/* 元信息栏 */
+.log-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+  color: var(--text-sub);
+  padding: 2px 4px;
+  flex-shrink: 0;
+}
+.log-meta-hint {
+  opacity: 0.6;
+}
+
+/* 日志列表(滚动区) */
+.log-list {
+  flex: 1;
+  min-height: 100px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  padding: 4px 6px;
+  font-family: 'Consolas', 'Menlo', monospace;
+  font-size: 10px;
+  line-height: 1.55;
+}
+.log-list::-webkit-scrollbar {
+  width: 6px;
+}
+.log-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+.log-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+.log-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* 日志条目 */
+.log-entry {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 1px 2px;
+  word-break: break-all;
+  border-left: 2px solid transparent;
+  padding-left: 4px;
+  margin-left: -4px;
+}
+.log-entry:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.log-time {
+  color: rgba(255, 255, 255, 0.32);
+  flex-shrink: 0;
+  font-size: 9px;
+}
+.log-msg {
+  flex: 1;
+  min-width: 0;
+}
+.log-count {
+  color: var(--text-sub);
+  font-size: 9px;
+  padding: 0 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  flex-shrink: 0;
+  align-self: center;
+}
+
+/* 类型着色 */
+.log-info  { color: #cccccc; }
+.log-info  .log-msg { color: #cccccc; }
+
+.log-success { color: #50fa7b; border-left-color: rgba(80, 250, 123, 0.35); }
+.log-success .log-msg { color: #50fa7b; }
+
+.log-warn { color: #ffb86c; border-left-color: rgba(255, 184, 108, 0.35); }
+.log-warn .log-msg { color: #ffb86c; }
+
+.log-error { color: #ff5555; border-left-color: rgba(255, 85, 85, 0.5); background: rgba(255, 85, 85, 0.04); }
+.log-error .log-msg { color: #ff5555; }
+
+/* 小尺寸响应式:窄布局下搜索框收起 */
+.w10-panel.panel-sz-narrow .log-toolbar,
+.w10-panel.panel-sz-tall .log-toolbar {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+}
+.w10-panel.panel-sz-narrow .log-toolbar-right,
+.w10-panel.panel-sz-tall .log-toolbar-right {
+  justify-content: space-between;
+}
+.w10-panel.panel-sz-narrow .log-search,
+.w10-panel.panel-sz-tall .log-search {
+  max-width: 100%;
+}
+.w10-panel.panel-sz-narrow .log-filter-btn,
+.w10-panel.panel-sz-tall .log-filter-btn {
+  font-size: 9px;
+  padding: 2px 6px;
+}
+.w10-panel.panel-sz-narrow .log-entry,
+.w10-panel.panel-sz-tall .log-entry {
+  font-size: 9px;
+}

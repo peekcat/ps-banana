@@ -1,0 +1,9 @@
+{
+  "id": "f_087",
+  "title": "全图特效光",
+  "content": "{\"role\":\"VFX特效光效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"preserve_hue_contrast\":\"保持画面色相和对比度不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify_character\":\"分析模特Cos角色IP属性、服饰色彩倾向(暖色系/冷色系/中性色)\",\"identify_action\":\"分析模特动作姿势(挥剑/施法/站立)判断光效运动方向\",\"identify_light\":\"分析原图光源方向\"},\"magic_light_fx\":{\"color_selection\":{\"logic\":\"根据角色和服饰色彩倾向选择对应色系：红衣=暖橙红光/蓝衣=冷蓝光/绿衣=翠绿光/紫衣=紫色光/白衣=金白色光\",\"harmony\":\"光效颜色与角色整体色调和谐统一\"},\"light_form\":{\"aura\":\"模特身体周围笼罩对应色系的魔法光晕(Opacity 15-35%)，贴合身体轮廓\",\"streaks\":\"根据动作方向生成流动的光线条纹/残影(Opacity 10-25%)\",\"epicenter\":\"能量爆发中心(通常在手部/武器处)有最强的光效集中\"},\"particles\":{\"count\":\"20-50个属性色发光粒子在模特周围飘散\",\"size\":\"粒子1-6px，每个有微弱Bloom自发光\",\"behavior\":\"粒子受光效流向影响缓慢飘散\"},\"energy_wave\":{\"action\":\"动作方向生成半透明的能量气浪(Opacity 8-18%)\",\"shape\":\"气浪呈弧形或扇形从动作发力点向外扩散\"},\"mapped_illumination\":{\"action\":\"光效对模特皮肤/服装/周围环境产生对应色系映射光\",\"intensity\":\"映射光使受影响表面偏色5-15%\",\"falloff\":\"映射光按距离Inverse Square衰减\"}},\"constraints\":{\"严禁\":\"光效遮挡模特面部、改变画面整体色相对比度\",\"禁止\":\"光效过强过密导致画面杂乱\"},\"integration\":{\"action_logic\":\"光效方向与模特动作逻辑一致(挥剑方向=光效残影方向)\",\"render_quality\":\"真实光影CG质感3D渲染引擎效果\",\"noise_match\":\"噪点一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

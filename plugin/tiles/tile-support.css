@@ -1,0 +1,312 @@
+/* ============================================================
+ *  tile-support.css — 在线客服磁贴样式
+ * ============================================================ */
+
+/* ── 磁贴正面未读徽标 ── */
+.support-tile-badge {
+  display: inline-block;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 4px;
+  margin-left: 4px;
+  background: #ff5555;
+  color: #fff;
+  border-radius: 7px;
+  font-size: 8px;
+  font-weight: 700;
+  text-align: center;
+  line-height: 14px;
+  vertical-align: middle;
+}
+
+/* ── 背面提示 ── */
+.support-tile-back-active {
+  color: #69f0ae;
+  font-weight: 600;
+  font-size: 9px;
+}
+
+/* ── 展开面板 ── */
+.support-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 200px;
+  overflow: hidden;
+}
+
+/* 头部 */
+.support-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+}
+
+.support-title {
+  font-weight: 600;
+  color: var(--text-main, #e0e0e0);
+}
+
+.support-id {
+  font-family: monospace;
+  font-size: 10px;
+  color: var(--text-sub, #888);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.support-spacer { flex: 1; }
+
+.support-cfg-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-sub, #888);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.support-cfg-btn:hover {
+  color: var(--text-main, #fff);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* 设置折叠区 */
+.support-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  font-size: 11px;
+}
+.support-set-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.support-set-row label {
+  width: 90px;
+  color: var(--text-sub, #aaa);
+  flex-shrink: 0;
+}
+.support-set-input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  color: var(--text-main, #e0e0e0);
+  font-size: 11px;
+  padding: 4px 6px;
+  outline: none;
+  font-family: inherit;
+  height: 26px;
+}
+.support-set-input:focus { border-color: #4fc3f7; }
+.support-set-btn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-main, #e0e0e0);
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 0 10px;
+  height: 26px;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.support-set-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* 消息列表 */
+.support-msg-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.support-msg-list::-webkit-scrollbar { width: 6px; }
+.support-msg-list::-webkit-scrollbar-track { background: transparent; }
+.support-msg-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 3px;
+}
+
+.support-empty {
+  margin: auto;
+  text-align: center;
+  color: var(--text-sub, #888);
+  font-size: 11px;
+  line-height: 1.6;
+  padding: 20px;
+}
+
+/* 单条消息 */
+.support-msg {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+  max-width: 80%;
+}
+.support-msg.user {
+  align-self: flex-end;
+  align-items: flex-end;
+  margin-left: auto;
+}
+.support-msg.admin {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.support-meta {
+  font-size: 9px;
+  color: var(--text-sub, #888);
+  margin-bottom: 2px;
+  padding: 0 4px;
+}
+
+.support-bubble {
+  padding: 7px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.5;
+  word-break: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
+}
+
+.support-msg.user .support-bubble {
+  background: #4fc3f7;
+  color: #000;
+  border-bottom-right-radius: 2px;
+}
+
+.support-msg.admin .support-bubble {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-main, #e0e0e0);
+  border-bottom-left-radius: 2px;
+}
+
+/* 信息面板快照消息 */
+.support-msg.info .support-bubble {
+  background: rgba(105, 240, 174, 0.1);
+  color: #a5d6a7;
+  font-family: monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  border-left: 2px solid #69f0ae;
+  max-height: 200px;
+  overflow-y: auto;
+  max-width: 100%;
+}
+
+/* 图片消息 */
+.support-img {
+  max-width: 220px;
+  max-height: 220px;
+  border-radius: 6px;
+  display: block;
+  cursor: pointer;
+}
+
+/* 待发送图片预览 */
+.support-img-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 10px;
+  color: var(--text-sub, #aaa);
+  flex-shrink: 0;
+}
+.support-img-preview img {
+  height: 36px;
+  border-radius: 3px;
+}
+.support-img-preview .name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.support-img-preview .x {
+  color: #ff5555;
+  cursor: pointer;
+  font-weight: bold;
+}
+.support-img-preview .x:hover { color: #ff8888; }
+
+/* 输入区 */
+.support-input-row {
+  display: flex;
+  gap: 4px;
+  padding: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  align-items: flex-end;
+}
+
+.support-icon-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-sub, #aaa);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 6px 8px;
+  height: 32px;
+  flex-shrink: 0;
+}
+.support-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main, #fff);
+}
+
+.support-textarea {
+  flex: 1;
+  min-width: 0;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--text-main, #e0e0e0);
+  font-size: 12px;
+  padding: 6px 8px;
+  outline: none;
+  resize: none;
+  min-height: 32px;
+  max-height: 100px;
+  font-family: inherit;
+  line-height: 1.4;
+}
+.support-textarea:focus { border-color: #4fc3f7; }
+
+.support-send-btn {
+  background: #4fc3f7;
+  border: none;
+  color: #000;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 14px;
+  height: 32px;
+  flex-shrink: 0;
+}
+.support-send-btn:hover:not(:disabled) { background: #29b6f6; }
+.support-send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

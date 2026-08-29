@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { margin: 0; padding: 0; width: 100%; height: 100vh; overflow: hidden; background: #1a1a2e; }
+</style>
+</head>
+<body>
+<webview id="panelWebView" src="plugin:/panel.html" style="width:100%; height:100%; border:none;"></webview>
+
+<!--
+  启动诊断浮层 —— 默认隐藏, 只在 webview 没把 panel.html 渲染出来时由下面的看门狗显示。
+  样式全内联(这一层用不到 panel 的 base.css)。注意 inset 简写在 UXP 不生效, 用四边+100%。
+-->
+<div id="__wcDiagOverlay" style="display:none; position:absolute; left:0; top:0; width:100%; height:100%; background:#1a1a2e; color:#e6e6e6; font-family:monospace; font-size:12px; padding:12px; box-sizing:border-box; z-index:2147483647; overflow:auto;">
+  <div style="font-size:14px; font-weight:bold; margin-bottom:8px; color:#ff6b6b;">⚠ 修图轮椅 · 启动失败诊断</div>
+  <div style="margin-bottom:8px; color:#aaa; line-height:1.5;">面板没能正常加载(你现在看到的就是这个诊断页)。请点「复制全部」把下面方框里的文字发给作者排查。</div>
+  <textarea id="__wcDiagText" readonly style="width:100%; height:55%; background:#0d0d1a; color:#9be7a0; border:1px solid #444; border-radius:4px; padding:8px; box-sizing:border-box; font-family:monospace; font-size:12px; resize:none; white-space:pre;"></textarea>
+  <div style="margin-top:8px;">
+    <button id="__wcDiagCopy" style="padding:6px 14px; background:#0078d4; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:12px;">复制全部</button>
+    <button id="__wcDiagReload" style="padding:6px 14px; background:#444; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:12px; margin-left:8px;">重新加载</button>
+  </div>
+</div>
+
+<!--
+  启动诊断看门狗 —— 自包含, 故意放在 index.js 之前。
+  这样即便 index.js 顶层 require 链在某些 PS 版本挂掉, 这段也照样跑, 诊断不会跟着失踪。
+-->
+<script>
+(function(){
+  'use strict';
+  var WATCHDOG_MS = 6000;
+  var state = {
+    startTs: Date.now(),
+    gotAnyMessage: false,
+    gotReady: false,
+    wvEvents: [],
+    psVersion: '',
+    uxpVersion: '',
+    pluginVersion: '6.5.8', // 兜底; 下面尝试从 manifest 动态读, 读到就覆盖
+    pluginPath: '',         // PS 实际从哪个文件夹加载的本插件(揪双份安装/装新读旧)
+    webview2: '检测中…',    // Windows 缺 WebView2 运行时 = webview 零事件的头号嫌疑
+    extra: {}
+  };
+
+  // 暴露给 index.js 喂宿主侧信息 / 标记 ready
+  window.__wcDiag = {
+    markMessage: function(){ state.gotAnyMessage = true; },
+    markReady: function(){ state.gotReady = true; },
+    setPsVersion: function(v){ if (v) state.psVersion = v; },
+    set: function(k, v){ try { state.extra[k] = v; if (shown) refresh(); } catch(_){} },
+    show: function(reason){ showOverlay(reason || '手动触发'); },
+    _state: state
+  };
+
+  // 版本信息(失败不致命, 全 try 包住)
+  try {
+    var uxp = require('uxp');
+    if (uxp) {
+      state.uxpVersion = (uxp.versions && (uxp.versions.uxp || uxp.versions.plugin)) ||
+                         (uxp.host && uxp.host.version) || '';
+    }
+  } catch(e){ state.uxpVersion = '取不到(' + (e && e.message) + ')'; }
+  try {
+    var ps = require('photoshop');
+    if (ps && ps.app && ps.app.version) state.psVersion = ps.app.version;
+  } catch(e){ state.psVersion = ''; }
+  // photoshop 模块读不到时兜底走 uxp.host(个别环境 require('photoshop') 在启动早期会抛)
+  if (!state.psVersion) {
+    try {
+      var uxp2 = require('uxp');
+      if (uxp2 && uxp2.host && uxp2.host.version) state.psVersion = uxp2.host.version + ' (host读法)';
+    } catch(e2){}
+  }
+  if (!state.psVersion) state.psVersion = '取不到';
+  try {
+    var mani = require('./manifest.json');
+    if (mani && mani.version) state.pluginVersion = mani.version;
+  } catch(e){}
+
+  // 插件真实加载路径: 揪出"用户说装了新版, 但 PS 读的是另一个位置的旧版"这类双份安装问题
+  try {
+    var _lfs = require('uxp').storage.localFileSystem;
+    if (_lfs && _lfs.getPluginFolder) {
+      _lfs.getPluginFolder().then(function(f){
+        if (f && f.nativePath) { state.pluginPath = f.nativePath; if (shown) refresh(); }
+      }).catch(function(){});
+    }
+  } catch(e){}
+
+  // WebView2 运行时自检(仅 Windows): 精简系统常把 Edge/WebView2 一起阉掉, webview 就会零事件
+  (function(){
+    var isMac = false;
+    try {
+      var _os = require('os');
+      isMac = /darwin|mac/i.test((_os && _os.platform) ? String(_os.platform()) : '');
+    } catch(_){}
+    if (isMac) { state.webview2 = 'macOS 不需要'; return; }
+    var candidates = [
+      'file:C:/Program Files (x86)/Microsoft/EdgeWebView/Application',
+      'file:C:/Program Files/Microsoft/EdgeWebView/Application'
+    ];
+    // 按用户安装的位置(少见但存在): C:\Users\某人\AppData\Local\Microsoft\EdgeWebView\Application
+    try {
+      var _os2 = require('os');
+      var _home = (_os2 && _os2.homedir) ? String(_os2.homedir()) : '';
+      if (_home) candidates.push('file:' + _home.replace(/\\/g, '/') + '/AppData/Local/Microsoft/EdgeWebView/Application');
+    } catch(_){}
+    try {
+      var _lfs2 = require('uxp').storage.localFileSystem;
+      if (!_lfs2 || !_lfs2.getEntryWithUrl) { state.webview2 = '无法检测(接口不可用)'; return; }
+      var _ci = 0;
+      function _tryNext(){
+        if (_ci >= candidates.length) {
+          state.webview2 = '未检测到 ← 高度怀疑就是它!去微软官网装「WebView2 Runtime」后重启 PS (若确认装过可忽略)';
+          if (shown) refresh();
+          return;
+        }
+        _lfs2.getEntryWithUrl(candidates[_ci++]).then(function(){
+          state.webview2 = '已安装 ✓ (问题不在这)';
+          if (shown) refresh();
+        }).catch(_tryNext);
+      }
+      _tryNext();
+    } catch(e){ state.webview2 = '无法检测(' + (e && e.message) + ')'; }
+  })();
+
+  // panel 消息监听(window 层先挂, webview 元素层在 DOM 就绪后挂)
+  function onMsg(e){
+    var d = e && e.data;
+    if (!d || d.source !== 'panel') return;
+    state.gotAnyMessage = true;
+    if (d.action === 'ready') state.gotReady = true;
+  }
+  try { window.addEventListener('message', onMsg); } catch(_){}
+
+  function hookWebview(){
+    var wv = null;
+    try { wv = document.getElementById('panelWebView'); } catch(_){}
+    if (!wv) return;
+    try { wv.addEventListener('message', onMsg); } catch(_){}
+    // CEF/UXP webview 可能支持的加载事件, 逐个 try, fire 了就留一笔时间戳
+    ['loadstart','loadstop','loaderror','load','error','didfinishload','didfailload'].forEach(function(ev){
+      try {
+        wv.addEventListener(ev, function(evt){
+          var t = Math.round((Date.now()-state.startTs)/100)/10;
+          var detail = '';
+          try { if (evt && evt.detail) detail = ':' + JSON.stringify(evt.detail).slice(0,120); } catch(_){}
+          state.wvEvents.push(ev + '@' + t + 's' + detail);
+          if (shown) refresh();
+        });
+      } catch(_){}
+    });
+  }
+
+  function buildText(reason){
+    var wv = null, wvSrc = '';
+    try { wv = document.getElementById('panelWebView'); } catch(_){}
+    try { wvSrc = wv ? (wv.src || wv.getAttribute('src') || '') : ''; } catch(_){}
+    var elapsed = Math.round((Date.now()-state.startTs)/1000);
+    var verdict;
+    if (state.gotReady) verdict = '面板已起来(收到 ready) → 问题在面板内部, 不是 webview';
+    else if (state.gotAnyMessage) verdict = '收到过面板消息但没收到 ready → 面板启动链中途卡住/抛错';
+    else if (!wv) verdict = 'webview 元素都不存在 → 该 PS 版本可能不认 <webview> 标签';
+    else verdict = 'webview 在但面板零消息 → 极可能 webview 没把 panel.html 渲染出来(当前主症状)';
+
+    var L = [];
+    L.push('===== 修图轮椅 启动诊断 =====');
+    L.push('原因: ' + (reason || '未知'));
+    L.push('插件版本: ' + state.pluginVersion);
+    L.push('插件加载路径: ' + (state.pluginPath || '(还没读到/读取失败)'));
+    L.push('PS 版本: ' + (state.psVersion || '?'));
+    L.push('UXP 版本: ' + (state.uxpVersion || '?'));
+    L.push('WebView2 运行时: ' + state.webview2);
+    L.push('启动已过: ' + elapsed + ' 秒');
+    L.push('webview 元素存在: ' + (wv ? '是' : '否(严重)'));
+    L.push('webview src: ' + (wvSrc || '(空)'));
+    L.push('收到过 panel 消息: ' + (state.gotAnyMessage ? '是' : '否'));
+    L.push('收到过 ready: ' + (state.gotReady ? '是' : '否'));
+    L.push('webview 加载事件: ' + (state.wvEvents.length ? state.wvEvents.join(' | ') : '一个都没触发'));
+    L.push('初步判读: ' + verdict);
+    // webview 在、但从没触发任何加载事件、也零消息 → 按 WebView2 状态分两种病型给建议
+    if (wv && !state.gotAnyMessage && state.wvEvents.length === 0) {
+      if (state.webview2.indexOf('已安装') === 0) {
+        L.push('⚠ WebView2 已安装却零事件, 重点怀疑: ① 杀毒软件拦截了 msedgewebview2.exe → 打开插件时看任务管理器有没有这个进程, 退出杀软再试 ② PS 是「以管理员身份」运行的 → 换普通双击方式启动 PS 再试 ③ 精简/破解 PS 包缺 webview 宿主组件 → 换正常安装包');
+      } else {
+        L.push('⚠ 可能原因: ① Windows 缺「Microsoft Edge WebView2 运行时」→ 去微软官网搜 "WebView2 Runtime" 装好后重启电脑 ② panel.html 加载协议(应为 plugin:/)');
+      }
+    }
+    var ek = Object.keys(state.extra);
+    if (ek.length){
+      L.push('--- 宿主(index.js)补充 ---');
+      ek.forEach(function(k){ L.push(k + ': ' + state.extra[k]); });
+    } else {
+      L.push('宿主补充: 无(index.js 可能没加载到底)');
+    }
+    L.push('==============================');
+    return L.join('\n');
+  }
+
+  var shown = false;
+  var _lastReason = '';
+  function refresh(){
+    try { var ta = document.getElementById('__wcDiagText'); if (ta) ta.value = buildText(_lastReason); } catch(_){}
+  }
+  function showOverlay(reason){
+    _lastReason = reason;
+    if (shown){ refresh(); return; }
+    shown = true;
+    // 关键: 藏掉原生 webview 层, 否则 HTML 浮层会被它盖住, 跟 panel.html 一样看不见
+    try { var wv = document.getElementById('panelWebView'); if (wv) wv.style.display = 'none'; } catch(_){}
+    try { var ov = document.getElementById('__wcDiagOverlay'); if (ov) ov.style.display = 'block'; } catch(_){}
+    refresh();
+  }
+
+  function wireButtons(){
+    try {
+      var cp = document.getElementById('__wcDiagCopy');
+      if (cp) cp.addEventListener('click', function(){
+        var ta = document.getElementById('__wcDiagText');
+        if (!ta) return;
+        var ok = false;
+        try { ta.focus(); ta.select(); } catch(_){}
+        try { ok = document.execCommand('copy'); } catch(_){}
+        cp.textContent = ok ? '已复制 ✓' : '请手动长按全选复制';
+        setTimeout(function(){ cp.textContent = '复制全部'; }, 2000);
+      });
+      var rl = document.getElementById('__wcDiagReload');
+      if (rl) rl.addEventListener('click', function(){ try { location.reload(); } catch(_){} });
+    } catch(_){}
+  }
+
+  // 自动重载 webview —— 兜底: 两种 src 写法轮着试。
+  //   plugin:/panel.html 是 UXP 8+ 官方写法(主), 万一某环境只认相对路径, 重载时切到 panel.html 试。
+  //   用同一个元素重载(不重建), 保证 index.js 之前挂的消息监听不丢。
+  var _altForms = ['plugin:/panel.html', 'panel.html'];
+  var _altIdx = 0;
+  function reloadWebview(){
+    try {
+      var wv = document.getElementById('panelWebView');
+      if (!wv) return false;
+      _altIdx = (_altIdx + 1) % _altForms.length;   // 换一种写法
+      var src = _altForms[_altIdx];
+      try { state.extra['webview_try_src'] = src; } catch(_){}
+      try { wv.setAttribute('src', ''); } catch(_){}
+      setTimeout(function(){ try { wv.setAttribute('src', src); } catch(_){} }, 50);
+      return true;
+    } catch(_) { return false; }
+  }
+
+  function arm(){
+    hookWebview();
+    wireButtons();
+    var retries = 0;
+    var MAX_RETRIES = 2;
+    var RETRY_WAIT = 4000;
+    function tick(){
+      if (state.gotReady) return; // 面板起来了, 收手, 不打扰正常用户
+      if (retries < MAX_RETRIES) {
+        retries++;
+        try { state.extra['webview_retry'] = '已自动重载 ' + retries + ' 次'; } catch(_){}
+        reloadWebview();
+        setTimeout(tick, RETRY_WAIT);
+      } else {
+        showOverlay('启动后自动重载 ' + retries + ' 次仍未收到面板 ready');
+      }
+    }
+    setTimeout(tick, WATCHDOG_MS);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', arm);
+  else arm();
+})();
+</script>
+
+<script src="index.js"></script>
+</body>
+</html>

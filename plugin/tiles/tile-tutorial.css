@@ -1,0 +1,111 @@
+/* tile-tutorial.css — 新手引导演示切片 */
+/* 遮罩根: 四边+100% 写法(UXP 对 inset 简写有历史坑, 新代码一律不用) */
+.tut-root {
+  position: fixed;
+  left: 0; top: 0; width: 100%; height: 100%;
+  z-index: 9999985;             /* 低于 firstrun(9999990), 高于普通内容 */
+  animation: tutFadeIn 0.25s ease-out;
+}
+@keyframes tutFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* 聚光灯: 自己透明, 用超大 box-shadow 把四周压暗 → 天然"打洞"效果 */
+.tut-spot {
+  position: absolute;
+  left: 0; top: 0; width: 0; height: 0;
+  border-radius: 8px;
+  box-shadow: 0 0 0 100000px rgba(0, 0, 0, 0.62);
+  border: 2px solid var(--accent, #4a9eff);
+  transition: left 0.3s ease, top 0.3s ease, width 0.3s ease, height 0.3s ease, opacity 0.3s;
+  pointer-events: none;
+}
+/* 无目标时(居中卡片步骤): 洞缩成 0, 阴影铺满全屏 = 纯遮罩, 高亮边框藏掉 */
+.tut-spot.tut-spot-none { border-color: transparent; }
+
+.tut-bubble {
+  position: absolute;
+  width: 300px;
+  max-width: calc(100% - 20px);
+  background: rgba(28, 30, 44, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  padding: 14px 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  animation: tutPop 0.28s ease-out;
+  transition: opacity 0.18s ease;   /* 转场淡出/淡入平滑, 消除步骤切换的跳变感 */
+}
+@keyframes tutPop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
+
+.tut-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text, #eee);
+  margin-bottom: 6px;
+  min-height: 18px;
+}
+.tut-text {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-sub, #aaa);
+  white-space: pre-line;
+  margin-bottom: 12px;
+  max-height: 46vh;      /* 控件级详解文字较长: 超出可滚动, 不撑破屏幕 */
+  overflow-y: auto;
+}
+.tut-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.tut-skip {
+  font-size: 11px;
+  color: var(--text-sub, #888);
+  cursor: pointer;
+  opacity: 0.7;
+}
+.tut-skip:hover { opacity: 1; text-decoration: underline; }
+.tut-next { font-size: 12px; padding: 5px 18px; }
+
+/* 放行模式(interactive 步骤): 让用户真的能点到底下的界面练手 */
+/* 根层不拦点击, 只有气泡自己能点; 聚光灯阴影调淡, 明示"没冻结" */
+.tut-root.tut-interactive { pointer-events: none; }
+.tut-root.tut-interactive .tut-bubble { pointer-events: auto; }
+.tut-root.tut-interactive .tut-spot { box-shadow: 0 0 0 100000px rgba(0, 0, 0, 0.15); }
+
+/* ===== 教程磁贴面板 ===== */
+.tut-panel { display: flex; flex-direction: column; gap: 8px; }
+.tut-search-row { margin-bottom: 2px; }
+.tut-search-results { display: none; flex-direction: column; gap: 2px; }
+.tut-search-results[style=""] { display: flex; }
+.tut-sr {
+  font-size: 11px; color: var(--text, #ddd);
+  padding: 5px 8px; border-radius: 4px; cursor: pointer;
+  background: rgba(74, 158, 255, 0.08);
+}
+.tut-sr:hover { background: rgba(74, 158, 255, 0.18); }
+
+.tut-chapter-list { display: flex; flex-direction: column; gap: 4px; }
+.tut-ch {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 6px; cursor: pointer;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  transition: background 0.15s;
+}
+.tut-ch:hover { background: rgba(255, 255, 255, 0.07); }
+.tut-ch-icon { font-size: 16px; flex: 0 0 auto; }
+.tut-ch-main { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.tut-ch-title { font-size: 12px; color: var(--text, #eee); font-weight: 500; }
+.tut-ch-desc { font-size: 10px; color: var(--text-sub, #999); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tut-ch-state { font-size: 10px; color: var(--accent, #4a9eff); flex: 0 0 auto; }
+.tut-ch-planned { opacity: 0.45; cursor: default; }
+.tut-ch-planned .tut-ch-state { color: var(--text-sub, #888); }
+
+.tut-panel-foot { display: flex; justify-content: flex-end; margin-top: 4px; }
+.tut-panel-foot .w10-btn { font-size: 10px; padding: 3px 10px; opacity: 0.7; }
+.tut-panel-foot .w10-btn:hover { opacity: 1; }
+.tut-selfcheck-out {
+  font-size: 10px; line-height: 1.7; color: var(--text-sub, #aaa);
+  background: rgba(0, 0, 0, 0.25); border-radius: 4px; padding: 8px;
+  white-space: pre-wrap; word-break: break-all;
+  max-height: 200px; overflow-y: auto;
+}

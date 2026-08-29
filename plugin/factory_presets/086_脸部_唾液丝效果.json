@@ -1,0 +1,9 @@
+{
+  "id": "f_085",
+  "title": "唾液丝效果",
+  "content": "{\"role\":\"ACG液体特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"preserve_expression\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析模特嘴部状态(微张/大张/舌头位置)和手指/手部位置，判断唾液丝的起止连接点\",\"identify_light\":\"分析面部光源方向\"},\"saliva_generation\":{\"thread_structure\":{\"connection\":\"在唇部/舌尖/指尖之间的两个接触点生成极细的唾液丝连接\",\"diameter\":\"丝线直径约0.3-1.5mm，中间最细两端较粗(连接点处)\",\"shape\":\"丝线呈自然下垂的悬链线(catenary)弧度，受重力影响中间微微下沉\",\"count\":\"1-3根唾液丝，间距和长度略有差异增加自然感\"},\"material_properties\":{\"transparency\":\"高度透明(Opacity 20-50%)，背景通过丝线隐约可见\",\"refraction\":\"丝线具有水的折射率(IOR 1.33)，在背景明暗交界处可见色散\",\"highlight\":\"沿丝线分布2-4个微小的镜面高光点(catchlights)，匹配光源方向，核心接近纯白\",\"surface\":\"表面湿润光泽，微弱的Fresnel反射效果\"},\"detail\":{\"droplet\":\"丝线底部可悬挂1-2个极小的透明液滴(直径约1-2mm)，液滴为球形具有镜面高光\",\"breakpoint\":\"如果丝线较长，可有1-2处即将断裂的极细收窄处\",\"bubble\":\"可选在液滴或连接处添加1个微小气泡(直径<1mm)\"}},\"constraints\":{\"严禁\":\"改变嘴部形状表情、改变手部位置、唾液丝过粗过多\",\"禁止\":\"丝线呈现不透明的白色(不是粘液而是透明唾液)\"},\"integration\":{\"light_match\":\"高光方向与面部光源一致\",\"depth\":\"丝线在正确的景深平面上，清晰度匹配\",\"noise_match\":\"噪点与原图一致\"}}",
+  "category": "head",
+  "subCategory": "mouth",
+  "refImages": [],
+  "_isFactory": true
+}

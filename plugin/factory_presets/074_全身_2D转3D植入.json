@@ -1,0 +1,9 @@
+{
+  "id": "f_073",
+  "title": "2D转3D植入",
+  "content": "{\"role\":\"3D材质渲染师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"preserve_global_hsl_gamma\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_2d_element\":\"识别画面中的2D平面贴图/印刷品(纸牌/海报/贴纸/立牌/平面道具)\",\"identify_2d_properties\":\"分析2D图像的内容属性：材质类型(金属/木质/布料/水晶/纸张)、颜色、角色/图案\",\"identify_scene\":\"分析原图的光源方向、色温、透视角度、环境反射信息\"},\"conversion_operations\":{\"background_removal\":{\"action\":\"移除2D贴图/立牌的纸质背景和边框\",\"edge\":\"提取主体轮廓边缘锐利清晰\"},\"material_assignment\":{\"logic\":\"根据2D图像中描绘的物体属性赋予对应的PBR材质\",\"metal\":\"如果是金属物品→Metalness 0.8-1.0, Roughness 0.15-0.35, 环境反射清晰\",\"fabric\":\"如果是布料→Roughness 0.6-0.8, SSS微量, 布料纹理Displacement\",\"crystal\":\"如果是水晶/宝石→IOR 1.5-2.4, 内部焦散Caustics, 半透明折射\",\"wood\":\"如果是木质→Roughness 0.4-0.7, 木纹Normal Map, 温暖SSS\"},\"3d_conversion\":{\"depth\":\"为原本平面的图像添加厚度和体积感，边缘可见物体的侧面厚度\",\"surface_detail\":\"添加表面微观细节：划痕/磨损/纹理凹凸(Normal Map + Displacement)\",\"curvature\":\"根据物体类型添加合理的曲面(剑刃的弧度/盾牌的弧面/酒杯的圆柱)\"},\"scene_integration\":{\"lighting\":\"3D物体受原图光源方向照射，产生正确的高光和阴影\",\"shadow\":\"物体在接触面产生合理的投影，投影方向和硬度与场景一致\",\"reflection\":\"金属/光滑材质表面反射场景环境\",\"atmosphere\":\"远处物体有空气透视衰减\"}},\"quality_standard\":{\"render_engine\":\"最终效果参考UE5 Path Tracing级别的写实渲染品质\",\"texture_resolution\":\"表面纹理精度等效4K-8K分辨率\",\"anti_flat\":\"转换后的物体必须具有真实的3D体积感和深度，禁止看起来仍像平面贴图\"},\"constraints\":{\"严禁\":\"改变2D图像原有的颜色和图案设计\",\"禁止\":\"3D效果不自然呈现'纸片加了阴影'的廉价感\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

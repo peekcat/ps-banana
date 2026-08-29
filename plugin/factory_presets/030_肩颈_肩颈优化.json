@@ -1,0 +1,9 @@
+{
+  "id": "f_029",
+  "title": "肩颈优化",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":true,\"preserve_pose\":\"不改变角度和姿势\",\"preserve_costume\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析颈部横纹深度、肩颈线条(溜肩/平肩/宽窄)、锁骨可见度、肩窝深度、肤色与面部的差异、光源方向\"},\"neck_optimization\":{\"wrinkle_removal\":{\"action\":\"祛除颈部不和谐的横纹(颈纹)\",\"degree\":\"横纹深度降低70-85%，保留极微弱纹理作为自然感\",\"method\":\"低频层平滑颈部整体光影起伏，高频层保留皮肤微纹理方向\"},\"skin_color\":{\"unify\":\"颈部肤色与面部统一协调，消除暗沉/色差/晒痕分界线\",\"smooth\":\"皮肤细腻光滑水润，与面部质感一致\"}},\"shoulder_sculpting\":{\"collarbone\":{\"action\":\"绘制或强化锁骨线条\",\"shape\":\"锁骨呈自然的V型或浅弧形，从肩峰到胸骨凹窝(颈窝)\",\"highlight\":\"锁骨凸起处添加自然高光(匹配光源方向)\",\"shadow\":\"锁骨下方产生柔和阴影增加立体感\"},\"shoulder_pit\":{\"action\":\"优化肩窝(锁骨与肩峰之间的凹陷)\",\"depth\":\"肩窝深度适中，呈现纤细有骨感的肩部结构\"},\"neckline\":{\"action\":\"优化肩颈线条使之纤细优美\",\"contour\":\"从颈部到肩峰的曲线流畅自然，呈现天鹅颈效果但不夸张\",\"symmetry\":\"左右肩颈对称(除非侧身角度需要透视调整)\"}},\"constraints\":{\"严禁\":\"改变角度大小、改变衣饰配饰位置、颈部过细呈不健康感\",\"禁止\":\"锁骨过于突出呈骨瘦感\"},\"integration\":{\"light_consistency\":\"肩颈光影和谐符合原图光源逻辑\",\"noise_match\":\"噪点一致\"}}",
+  "category": "neck",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

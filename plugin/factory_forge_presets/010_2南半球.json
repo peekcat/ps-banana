@@ -1,0 +1,23 @@
+{
+  "id": "ff_010",
+  "name": "2南半球",
+  "displayName": "南半球",
+  "category": "torso",
+  "data": {
+    "model": "xxmix9realistic_v40.safetensors [5f41c4861c]",
+    "lora": "辅助生成南半球,搭配upshirt, underboob两词启用,极大概率生成NSFW内容,慎用",
+    "loraWeight": "0.4",
+    "redrawAmount": "0.4",
+    "imageCount": "3",
+    "resolution": "768",
+    "positivePrompt": "8k RAW,best quality, ultra high res, extreme_detail,soft focus, (photorealistic:1.4), masterpiece,((big tits, cleavage, big boobs)),(upshirt,underboob)",
+    "negativePrompt": "paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, glans, anime, watermark, username, signature, text",
+    "selectedControlNetModule": "None",
+    "controlNetModel": "None",
+    "controlNetWeight": "",
+    "step": "20",
+    "selectedName": "DPM++ 2M",
+    "selectedScheduler": "automatic"
+  },
+  "_isFactory": true
+}

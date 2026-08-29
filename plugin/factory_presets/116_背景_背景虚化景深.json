@@ -1,0 +1,9 @@
+{
+  "id": "f_115",
+  "title": "背景虚化景深",
+  "content": "{\"role\":\"后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"为画面添加专业的浅景深效果——人物主体保持锐利清晰、背景随距离递增高斯模糊(Bokeh散景)、前景可轻微虚化，模拟大光圈镜头效果\",\"detection\":{\"analyze\":\"分析画面主体(人物)与背景的距离层次关系、是否有前景元素、背景复杂度和光点分布\"},\"@param:虚化强度\":0.6,\"@param:虚化强度_desc\":\"0=无虚化全画面锐利(如f/16小光圈);0.2=极轻微虚化背景微微柔化(如f/8中等光圈);0.35=轻微虚化背景明显柔化但仍可辨细节(如f/4);0.5=中等虚化背景较模糊细节模糊但轮廓可见(如f/2.8);0.6=明显虚化背景模糊光点开始呈现散景(如f/2);0.8=强烈虚化背景高度模糊散景光斑明显(如f/1.4);1=极致奶油散景背景完全化为柔和色块和圆形光斑(如f/1.2大光圈)\",\"operations\":{\"depth_map\":{\"action\":\"生成画面深度图区分前景/主体/背景\",\"subject\":\"人物主体区域标记为焦平面保持锐利\",\"transition\":\"从焦平面向背景方向模糊度线性递增\"},\"background_blur\":{\"action\":\"对背景施加高斯模糊\",\"radius\":\"模糊半径从2px(值0.2)到30px(值1)递增\",\"bokeh\":\"光点区域产生圆形散景光斑(口径蚀效果)\",\"shape\":\"散景形状为圆形(模拟大光圈)\"},\"foreground\":{\"action\":\"前景元素可轻微虚化(参数>0.5时)\",\"amount\":\"前景虚化程度为背景的30-50%\"},\"edge_blend\":{\"action\":\"主体边缘与虚化背景自然过渡\",\"method\":\"羽化过渡无硬边无光晕\"}},\"constraints\":{\"严禁\":\"主体人物被模糊(必须保持锐利)\",\"禁止\":\"主体边缘出现不自然的光晕或锯齿\"},\"integration\":{\"subject_sharp\":\"主体始终保持最高锐度\",\"depth_natural\":\"虚化梯度自然连续\",\"noise_match\":\"噪点一致\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

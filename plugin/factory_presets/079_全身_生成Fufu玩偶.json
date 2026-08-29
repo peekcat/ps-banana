@@ -1,0 +1,9 @@
+{
+  "id": "f_078",
+  "title": "生成Fufu玩偶",
+  "content": "{\"role\":\"ACG角色设计合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_character\":\"分析模特Cos角色的服装特征、配饰、发色发型、IP属性\",\"identify_scene\":\"分析场景中可供玩偶互动的位置(肩膀/头顶/地面/道具旁)\"},\"fufu_generation\":{\"design\":{\"count\":\"在角色周围随机位置插入1-8个Fufu风格毛绒玩偶\",\"proportion\":\"Chibi/Q版比例：头身比约1:1至1:1.5，头大身小\",\"costume\":\"每个玩偶穿着模特角色服装的微缩复制品(含头饰/配饰/武器迷你版)\",\"face\":\"圆润可爱的面部，略呆萌的表情(^_^或>_<等)，简化的五官\",\"material\":\"毛绒玩具质感：柔软蓬松的短绒布料(Roughness 0.7-0.9)，缝线可见\"},\"interaction\":{\"behaviors\":\"每个玩偶与场景产生不同的可爱互动：攀爬模特手臂/肩膀、在模特头顶偷看、地面拥抱模特脚踝、骑在道具上、互相叠罗汉、举着迷你武器摆pose\",\"variety\":\"每个玩偶姿势和表情不同，增加画面趣味性\"},\"placement\":{\"random\":\"分布位置随机自然，避免对称排列\",\"depth\":\"可在不同景深层：前景/中景/模特身上\",\"occlusion\":\"玩偶与模特和场景物体的遮挡关系正确\"}},\"integration\":{\"lighting\":\"每个玩偶受原图光源照射，产生正确的高光和投影\",\"shadow\":\"玩偶在接触面(肩膀/地面)产生柔和投影\",\"color_tone\":\"玩偶色调与原图整体色调协调\",\"noise_match\":\"噪点一致\"},\"constraints\":{\"严禁\":\"改变模特任何特征、玩偶遮挡模特面部\",\"禁止\":\"玩偶风格不统一、玩偶比例过大(每个应为模特身高的10-20%)\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

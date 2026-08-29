@@ -1,0 +1,64 @@
+/* ============================================================
+ * tile-layout.css — 布局快照磁贴
+ * ============================================================ */
+
+.layout-section-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0 6px;
+  flex-wrap: wrap;
+}
+
+.layout-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.12s;
+}
+.layout-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.layout-row-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.layout-row-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text, #e0e0e0);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-row-desc {
+  font-size: 10px;
+  color: var(--text-sub, #888);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.layout-row-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.layout-row-del {
+  background: transparent !important;
+  border: 1px solid rgba(255, 100, 100, 0.3) !important;
+}
+.layout-row-del:hover {
+  background: rgba(255, 80, 80, 0.15) !important;
+}

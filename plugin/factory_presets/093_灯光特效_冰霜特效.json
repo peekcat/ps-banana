@@ -1,0 +1,9 @@
+{
+  "id": "f_092",
+  "title": "冰霜特效",
+  "content": "{\"role\":\"特效后期师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"在指定区域生成真实的冰霜/结冰/霜花效果——六角形冰晶微结构、半透明冰层折射、冰面锐利反光、冷蓝色调、冷气白雾\",\"detection\":{\"analyze\":\"分析需要添加冰霜的区域(可以是道具/服装/身体部位/地面)、当前表面材质和光源方向\"},\"@param:冰冻程度\":0.6,\"@param:冰冻程度_desc\":\"0=无冰霜保持原样;0.15=极轻微的表面霜花薄薄一层白霜(呵气成霜);0.3=轻微霜冻表面可见六角形冰晶纹理(冬天窗花);0.5=中度结冰薄冰层覆盖表面半透明可见底色(水洼薄冰);0.6=明显冰封冰层加厚折射明显冰裂纹出现(冰柱);0.8=严重冰封厚冰层包裹冰面镜面反光锐利大量冰裂纹(冰河);1=极致冰封完全被厚实冰层包裹几乎不可见底色冰面如镜(冰山)\",\"operations\":{\"frost_texture\":{\"action\":\"生成六角形冰晶微结构霜花纹理\",\"scale\":\"冰晶大小从微观到肉眼可见随参数递增\",\"pattern\":\"树枝状分形扩散的霜花图案\"},\"ice_layer\":{\"action\":\"覆盖半透明到不透明的冰层\",\"thickness\":\"冰层厚度感从薄霜到厚冰随参数递增\",\"color\":\"冷蓝色调(H200-210 S15-40 明度随厚度降低)\",\"transparency\":\"透明度从90%渐变到15%随参数递增\"},\"reflection\":{\"action\":\"冰面添加镜面反光\",\"sharpness\":\"反光锐利度随参数递增\",\"highlight\":\"冰面高光呈白色锐利线条\"},\"cracks\":{\"action\":\"参数>0.4时生成冰裂纹\",\"pattern\":\"从应力点放射状延伸的自然裂纹\",\"density\":\"裂纹密度随参数递增\"},\"mist\":{\"action\":\"从冰面升腾冷气白雾\",\"opacity\":\"白雾浓度随参数从5%到40%递增\"}},\"constraints\":{\"严禁\":\"冰霜效果遮挡面部五官辨识\",\"禁止\":\"冰面颜色偏暖(必须冷蓝色调)\"},\"integration\":{\"light_match\":\"冰面反光匹配光源\",\"color_temp\":\"整体偏冷色温\",\"noise_match\":\"噪点一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

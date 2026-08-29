@@ -1,0 +1,9 @@
+{
+  "id": "f_094",
+  "title": "风场特效(画笔引导)",
+  "content": "{\"role\":\"VFX特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_pose\":true,\"preserve_facial_features\":true,\"no_scale_rotate_translate\":true},\"brush_interpretation\":{\"marker_type\":\"绿色画笔引导线\",\"marker_purpose\":\"仅为指令引导标记，非画面内容\",\"semantics\":{\"stroke_direction\":\"绿色笔触方向=风吹方向\",\"stroke_curvature\":\"笔触弧度=风场的弯曲路径，直线笔触产生直线风，弯曲笔触产生旋风/涡流\",\"stroke_intensity\":\"笔触粗细和密集程度≈风力强度的参考\",\"stroke_length\":\"笔触长度=风场影响范围\"},\"scope\":\"风场以标记区域为中心向外辐射影响，影响范围约为标记范围的1.5-2倍\"},\"wind_field_generation\":{\"visible_air_flow\":{\"distortion\":\"风场路径上的空气产生可见的折射扭曲(类似热浪效果但更线性)，扭曲方向与风向一致\",\"flow_lines\":\"沿风向生成半透明的白色/浅灰色空气流线(Opacity 8-20%)，流线跟随引导线方向自然流动\",\"turbulence\":\"使用Curl Noise(频率1.0-2.5)在流线上添加微观湍流扰动，避免过于规则\"},\"particle_scatter\":{\"debris_types\":\"根据场景自动判断飘散物类型：室外=树叶/花瓣/灰尘/碎屑；室内=纸片/布料碎片/灰尘粒子\",\"particle_behavior\":\"粒子沿风向飘散，近处粒子大且清晰(3-8px)，远处粒子小且模糊(1-2px)，符合景深逻辑\",\"rotation\":\"飘散物在飞行中自然翻转旋转，旋转轴随机，角速度与风速成正比\",\"count\":\"粒子数量15-40个，分布自然随机，禁止均匀排列\"},\"affected_objects\":{\"hair\":\"模特头发沿风向偏移飘动，发丝末端被吹散，偏移量与距风场中心距离相关\",\"clothing\":\"服装可飘动部分(裙摆/飘带/披风/袖口)沿风向鼓起飘动，布料形变符合Marvelous Designer织物模拟逻辑\",\"accessories\":\"轻质配饰(缎带/流苏/羽毛)跟随风向摆动\"},\"vortex_field\":\"如果引导线呈旋转/螺旋形态，使用Vortex Force Field生成旋风效果，粒子沿螺旋路径运动\"},\"brush_removal\":{\"priority\":\"MANDATORY\",\"action\":\"在最终输出前完全移除所有绿色引导线痕迹及色彩残留，修复被标记覆盖的原始画面内容\"},\"integration\":{\"physics_consistency\":\"所有受风影响的物体偏移方向必须一致，禁止出现不同物体被吹向不同方向\",\"depth_occlusion\":\"前景粒子遮挡背景，背景粒子被前景物体遮挡\",\"light_mapping\":\"飘散粒子的受光面与原图光源方向一致\",\"noise_match\":\"特效区域噪点与原图一致\",\"color_space\":\"风场效果不改变画面整体色相饱和度伽马值\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

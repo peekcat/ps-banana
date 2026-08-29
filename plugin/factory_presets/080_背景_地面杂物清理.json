@@ -1,0 +1,9 @@
+{
+  "id": "f_079",
+  "title": "地面杂物清理",
+  "content": "{\"role\":\"摄影后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":\"严禁改变模特任何特征\",\"preserve_background_structure\":\"保持地面和背景整体结构不变，仅移除杂物\",\"preserve_global_hsl_gamma\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_debris\":\"自动识别地面上不属于场景或角色设定的杂物：电线/线缆、垃圾/纸屑、胶带标记/地标、水瓶/个人物品、落叶堆积(非装饰性)、摄影辅助设备底座\",\"identify_ground\":\"分析地面材质类型(瓷砖/水泥/草地/木地板/地毯)、纹理方向、接缝模式、光影分布\"},\"removal_operations\":{\"cable_removal\":\"移除地面上所有可见的电线/线缆/延长线，重建被线缆遮挡的地面纹理\",\"tape_removal\":\"移除地面上的胶带标记/定位贴纸/X标记，恢复原始地面材质\",\"trash_removal\":\"移除所有零散垃圾和不相关物品\",\"inpaint_method\":{\"texture_clone\":\"使用周围同材质地面纹理进行智能克隆填充\",\"seam_alignment\":\"如果地面有瓷砖/木板接缝，修补区域的接缝方向和间距必须与周围完全对齐\",\"perspective\":\"纹理透视缩放匹配场景消失点\"}},\"quality_control\":{\"light_match\":\"修补区域的光影明暗与周围地面一致\",\"shadow_preserve\":\"保留模特和道具在地面的正常投影，不误删\",\"edge_blend\":\"修补边缘无缝融合\",\"noise_match\":\"噪点颗粒度与原图一致\"},\"constraints\":{\"严禁\":\"移除属于角色道具/场景设计的地面物品、移除模特的脚部投影\",\"禁止\":\"修补区域出现明显的涂抹痕迹或纹理断裂\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,72 @@
+/* === tile-drawer.css — 抽屉磁贴样式 === */
+
+.drawer-panel{
+  padding:12px 16px;display:flex;flex-direction:column;height:100%;box-sizing:border-box;
+}
+.drawer-panel-head{
+  display:flex;align-items:baseline;gap:10px;margin-bottom:10px;flex-shrink:0;
+}
+.drawer-title{
+  font-size:13px;font-weight:600;color:var(--text);
+}
+.drawer-hint{
+  font-size:9px;color:var(--text-sub);
+}
+
+.drawer-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(68px,1fr));
+  gap:8px;
+  overflow-y:auto;
+  align-content:start;
+  flex:1;
+  padding:2px;
+}
+
+.drawer-card{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  aspect-ratio:1/1;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:var(--tile-radius);
+  cursor:pointer;
+  transition:transform 0.15s,background 0.15s,border-color 0.15s,box-shadow 0.15s;
+  padding:4px;
+  text-align:center;
+  overflow:hidden;
+  user-select:none;
+}
+.drawer-card:hover{
+  transform:scale(1.05);
+  background:rgba(255,255,255,0.08);
+  border-color:rgba(255,255,255,0.2);
+  box-shadow:0 2px 10px rgba(0,0,0,0.25);
+}
+.drawer-card:active{
+  transform:scale(0.96);
+}
+.drawer-card-icon{
+  font-size:20px;line-height:1;margin-bottom:3px;
+}
+.drawer-card-label{
+  font-size:8px;font-weight:600;color:var(--text);
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+
+.drawer-empty{
+  grid-column:1/-1;
+  padding:40px 16px;
+  text-align:center;
+  color:var(--text-sub);
+  font-size:11px;
+  line-height:1.8;
+}
+.drawer-empty-sub{
+  font-size:9px;opacity:0.7;
+}
+
+/* 拖拽到抽屉磁贴上时的高亮 (复用 .group-hover 已有动效) */
+.tile[data-id="drawer"].group-hover{
+  border-color:var(--accent)!important;
+  box-shadow:0 0 16px var(--accent-glow),0 0 0 2px var(--accent)!important;
+}

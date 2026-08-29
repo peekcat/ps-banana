@@ -1,0 +1,9 @@
+{
+  "id": "f_003",
+  "title": "厚涂感修容",
+  "content": "{\"role\":\"资深Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"operations\":\"分析角色IP添加精致cosplay妆:手绘睫毛+shimmering眼妆+catchlights+卧蚕+T区高光+修容阴影+水润唇;奶油肌水润光泽;消除黑眼圈法令纹痘印;移除碎发\",\"constraints\":{\"锁定\":\"五官位置色相饱和度不变\"}}",
+  "category": "head",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

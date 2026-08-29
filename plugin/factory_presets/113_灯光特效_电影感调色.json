@@ -1,0 +1,9 @@
+{
+  "id": "f_112",
+  "title": "电影感调色",
+  "content": "{\"role\":\"调色后期师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"为画面添加电影级调色效果——通过色温控制实现从冷调到暖调的电影色彩风格，配合对比度/色彩分离/暗角等营造电影画面感\",\"detection\":{\"analyze\":\"分析画面当前白平衡/色温/对比度/高光阴影分布/整体色调倾向\"},\"@param:色温\":0.5,\"@param:色温_desc\":\"0=极冷色调(蓝色主导如冰雪场景/科幻片冷酷氛围色温约3200K);0.25=冷色调(蓝青色如夜景/悬疑片冷峻感色温约4500K);0.5=中性色温(自然平衡的电影质感色温约5500K标准日光);0.75=暖色调(橙黄色如黄昏/怀旧/温馨氛围色温约6500K);1=极暖色调(深橙金色如夕阳/沙漠/复古片浓郁暖意色温约8000K)\",\"operations\":{\"white_balance\":{\"action\":\"根据色温参数调整整体白平衡\",\"range\":\"色温从3200K(值0)到8000K(值1)线性映射\"},\"contrast\":{\"action\":\"提升对比度增加电影感\",\"amount\":\"增加对比度15-25%\",\"curve\":\"S曲线压暗暗部提亮高光\"},\"split_tone\":{\"action\":\"色彩分离处理\",\"highlight\":\"高光微偏暖(在暖色调时)或偏冷(在冷色调时)\",\"shadow\":\"阴影与高光形成互补色温差\"},\"cinema_lut\":{\"action\":\"应用电影级LUT色彩映射\",\"style\":\"根据色温方向选择对应电影风格\"},\"vignette\":{\"action\":\"添加柔和暗角\",\"strength\":\"暗角强度15-25%集中观众视线\"},\"grain\":{\"action\":\"添加电影胶片颗粒\",\"amount\":\"微弱颗粒增加质感\"}},\"constraints\":{\"严禁\":\"肤色严重偏色失真(肤色需相对保护)\",\"禁止\":\"调色后画面过暗或过曝\"},\"integration\":{\"skin_protect\":\"人物肤色在调色中保持相对自然\",\"noise_match\":\"噪点风格化处理\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

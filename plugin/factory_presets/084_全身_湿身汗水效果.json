@@ -1,0 +1,9 @@
+{
+  "id": "f_083",
+  "title": "湿身汗水效果",
+  "content": "{\"role\":\"资深Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"为人物全身添加真实的微汗湿润效果——皮肤油光质感、额头鼻梁锁骨等凸起处镜面高光、衣物局部浸湿贴身、微小汗珠可见\",\"detection\":{\"analyze\":\"分析人物全身皮肤裸露区域和服装区域，确定凸起部位(额头/鼻梁/颧骨/锁骨/肩膀/胸口)和光源方向\"},\"@param:湿润程度\":0.5,\"@param:湿润程度_desc\":\"0=完全干燥无汗保持原样;0.15=极微弱的皮肤微光泽(运动后微微发亮);0.3=轻微汗湿T区和额头微光(刚运动完);0.5=明显湿润全身皮肤油光质感凸起处集中高光(大量出汗);0.7=强烈湿身效果皮肤水光明显衣物开始浸湿变色贴身(淋雨初期);0.85=非常湿透皮肤大面积水光衣物深色浸湿严重贴身(大雨);1=极致湿透全身如刚从水中出来皮肤水滴遍布衣物完全浸湿透明贴身\",\"operations\":{\"skin_sheen\":{\"action\":\"在裸露皮肤表面添加均匀油光质感\",\"roughness\":\"降低皮肤Roughness从0.7渐变到0.2(随参数递增)\",\"specular\":\"增加皮肤镜面反射率\"},\"highlight_points\":{\"action\":\"在额头/鼻梁/颧骨/锁骨/肩膀等凸起处添加集中的镜面湿润高光\",\"intensity\":\"高光强度随参数从10%到80%递增\",\"shape\":\"高光呈自然的不规则长条形跟随凸起结构\"},\"sweat_drops\":{\"action\":\"在侧光面可见区域添加微小水珠/汗珠\",\"size\":\"水珠直径0.5-2mm\",\"density\":\"水珠密度随参数从0到密集递增\",\"refraction\":\"每颗水珠有微小的高光点和折射\"},\"wet_fabric\":{\"action\":\"服装在参数>0.5时开始局部浸湿\",\"darkening\":\"浸湿区域色彩加深10-40%(随参数)\",\"cling\":\"浸湿区域布料贴身显示身体轮廓\",\"areas\":\"优先浸湿贴身区域(肩膀/背部/胸口)\"}},\"constraints\":{\"严禁\":\"改变肤色基调(仅增加光泽)、改变服装颜色设计\",\"禁止\":\"水渍分布不自然呈几何形\"},\"integration\":{\"light_match\":\"所有湿润高光方向匹配画面光源\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

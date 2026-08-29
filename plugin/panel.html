@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>修图轮椅 v6</title>
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/tiles.css">
+<link rel="stylesheet" href="styles/groups.css">
+<link rel="stylesheet" href="styles/expand-panels.css">
+<link rel="stylesheet" href="styles/components.css">
+<link rel="stylesheet" href="styles/ui-kit.css">
+<link rel="stylesheet" href="styles/dock.css">
+<link rel="stylesheet" href="styles/simple-mode.css">
+</head>
+<body>
+
+<!--
+  初始启动遮罩 —— 纯 HTML+CSS,不依赖任何 JS
+  整个启动流程:
+    1. 页面加载瞬间这个遮罩就显示(避免白屏/闪现主界面)
+    2. app.js 完成 storage 就绪后,把 #bootMsg 改成欢迎页
+    3. 用户点"开始使用"后淡出,才开始加载磁贴
+-->
+<div id="bootOverlay" class="boot-overlay">
+  <div class="boot-backdrop"></div>
+  <div class="boot-stage" id="bootStage">
+    <!-- 初始阶段:启动 loading -->
+    <div class="boot-loader" id="bootLoader">
+      <div class="boot-spinner"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+      <div class="boot-msg" id="bootMsg">正在启动…</div>
+    </div>
+  </div>
+</div>
+
+<!-- 背景层 -->
+<div class="bg-layer" id="bgLayer"></div>
+<div class="bg-blur" id="bgBlur"></div>
+
+<!-- 展开遮罩 -->
+<div class="expand-bg" id="expBg"></div>
+
+<!-- 主视口（分组和磁贴由JS动态渲染到这里） -->
+<div class="vp" id="vp"></div>
+
+<!-- 底栏编辑菜单 -->
+<div class="edit-toolbar" id="editToolbar">
+  <div class="edit-toolbar-btn" id="tbAutoSort">📐 自动排序</div>
+  <div class="edit-toolbar-btn" id="tbNewFolder">📁 新建文件夹</div>
+  <div class="edit-toolbar-btn" id="tbStashAll">🗄️ 全部收纳</div>
+  <div class="edit-toolbar-btn" id="tbClearColors">🎨 清除所有颜色</div>
+  <div class="edit-toolbar-input" id="tbFolderInput" style="display:none;">
+    <input type="text" id="tbFolderName" placeholder="文件夹名称" class="edit-toolbar-text">
+    <div class="edit-toolbar-btn" id="tbFolderConfirm">✓</div>
+    <div class="edit-toolbar-btn" id="tbFolderCancel">✕</div>
+  </div>
+  <div class="edit-toolbar-separator"></div>
+  <div class="edit-toolbar-btn" id="tbExpandMode" style="display:none;">📌 点击方式: <span id="tbExpandModeLabel">就地展开</span></div>
+  <div class="edit-toolbar-btn" id="tbColorPick" style="display:none;">🎨 颜色 <span class="tb-color-dot"></span></div>
+  <div class="edit-toolbar-btn" id="tbStash" style="display:none;">🗄️ 移入抽屉</div>
+</div>
+
+<!-- 确认弹窗 -->
+<div class="confirm-overlay" id="confirmOverlay" style="display:none">
+  <div class="confirm-box">
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-btns">
+      <button class="confirm-btn confirm-btn-no" id="confirmNo">取消</button>
+      <button class="confirm-btn confirm-btn-yes" id="confirmYes">确认</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast提示 -->
+<div class="toast" id="toast"></div>
+
+<!-- 核心框架 (按依赖顺序加载) -->
+<!-- 插件默认布局 — storage-manager 启动时读,被任何用户存储值覆盖 -->
+<script src="defaults/default-layout.js"></script>
+<script src="defaults/layout-migration.js"></script>
+<script src="defaults/v5-data-migration.js"></script>
+<script src="defaults/timeout-migration.js"></script>
+<script src="defaults/aji-url-migration.js"></script>
+<script src="core/storage-manager.js"></script>
+<script src="core/message-bridge.js"></script>
+<script src="core/ui-kit.js"></script>
+<script src="core/tile-api.js"></script>
+<script src="core/ui-tooltip.js"></script>
+<script src="core/aspect-warn.js"></script>
+<script src="core/theme-engine.js"></script>
+<script src="core/group-manager.js"></script>
+<script src="core/tile-engine.js"></script>
+<script src="core/mount-kit.js"></script>
+<script src="core/server-config.js"></script>
+<script src="core/telemetry.js"></script>
+
+<!-- Emoji 图片化 (Fluent Emoji) — manifest 必须在 emoji-pack 之前 -->
+<script src="icons/emoji/manifest.js"></script>
+<script src="core/emoji-pack.js"></script>
+
+<!-- 右侧快捷栏 Dock(默认关闭,设置里开;监听 app:ready 初始化) -->
+<script src="core/dock.js"></script>
+
+<!-- 欢迎页(启动必需,在其他磁贴加载之前就要就绪) -->
+<script src="tiles/tile-welcome.js"></script>
+<link rel="stylesheet" href="tiles/tile-welcome.css">
+
+<!--
+  磁贴模块不再硬编码：app.js 会向宿主请求 scanTiles，
+  宿主扫描 tiles/ 目录并回传文件列表，前端动态注入 <script>。
+  新增磁贴只需把文件放到 tiles/ 下并重启插件即可。
+  默认顺序由 tiles/_order.json 控制；未列出的磁贴按字母序追加到末尾。
+-->
+
+<!-- 启动 (必须最后加载) -->
+<script src="core/app.js"></script>
+
+</body>
+</html>

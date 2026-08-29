@@ -1,0 +1,9 @@
+{
+  "id": "f_062",
+  "title": "道具木质化(可调参数)",
+  "content": "{\"role\":\"资深道具后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"保持物体结构颜色花纹不变，将道具材质升级为真实木质制品。通过4个参数控制木纹密度、年轮、漆面和做旧程度\",\"detection\":{\"identify\":\"识别道具当前材质和需要木质化的区域\"},\"@param:木纹密度\":0.5,\"@param:木纹密度_desc\":\"0=极疏木纹(宽纹间距大纹理简约如松木);0.25=较疏木纹(中宽纹如橡木);0.5=中等密度木纹(标准硬木如胡桃木);0.75=较密木纹(细密纹理如红木紫檀);1=极密木纹(极细密纹理如乌木黑檀)\",\"@param:年轮可见度\":0.3,\"@param:年轮可见度_desc\":\"0=无可见年轮(均匀木纹);0.3=微弱年轮弧线隐约可辨;0.5=中等年轮清晰可见弧形纹理;0.7=非常明显的年轮同心弧纹;1=极致清晰的年轮木纹木节可见\",\"@param:漆面光泽\":0.4,\"@param:漆面光泽_desc\":\"0=无漆面原木哑光质感(Roughness0.8+);0.25=薄层木蜡油微光泽;0.5=清漆半光泽(Roughness0.4);0.75=厚漆面光亮(Roughness0.2);1=钢琴漆面镜面光泽(Roughness0.05)\",\"@param:做旧程度\":0.2,\"@param:做旧程度_desc\":\"0=全新木材表面完美无瑕;0.2=微弱使用痕迹极浅磨损;0.5=中度做旧色泽加深边缘磨圆;0.7=明显的古旧感裂纹和色变;1=极度老旧风化开裂虫蛀痕迹\",\"operations\":{\"material\":\"移除塑料质感替换为PBR木质材质\",\"wood_grain\":\"根据密度参数生成对应疏密的木纹Normal Map\",\"rings\":\"根据年轮参数添加年轮弧线纹理\",\"finish\":\"根据漆面参数设置表面Roughness和反射\",\"aging\":\"根据做旧参数叠加磨损/色变/裂纹纹理\"},\"constraints\":{\"严禁\":\"改变道具形状设计\",\"禁止\":\"木纹不跟随道具曲面方向\"},\"integration\":{\"light_match\":\"木面反光与光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "accessory",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

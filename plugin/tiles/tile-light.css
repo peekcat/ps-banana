@@ -1,0 +1,691 @@
+/* ============================================================
+ *  tile-light.css — 灯光编辑器样式
+ * ============================================================ */
+
+.light3d-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Canvas 容器 */
+.light3d-canvas-wrap {
+  position: relative;
+  width: 100%;
+  background: #242424;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+.light3d-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #242424;
+  cursor: crosshair;
+}
+
+.light3d-zoom-slider {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-lr;
+  direction: rtl;
+  height: 60px;
+  width: 12px;
+  accent-color: rgba(255, 255, 255, 0.4);
+  cursor: ns-resize;
+  opacity: 0.35;
+  transition: opacity 0.2s;
+}
+.light3d-zoom-slider:hover {
+  opacity: 0.8;
+}
+
+.light3d-capture-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+.light3d-capture-btn:hover {
+  background: rgba(0, 0, 0, 0.75);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 参数行(方位/仰角/距离) */
+.light3d-controls {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  padding: 8px 10px 6px;
+}
+.light3d-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 6px;
+}
+.light3d-row:last-child { margin-bottom: 0; }
+.light3d-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.light3d-dot-az { background: #54c2ff; box-shadow: 0 0 4px #54c2ff; }
+.light3d-dot-el { background: #bb73ff; box-shadow: 0 0 4px #bb73ff; }
+.light3d-dot-ds { background: #ff9438; box-shadow: 0 0 4px #ff9438; }
+
+.light3d-label {
+  min-width: 46px;
+  margin: 0;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.3px;
+}
+.light3d-slider {
+  flex: 1;
+  height: 4px;
+}
+.light3d-slider-az { accent-color: #54c2ff; }
+.light3d-slider-el { accent-color: #bb73ff; }
+.light3d-slider-ds { accent-color: #ff9438; }
+
+.light3d-val {
+  font-size: 10px;
+  min-width: 28px;
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.light3d-val-az { color: #54c2ff; }
+.light3d-val-el { color: #bb73ff; }
+.light3d-val-ds { color: #ff9438; }
+
+.light3d-reset {
+  cursor: pointer;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.2);
+  transition: color 0.2s;
+  padding: 2px 4px;
+}
+.light3d-reset:hover {
+  color: var(--accent);
+}
+
+/* 灯光属性块 */
+.light3d-attrs {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+.light3d-attr-row {
+  margin-bottom: 6px;
+}
+.light3d-attr-row:last-child { margin-bottom: 0; }
+.light3d-attr-label {
+  display: block;
+  margin: 0 0 3px;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* Pill 按钮组 */
+.sf-pill {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.sf-pill-opt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+  letter-spacing: 0.2px;
+}
+.sf-pill-opt:hover {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.sf-pill-opt.active {
+  color: #fff;
+  background: var(--accent, #0078d4);
+  border-color: var(--accent, #0078d4);
+}
+
+/* 色温/颜色行 */
+.light3d-color-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+.light3d-kelvin {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.light3d-kelvin input[type="range"] {
+  flex: 1;
+  accent-color: #ffa500;
+}
+.light3d-kelvin-val {
+  font-size: 10px;
+  color: #ffa500;
+  min-width: 42px;
+  text-align: right;
+  font-weight: 600;
+}
+.light3d-hsl-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.light3d-color-picker {
+  width: 32px;
+  height: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+}
+.light3d-color-val {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* 添加灯光按钮 */
+.light3d-btn-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.light3d-btn-add:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+  color: #fff;
+}
+
+/* 灯光列表 */
+.light3d-list-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  margin-bottom: 3px;
+  background: rgba(38, 38, 38, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  font-size: 9px;
+  color: var(--text-sub, rgba(255,255,255,0.5));
+}
+.light3d-list-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.light3d-list-text {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.light3d-list-del {
+  cursor: pointer;
+  color: #ff6666;
+  font-size: 11px;
+}
+.light3d-list-del:hover {
+  color: #ff4444;
+}
+
+/* 提示词预览 */
+.light3d-preview {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 9px;
+  color: rgba(255, 200, 80, 0.7);
+  font-family: 'Consolas', 'Monaco', monospace;
+  word-break: break-all;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+/* ============================================================
+ *  外壳 + Tab 栏(2D / 3D 切换)
+ * ============================================================ */
+.light-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.light-tabs {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.light-tab {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-sub);
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.light-tab:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+.light-tab-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.light-tab-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* ============================================================
+ *  2D Tab — 手绘灯光附件
+ * ============================================================ */
+.lh-2d-root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lh-loading {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-sub);
+  font-size: 12px;
+}
+.lh-tip {
+  font-size: 11px;
+  color: var(--text-sub);
+}
+
+/* 9 张 1:1 网格 */
+.lh-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.lh-grid-item {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  box-sizing: border-box;
+  transition: background 0.18s, border-color 0.18s, transform 0.18s, box-shadow 0.18s;
+}
+.lh-grid-item:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.18);
+  transform: translateY(-1px);
+}
+.lh-grid-item-active {
+  border-color: var(--accent);
+  background: rgba(255,255,255,0.08);
+  box-shadow: 0 0 0 1px var(--accent), 0 4px 12px rgba(0,0,0,0.25);
+  transform: translateY(-1px);
+}
+.lh-grid-thumb-wrap {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30,30,30,0.85);
+  border-radius: 4px;
+  overflow: hidden;
+  min-height: 0;
+}
+.lh-grid-thumb {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+.lh-grid-name {
+  font-size: 11px;
+  color: var(--text);
+  text-align: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.lh-grid-check {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.5);
+  transition: opacity 0.2s, transform 0.2s cubic-bezier(.34, 1.56, .64, 1);
+  pointer-events: none;
+}
+.lh-grid-item-active .lh-grid-check {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* 编辑参数面板(滑入) */
+.lh-panel {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-8px);
+  transition:
+    max-height 0.35s cubic-bezier(.4, 0, .2, 1),
+    opacity 0.25s ease 0.05s,
+    transform 0.3s cubic-bezier(.4, 0, .2, 1);
+}
+.lh-panel-open {
+  max-height: 1200px;
+  opacity: 1;
+  transform: translateY(0);
+}
+.lh-panel-inner {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 10px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lh-panel-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lh-panel-title {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+.lh-panel-close {
+  flex-shrink: 0;
+  font-size: 14px;
+  padding: 2px 10px;
+  line-height: 1;
+}
+
+.lh-panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lh-stage {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(30,30,30,0.85);
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 10px;
+  box-sizing: border-box;
+  max-height: 50vh;
+}
+.lh-preview {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.lh-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lh-section-title {
+  font-size: 11px;
+  color: var(--text-sub);
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.lh-presets {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+.lh-preset {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  font-size: 10px;
+  color: var(--text);
+  text-align: left;
+  min-width: 0;
+}
+.lh-preset:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.2);
+}
+.lh-preset-active {
+  border-color: var(--accent);
+  background: rgba(255,255,255,0.08);
+}
+.lh-preset-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+.lh-preset-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lh-hsl-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.lh-hsl-row label {
+  flex: 0 0 14px;
+  font-size: 11px;
+  color: var(--text-sub);
+}
+.lh-hsl-row input[type=range] {
+  flex: 1;
+  min-width: 0;
+}
+.lh-hsl-val {
+  flex: 0 0 28px;
+  font-size: 10px;
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+#lhHslH {
+  background: linear-gradient(to right,
+    #FF0000 0%, #FFFF00 17%, #00FF00 33%,
+    #00FFFF 50%, #0000FF 67%, #FF00FF 83%, #FF0000 100%);
+  border-radius: 3px;
+}
+
+.lh-intensity-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.lh-intensity-row input[type=range] {
+  flex: 1;
+  min-width: 0;
+}
+.lh-intensity-num {
+  flex: 0 0 56px;
+  text-align: center;
+  padding: 2px 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.lh-send-btn {
+  margin-top: 4px;
+  font-size: 12px;
+  padding: 8px;
+}
+
+/* 已发送的灯光示意列表 */
+.lh-list-wrap {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  padding-top: 6px;
+}
+.lh-list-empty {
+  font-size: 10px;
+  color: var(--text-sub);
+  text-align: center;
+  padding: 6px;
+  opacity: 0.7;
+}
+.lh-list-title {
+  font-size: 11px;
+  color: var(--text-sub);
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+.lh-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.lh-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.06);
+  font-size: 11px;
+}
+.lh-list-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+.lh-list-text {
+  flex: 1;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.lh-list-del {
+  cursor: pointer;
+  color: rgba(255,255,255,0.4);
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: 3px;
+  transition: color 0.15s, background 0.15s;
+}
+.lh-list-del:hover {
+  color: #ff4444;
+  background: rgba(255, 68, 68, 0.1);
+}
+
+/* 生成按钮 */
+.light3d-btn-go {
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 6px;
+}
+
+/* 提示 hint */
+.light3d-hint {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.3);
+  text-align: center;
+  margin-top: 2px;
+}

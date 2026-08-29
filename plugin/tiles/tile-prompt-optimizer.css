@@ -1,0 +1,132 @@
+/* ============================================================
+ *  tile-prompt-optimizer.css
+ *  视觉风格继承自 tile-prompt.css(.prompt-ta-panel / .prompt-preset-head 等)
+ *  本文件只补三块独有样式:
+ *    1. 优化器专用 badge 配色(紫色,区分 forge 橙 / banana 蓝)
+ *    2. 顶栏 head 背景色(浅紫,跟 banana / forge / params 区分)
+ *    3. 二次修改意见区(followup)
+ * ============================================================ */
+
+/* === 1. 顶栏整体配色 === */
+.prompt-preset-head.prompt-preset-head-optimizer{
+  background:rgba(170,120,255,0.10);
+  border-bottom-color:rgba(170,120,255,0.25);
+}
+
+/* === 2. badge 紫色渐变 === */
+.prompt-preset-badge.prompt-preset-badge-optimizer{
+  background:linear-gradient(135deg, #aa78ff 0%, #6b9eff 100%);
+  font-size:11px;
+}
+
+/* === 3. 优化器面板继承 prompt-ta-panel 但允许 followup 区参与布局 === */
+.w10-panel.optimizer-panel{
+  /* prompt-ta-panel 是 padding:0 + flex column,直接继承即可 */
+  /* followup 是 flex 子项,自动排在 textarea 下方 */
+}
+
+/* === 4. 二次意见区 === */
+.optimizer-followup{
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding:6px 8px 8px;
+  background:rgba(170,120,255,0.06);
+  border-top:1px solid rgba(170,120,255,0.18);
+}
+
+.optimizer-followup-bar{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.optimizer-followup-icon{
+  font-size:11px;
+}
+.optimizer-followup-title{
+  flex:1;
+  font-size:11px;
+  font-weight:600;
+  color:rgba(200,170,255,0.9);
+  letter-spacing:0.3px;
+}
+/* followup 内的 ✨ 按钮:和 prompt-preset-run(▶ 绿色)区分,改成紫色 */
+.optimizer-followup .prompt-preset-run{
+  background:rgba(170,120,255,0.15);
+  border-color:rgba(170,120,255,0.35);
+  color:#c8a8ff;
+  width:24px;
+  height:20px;
+}
+.optimizer-followup .prompt-preset-run:hover:not(:disabled){
+  background:rgba(170,120,255,0.28);
+  color:#e0c8ff;
+  border-color:rgba(170,120,255,0.6);
+}
+
+/* followup 输入框:小一号,sans-serif(意见是自然语言,不需要等宽字体) */
+.optimizer-followup-input{
+  width:100%;
+  min-height:48px;
+  max-height:120px;
+  resize:vertical;
+  padding:6px 8px;
+  font-family:'Segoe UI', 'Microsoft YaHei', sans-serif;
+  font-size:11px;
+  line-height:1.5;
+  background:rgba(0,0,0,0.20);
+  border:1px solid rgba(255,255,255,0.10);
+  border-radius:3px;
+  color:var(--text);
+  box-sizing:border-box;
+}
+.optimizer-followup-input:focus{
+  outline:none;
+  border-color:rgba(170,120,255,0.6);
+  background:rgba(0,0,0,0.28);
+}
+
+/* === 5. 禁用态按钮:补一份,prompt-preset-* 原样式没考虑 disabled === */
+.prompt-preset-run:disabled,
+.prompt-preset-toggle:disabled,
+.prompt-preset-unload:disabled{
+  opacity:0.4;
+  cursor:not-allowed;
+  pointer-events:none;
+}
+
+/* === 6. 优化中冻结态 === */
+/* textarea readonly 状态:加柔和的紫色光晕 + 禁止鼠标交互的视觉提示 */
+.optimizer-panel.is-optimizing .prompt-ta[readonly]{
+  background:rgba(170,120,255,0.06)!important;
+  color:rgba(220,200,255,0.92);
+  cursor:wait;
+  outline:1px solid rgba(170,120,255,0.35);
+  outline-offset:-1px;
+  /* 进度文字居中可读,但保留多行可滚 */
+  font-size:12px;
+  line-height:1.7;
+}
+.optimizer-panel.is-optimizing .prompt-ta[readonly]:focus{
+  outline-color:rgba(170,120,255,0.5);
+  background:rgba(170,120,255,0.08)!important;
+}
+
+/* badge 在优化中柔和呼吸 */
+@keyframes optimizer-badge-pulse{
+  0%, 100%{ box-shadow:0 1px 2px rgba(0,0,0,0.3), 0 0 0 0 rgba(170,120,255,0.4); }
+  50%     { box-shadow:0 1px 2px rgba(0,0,0,0.3), 0 0 0 6px rgba(170,120,255,0); }
+}
+.optimizer-panel.is-optimizing .prompt-preset-badge-optimizer{
+  animation:optimizer-badge-pulse 1.6s ease-in-out infinite;
+}
+
+/* followup 冻结态 */
+.optimizer-followup.is-frozen{
+  opacity:0.6;
+}
+.optimizer-followup.is-frozen .optimizer-followup-input{
+  cursor:wait;
+}
+

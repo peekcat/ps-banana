@@ -1,0 +1,9 @@
+{
+  "id": "f_118",
+  "title": "纹身花纹添加",
+  "content": "{\"role\":\"纹身/人体彩绘后期师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_body_shape\":true,\"preserve_skin_base\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_area\":\"识别用户指定的纹身添加区域(手臂/背部/腿部/胸部/颈部等)\",\"identify_surface\":\"分析该区域皮肤的曲面方向、肌肉结构、光影状态\"},\"tattoo_generation\":{\"style_options\":{\"japanese\":\"日式传统：浮世绘风格，如龙/锦鲤/般若/樱花，浓墨重彩\",\"tribal\":\"部落图腾：粗黑线条的几何化动物/符号图案，Maori/Polynesian风格\",\"geometric\":\"几何纹身：精密的点线面构成的sacred geometry神圣几何/曼陀罗\",\"floral\":\"花卉纹身：写实或插画风格的花朵(玫瑰/牡丹/莲花)和藤蔓\",\"custom\":\"根据用户描述的具体图案生成\"},\"surface_mapping\":{\"perspective\":\"图案跟随身体曲面做正确的透视变形(圆柱映射)\",\"stretch\":\"在肌肉凸起处图案微微拉伸，凹陷处微缩\",\"wrap\":\"图案环绕身体部位(如手臂环绕纹身)时透视衔接连续\"},\"skin_integration\":{\"depth\":\"纹身呈现皮下墨色渗透感(subcutaneous ink)，非贴在表面\",\"ink_diffusion\":\"墨水边缘有极微弱的晕染扩散(0.5-1px)，模拟真实纹身墨水在皮肤中的渗透\",\"skin_texture\":\"纹身区域仍可见皮肤毛孔和纹理(纹身在皮肤下而非覆盖皮肤)\",\"age\":\"新鲜纹身色彩饱满边缘锐利，如需旧纹身效果可略微褪色\"},\"color\":{\"black_grey\":\"黑灰纹身：纯黑线条+灰度阴影渐变\",\"color\":\"彩色纹身：根据风格使用对应色彩(日式=红蓝金，花卉=自然色)\"}},\"constraints\":{\"严禁\":\"改变身体形状/姿势、纹身呈现贴纸/印刷感\",\"禁止\":\"纹身线条模糊不清、图案透视与身体曲面不匹配\"},\"integration\":{\"light_match\":\"纹身区域皮肤受光面纹身略浅(高光)，背光面略深(阴影)\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,116 @@
+/* ============================================================
+   tile-firstrun-satellite.css — 卫星插件推荐弹窗 (单独于功能导览)
+   ============================================================ */
+
+.frs-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999991;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 12px;
+    animation: frsFadeIn 0.22s ease-out;
+}
+.frs-overlay.frs-exit {
+    animation: frsFadeOut 0.2s ease-in forwards;
+}
+@keyframes frsFadeIn  { from { opacity:0; } to { opacity:1; } }
+@keyframes frsFadeOut { from { opacity:1; } to { opacity:0; } }
+
+.frs-card {
+    width: 100%;
+    max-width: 440px;
+    background: #1c1f28;
+    border: 1px solid rgba(120,180,255,0.35);
+    border-radius: 10px;
+    padding: 18px 18px 14px;
+    box-shadow: 0 10px 50px rgba(0,0,0,0.7), 0 0 24px rgba(120,180,255,0.08);
+    color: #d9dde6;
+    animation: frsPop 0.32s cubic-bezier(.22,1,.36,1);
+}
+@keyframes frsPop {
+    from { transform: translateY(20px) scale(0.97); opacity: 0; }
+    to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.frs-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.frs-head-icon { font-size: 30px; line-height: 1; }
+.frs-head-text { flex: 1; min-width: 0; }
+.frs-head-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+}
+.frs-head-sub {
+    font-size: 11px;
+    color: #98a;
+    margin-top: 2px;
+}
+
+.frs-bullets {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin: 6px 0 10px;
+    padding: 10px 12px;
+    background: rgba(120,180,255,0.08);
+    border: 1px solid rgba(120,180,255,0.18);
+    border-radius: 6px;
+}
+.frs-bullet {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 11px;
+    color: #ccd;
+    line-height: 1.5;
+}
+.frs-bullet-icon {
+    flex: 0 0 18px;
+    color: #9cc8ff;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.frs-hint {
+    margin-top: 4px;
+    padding: 6px 8px;
+    font-size: 10px;
+    color: #889;
+    background: rgba(255,255,255,0.025);
+    border-radius: 4px;
+    line-height: 1.5;
+}
+
+.frs-status {
+    margin-top: 6px;
+    font-size: 11px;
+    color: #aac;
+    min-height: 14px;
+}
+
+.frs-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.frs-actions .w10-btn { min-width: 78px; font-size: 11px; }
+.frs-btn-never {
+    color: #998;
+    border-color: rgba(255,255,255,0.08);
+}
+.frs-btn-never:hover {
+    color: #ff9090;
+    border-color: rgba(255,100,100,0.3);
+    background: rgba(255,100,100,0.06);
+}

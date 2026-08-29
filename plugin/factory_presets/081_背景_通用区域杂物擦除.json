@@ -1,0 +1,9 @@
+{
+  "id": "f_080",
+  "title": "通用区域杂物擦除",
+  "content": "{\"role\":\"摄影后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":true,\"preserve_global_hsl_gamma\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别用户涂抹标记的区域内的杂物/瑕疵\",\"identify_background\":\"分析被标记区域周围的材质类型(皮肤/服装/地面/墙面/天空等)、纹理模式和光影分布\"},\"removal\":{\"erase\":{\"action\":\"完全清除标记区域内的所有杂物/瑕疵/不需要的元素\"},\"inpaint\":{\"method\":\"使用周围材质智能重建被清除区域的原始内容\",\"texture\":\"重建区域纹理方向密度与周围完全匹配\",\"perspective\":\"纹理透视缩放匹配场景消失点\",\"seam\":\"如有接缝/砖缝/木板缝等，重建区域接缝完全对齐\"}},\"quality_control\":{\"light_match\":\"修补区域光影渐变与周围一致\",\"edge_blend\":\"修补边缘无缝融合，无可见AI修补痕迹\",\"pattern\":\"不出现重复纹理图案(clone stamp pattern)\",\"noise_match\":\"噪点一致\"},\"constraints\":{\"严禁\":\"误删模特或重要道具、改变周围环境结构\",\"禁止\":\"修补区域出现涂抹模糊\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

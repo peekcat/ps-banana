@@ -1,0 +1,9 @@
+{
+  "id": "f_048",
+  "title": "网袜渔网袜生成",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":true,\"preserve_leg_shape\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析腿部当前状态、需要覆盖的范围、肤色、光源方向\"},\"fishnet_generation\":{\"mesh_pattern\":{\"shape\":\"菱形(diamond)网格均匀规则分布\",\"size\":\"可选小网格(5-8mm)、中网格(10-15mm)、大网格(20-30mm)\",\"node\":\"网格交叉处结点(knot)清晰可辨，略有凸起质感\",\"thread\":\"网线粗细均匀(约0.5-1mm)，呈现尼龙/弹性纤维编织质感\"},\"body_mapping\":{\"perspective\":\"网格跟随腿部曲面做正确的透视变形(圆柱映射)\",\"stretch\":\"膝盖弯曲处和大腿内侧网格因拉伸略变大，小腿直面网格均匀\",\"symmetry\":\"双腿网格对称\"},\"skin_exposure\":{\"action\":\"皮肤从菱形网格间隙中自然露出\",\"color\":\"露出的皮肤呈现自然肤色\",\"shadow\":\"网线在皮肤上投射极细微的网格状阴影(light_match)\"},\"material\":{\"color\":\"黑色(默认)/白色/红色根据需求\",\"sheen\":\"网线表面微弱的尼龙光泽\",\"stretch_mark\":\"网袜贴合腿部拉伸处网线略细，松弛处略粗\"}},\"constraints\":{\"严禁\":\"改变腿部形状粗细\",\"禁止\":\"网格不跟随身体曲面变形(呈平面贴图感)\"},\"integration\":{\"light_match\":\"网袜反光与光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "legs",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

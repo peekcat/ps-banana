@@ -1,0 +1,87 @@
+/* ============================================================
+   tile-billing.css —— 算力账单磁贴
+   ============================================================ */
+.bill-panel { padding: 4px 2px; }
+.bill-intro {
+  font-size: 11px;
+  color: var(--text-sub);
+  line-height: 1.6;
+  margin: 4px 0 10px;
+}
+.bill-dim { color: var(--text-sub); }
+
+.bill-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.bill-card-momo { border-color: rgba(255, 140, 190, 0.35); }
+
+.bill-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.bill-card-name { font-weight: 600; font-size: 13px; }
+.bill-card-bal { font-size: 12px; color: var(--text); }
+
+.bill-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 6px;
+}
+.bill-card-momo .bill-grid { grid-template-columns: 1fr 1fr; }
+.bill-cell {
+  text-align: center;
+  padding: 6px 2px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.03);
+}
+.bill-cell-v { font-size: 14px; font-weight: 600; }
+.bill-cell-l { font-size: 10px; color: var(--text-sub); margin-top: 2px; }
+
+.bill-momo-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.bill-momo-empty {
+  font-size: 11px;
+  color: var(--text-sub);
+  padding: 8px 0;
+  line-height: 1.6;
+}
+.bill-momo-list {
+  margin-top: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.bill-momo-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  font-size: 11px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.bill-momo-time { color: var(--text-sub); flex: 0 0 auto; }
+.bill-momo-model { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bill-momo-tokens { color: var(--text-sub); flex: 0 0 auto; }
+.bill-momo-fee { flex: 0 0 auto; font-weight: 600; }
+
+.bill-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* === v6.5.9 体感: 卡片轻 hover(纯展示列表, 有质感即可) === */
+.bill-card { transition: border-color 0.15s, background 0.15s; }
+.bill-card:hover { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.05); }
+.bill-momo-row { transition: background 0.12s; }
+.bill-momo-row:hover { background: rgba(255,255,255,0.04); }

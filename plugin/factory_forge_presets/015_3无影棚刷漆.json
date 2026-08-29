@@ -1,0 +1,23 @@
+{
+  "id": "ff_015",
+  "name": "3无影棚刷漆",
+  "displayName": "无影棚刷漆",
+  "category": "background",
+  "data": {
+    "model": "leosamsHelloworldSDXL_helloworldSDXL32DPO.safetensors [22c686a9f4]",
+    "lora": "",
+    "loraWeight": "0",
+    "redrawAmount": "0.41",
+    "imageCount": "3",
+    "resolution": "2048",
+    "positivePrompt": "8k RAW, best quality, ultra high res, extreme_detail, sharp focus, (photorealistic:1.4), masterpiece,,((Clean floor, white painted floor, white no studio, white studio, clean white wall))",
+    "negativePrompt": "paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, glans, anime, watermark, username, signature, text",
+    "selectedControlNetModule": "None",
+    "controlNetModel": "None",
+    "controlNetWeight": "",
+    "step": "20",
+    "selectedName": "DPM++ 2M",
+    "selectedScheduler": "automatic"
+  },
+  "_isFactory": true
+}

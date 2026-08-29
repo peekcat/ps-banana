@@ -1,0 +1,9 @@
+{
+  "id": "f_044",
+  "title": "腿部中性灰精修",
+  "content": "{\"role\":\"Cosplay人像后期修图师(中性灰精修技术)\",\"base_rules\":{\"preserve_composition\":true,\"preserve_leg_shape\":true,\"preserve_pose\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析腿部皮肤瑕疵分布：毛孔粗大区域、鸡皮肤(毛周角化)、橘皮纹(脂肪团)、静脉曲张(蓝紫色血管)、淤青/色斑/疤痕、肤色不均匀区域\"},\"neutral_gray_technique\":{\"method\":\"模拟中性灰(Dodge & Burn)+高低频分离的专业修图技术\",\"low_frequency\":{\"action\":\"低频层处理：平滑腿部大面积的色调和光影起伏\",\"smooth\":\"消除橘皮纹的凹凸不平、静脉曲张的隆起、大面积色斑的色调差异\",\"preserve\":\"保留腿部整体的肌肉线条和骨骼轮廓的自然光影\"},\"high_frequency\":{\"action\":\"高频层处理：精修皮肤微观纹理\",\"cleanup\":\"消除毛孔粗大/鸡皮疙瘩的颗粒感、极小的痣/斑点、毛囊残留\",\"texture_rebuild\":\"重建均匀细腻的皮肤纹理，毛孔大小适中分布均匀\",\"natural\":\"保留约30-40%的微弱自然纹理避免塑料感\"},\"dodge_burn\":{\"action\":\"使用加深减淡技术优化腿部光影\",\"contour\":\"强化腿部肌肉线条的立体感(小腿肚弧线/膝盖轮廓/大腿内外侧)\",\"transition\":\"光影过渡柔和自然，无硬边\"}},\"color_correction\":{\"unify\":\"腿部肤色均匀通透，消除暗沉/泛黄/发灰区域\",\"match\":\"腿部肤色与全身其他部位协调统一\"},\"constraints\":{\"严禁\":\"改变腿部形状粗细、完全消除纹理呈塑料感\",\"禁止\":\"过度磨皮导致皮肤失去质感\"},\"integration\":{\"seamless\":\"精修区域与未精修区域过渡自然\",\"noise_match\":\"噪点一致\"}}",
+  "category": "legs",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

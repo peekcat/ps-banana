@@ -1,0 +1,9 @@
+{
+  "id": "f_113",
+  "title": "夜景霓虹氛围",
+  "content": "{\"role\":\"氛围后期师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"为画面营造夜景霓虹灯光氛围——通过霓虹色彩光源照射人物和环境，营造都市夜晚的迷幻光影效果\",\"detection\":{\"analyze\":\"分析画面当前光源、人物位置、环境明暗分布、是否已有夜景元素\"},\"@param:霓虹色彩\":0.5,\"@param:霓虹色彩_desc\":\"0=无霓虹单色冷白光(路灯般简洁);0.2=微弱的单色霓虹(微微偏粉或偏蓝的环境光);0.4=轻微的双色霓虹(粉+蓝或红+青的柔和混合);0.5=标准霓虹三色(品红+青+紫经典赛博配色均匀混合);0.7=浓烈的多色霓虹(鲜艳的多色光交叉照射色彩丰富);0.85=极浓烈的虹彩霓虹(彩虹般多色密集光源);1=极致炫彩全画面被密集多色霓虹灯笼罩如站在时代广场中心\",\"operations\":{\"ambient_darken\":{\"action\":\"压暗整体环境模拟夜景\",\"amount\":\"环境亮度降低30-50%保留人物\"},\"neon_source\":{\"action\":\"在画面边缘/上方/侧面模拟霓虹灯光源\",\"color\":\"根据参数从单色到多色递增\",\"direction\":\"多方向光源在人物身上形成彩色光影交叉\"},\"color_cast\":{\"action\":\"人物皮肤和服装上产生霓虹色彩映射\",\"intensity\":\"色彩映射强度随参数递增\",\"zones\":\"受光面偏一色背光面偏另一色形成对比\"},\"atmosphere\":{\"action\":\"添加夜景氛围元素\",\"haze\":\"轻微光雾/烟雾散射霓虹光\",\"bokeh\":\"背景光点散景效果\"}},\"constraints\":{\"严禁\":\"面部被霓虹色完全覆盖失去辨识度\",\"禁止\":\"光源方向自相矛盾\"},\"integration\":{\"face_readable\":\"面部保持可辨识\",\"depth\":\"光源从环境照射人物有空间感\",\"noise_match\":\"噪点一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

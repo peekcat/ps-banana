@@ -1,0 +1,9 @@
+{
+  "id": "f_037",
+  "title": "手臂纤细",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":true,\"preserve_hand_shape\":\"手部形状完全不变\",\"preserve_pose\":\"严禁改变手臂动作和角度\",\"preserve_costume\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析手臂当前粗细、上臂/前臂比例、肘关节位置、手臂与躯干的连接关系、袖口/手套等服装遮挡情况\"},\"arm_sculpting\":{\"liquify\":{\"method\":\"对上臂和前臂区域进行向内液化收缩，缩减量控制在原臂围的5-10%\",\"upper_arm\":\"上臂从肩关节到肘部呈自然锥形，保留三角肌的柔和弧度\",\"forearm\":\"前臂从肘到手腕自然收窄，保留手腕骨骼的纤细骨感\",\"elbow\":\"肘关节区域保持自然骨骼突起和凹陷，不过度液化\",\"symmetry\":\"双臂液化程度一致(除非视角遮挡导致仅可见单臂)\"},\"muscle_preservation\":{\"action\":\"保留自然的肌肉线条流畅感，让手臂看起来纤细但有力量感\",\"skin_texture\":\"液化后皮肤纹理无拉伸变形，毛孔密度与周围一致\"},\"clothing_follow\":{\"sleeve\":\"袖子跟随液化后的手臂自然贴合，褶皱合理重新分布\",\"accessory\":\"手臂上的臂环/袖套/手套跟随调整，不扭曲变形\"}},\"background_repair\":{\"action\":\"液化导致的背景变形必须完全修复，直线保持直线，纹理无弯曲\"},\"constraints\":{\"严禁\":\"改变手臂动作角度、手部形状变化、手臂过细呈现骷髅感\",\"禁止\":\"液化导致背景可见变形、关节处出现不自然的折角\"}}",
+  "category": "arms",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

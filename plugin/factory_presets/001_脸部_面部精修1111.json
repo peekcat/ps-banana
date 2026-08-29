@@ -1,0 +1,9 @@
+{
+  "id": "f_000",
+  "title": "面部精修1111",
+  "content": "{\"role\":\"资深Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"detection\":{\"face\":\"定位五官下颌线颧骨眉弓\",\"lighting\":\"记录主光源方向\",\"character\":\"分析Cos角色IP人设\"},\"operations\":{\"skin\":\"消除双下巴添加清晰下颌线;中性灰+高低频精修;重绘均匀精致毛孔(约原始60%);削弱唇纹水润\",\"makeup\":\"根据角色人设匹配妆容微调严禁大幅重画\",\"lighting\":\"面部光影均匀自然影视级棚拍\",\"eyes\":\"原本瞳色提亮绘制添加catchlights\",\"cleanup\":\"移除遮面碎发\"},\"constraints\":{\"严禁\":\"改变五官位置表情肤色,旋转缩放\"}}",
+  "category": "head",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

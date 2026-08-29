@@ -1,0 +1,217 @@
+/* ============================================================
+ *  tile-bodypreset.css — 人体剪影分类选择器样式
+ *  v6.0: 精简版,只保留剪影选择器本身(不含预设列表)
+ * ============================================================ */
+
+/* === 外层容器 === */
+.body-preset-silhouette {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(18, 18, 18, 0.22);
+  border: 1px solid rgba(150, 150, 150, 0.22);
+  border-radius: 6px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 8px;
+  overflow: hidden;
+}
+
+/* === 顶部面包屑 + 返回按钮 === */
+.bp-top-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  min-height: 22px;
+}
+.bp-back-btn {
+  padding: 2px 8px;
+  font-size: 12px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.bp-crumb-line {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 10px;
+  color: var(--text-sub);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.bp-crumb {
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: 3px;
+  transition: background 0.12s;
+}
+.bp-crumb:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+}
+.bp-crumb.current {
+  color: var(--accent);
+  cursor: default;
+}
+.bp-crumb.current:hover {
+  background: transparent;
+}
+.bp-crumb-sep {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 9px;
+}
+
+/* === 视口(剪影绘制区) === */
+.bp-png-viewport {
+  position: relative;
+  flex: 1;
+  min-height: 180px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.bp-body-canvas,
+.bp-highlight-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.bp-highlight-canvas {
+  z-index: 3;
+  /* v6.5.6b: 去掉 screen 混合 — 选中部位是全亮绘制, screen 叠亮色≈隐形,
+     看起来像"高亮被遮"。normal 混合 + 半透明色实画, 任何底色上都可见 */
+  mix-blend-mode: normal;
+}
+
+.bp-sub-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  z-index: 2;   /* v6.5.6: 让位给高亮层 */
+}
+
+/* === hover 标签层 === */
+.bp-label-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 4;
+}
+.bp-hover-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 4px 10px;
+  background: rgba(0, 0, 0, 0.65);
+  border: 1px solid var(--accent);
+  border-radius: var(--tile-radius);
+  color: var(--text);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  animation: bp-labelFadeIn 0.15s ease;
+  pointer-events: none;
+}
+@keyframes bp-labelFadeIn {
+  from { opacity: 0; transform: translate(-50%, -40%); }
+  to   { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* === 底部提示 === */
+.bp-hint {
+  flex-shrink: 0;
+  font-size: 9px;
+  color: var(--text-sub);
+  text-align: center;
+  padding: 2px 0;
+  opacity: 0.7;
+  animation: bp-hintBlink 3s ease-in-out infinite;
+}
+@keyframes bp-hintBlink {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 0.9; }
+}
+
+/* === 底部预设操作栏(所有展开布局显示) === */
+.bp-actions-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  padding: 6px 4px 2px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 2px;
+}
+.bp-action-btn {
+  flex: 1 1 0;
+  font-size: 11px;
+  padding: 5px 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+/* tall(纵向窄)布局:横排但收紧字号 */
+.w10-panel.panel-sz-tall .bp-actions-bar {
+  gap: 3px;
+  padding: 5px 2px 2px;
+}
+.w10-panel.panel-sz-tall .bp-action-btn {
+  font-size: 10px;
+  padding: 4px 2px;
+}
+/* narrow(极窄,宽<200)布局:还是横排,字号继续压 */
+.w10-panel.panel-sz-narrow .bp-actions-bar {
+  gap: 2px;
+  padding: 4px 2px 2px;
+}
+.w10-panel.panel-sz-narrow .bp-action-btn {
+  font-size: 9px;
+  padding: 3px 2px;
+}
+
+/* === 响应式 === */
+.w10-panel.panel-sz-narrow .body-preset-silhouette,
+.w10-panel.panel-sz-tall .body-preset-silhouette {
+  min-height: 200px;
+  padding: 4px;
+  gap: 3px;
+}
+.w10-panel.panel-sz-narrow .bp-crumb-line,
+.w10-panel.panel-sz-tall .bp-crumb-line {
+  font-size: 9px;
+}
+.w10-panel.panel-sz-narrow .bp-hover-label,
+.w10-panel.panel-sz-tall .bp-hover-label {
+  font-size: 9px;
+  padding: 3px 7px;
+}
+.w10-panel.panel-sz-narrow .bp-hint,
+.w10-panel.panel-sz-tall .bp-hint {
+  font-size: 8px;
+}
+
+.w10-panel.panel-sz-square .body-preset-silhouette {
+  min-height: 220px;
+}

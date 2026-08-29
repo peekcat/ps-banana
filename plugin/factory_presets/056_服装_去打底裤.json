@@ -1,0 +1,9 @@
+{
+  "id": "f_055",
+  "title": "去打底裤",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":true,\"preserve_costume_upper\":\"外层服装完全不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别外层皮短裤/打底裤/安全裤区域\",\"identify_under\":\"分析底层应呈现的服装层(乳胶衣/丝袜/皮肤)\"},\"replacement\":{\"outer_removal\":{\"action\":\"完全移除外层皮短裤/打底裤\"},\"base_layer\":{\"latex\":\"如有乳胶衣底层→重建高光泽黑色乳胶连体衣，高叉剪裁，表面Roughness 0.05-0.15的镜面反射\",\"pantyhose\":\"黑色半透明连裤袜层(15-20D)，T型加固缝可见，肤色透出\",\"fishnet\":\"最外层黑色网袜覆盖，菱形/六角网眼均匀规则\"},\"body_sculpting\":{\"curves\":\"臀部和大腿曲线饱满光滑\",\"skin\":\"丝袜下皮肤呈现自然肤色，肤色与腿部一致\",\"shadow\":\"大腿内侧和臀下阴影自然符合光源\"}},\"constraints\":{\"严禁\":\"改变姿势/上半身服装\",\"禁止\":\"各层材质之间出现色差断层\"},\"integration\":{\"light_match\":\"各层材质反光方向与光源一致\",\"seamless\":\"各层过渡自然\",\"noise_match\":\"噪点一致\"}}",
+  "category": "clothing",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

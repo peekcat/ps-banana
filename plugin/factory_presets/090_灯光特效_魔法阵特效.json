@@ -1,0 +1,9 @@
+{
+  "id": "f_089",
+  "title": "魔法阵特效",
+  "content": "{\"role\":\"VFX特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_position\":\"用户在指定位置生成魔法阵，识别该位置的景深、地面角度、光源方向\",\"identify_character\":\"分析模特角色IP属性判断魔法阵的风格和颜色(火系=橙红/冰系=蓝白/暗系=紫黑/光系=金色)\"},\"magic_circle\":{\"geometry\":{\"shape\":\"正圆形魔法阵，由2个同心圆组成\",\"outer_ring\":\"最外层同心圆线条较粗(约3-5px)，作为主边框\",\"inner_ring\":\"内层同心圆较细(约1-2px)\",\"star\":\"内层圆中生成正N芒星(N=5-8根据角色风格)，N个外点与内圆周相交\",\"rune_band\":\"两个同心圆之间的环形区域填充符文、咒语文字和装饰性几何纹样\"},\"angle_perspective\":{\"action\":\"魔法阵根据放置位置的角度呈现正确的透视投影\",\"ground\":\"如果在地面，呈现俯视椭圆投影\",\"air\":\"如果在空中面向镜头，保持正圆或根据角度微调\"},\"luminous_properties\":{\"self_glow\":\"魔法阵整体自发光，线条和符文具有明亮的属性色辉光\",\"bloom\":\"核心线条区域Bloom过曝，外层柔和光晕扩散\",\"color\":\"发光颜色与角色属性对应，线条核心偏白，辉光为属性色\",\"pulse\":\"光效具有微弱的脉动感，模拟能量流动\"},\"light_interaction\":{\"mapped_light\":\"魔法阵对下方/周围物体产生对应色系的映射光\",\"ground_illumination\":\"地面魔法阵照亮上方的模特脚部和腿部，产生从下往上的补光\",\"atmospheric\":\"魔法阵上方可有微弱的光柱/光雾向上升腾(Opacity 5-15%)\"}},\"constraints\":{\"严禁\":\"魔法阵遮挡模特面部、改变画面整体HSL\",\"禁止\":\"魔法阵过大占据画面主体\"},\"integration\":{\"depth_occlusion\":\"魔法阵与场景物体遮挡关系正确\",\"noise_match\":\"噪点一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_081",
+  "title": "白色粘液生成",
+  "content": "{\"role\":\"VFX液体特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析指定区域的表面材质(皮肤/服装/道具)、光源方向、表面倾斜角度\"},\"viscous_liquid\":{\"flow_physics\":{\"gravity\":\"液体受重力影响自然向下流淌垂坠\",\"drip\":\"形成自然的滴落形态：上方薄下方厚聚集\",\"strands\":\"粘稠液体产生拉丝效果(strand/thread)，丝线从主体向下延伸渐细\",\"pool\":\"液体聚集处形成不规则的液池/液滩\"},\"material\":{\"color\":\"白色至乳白色半透明(RGB 245-255,240-250,235-245)\",\"translucency\":\"半透明质感(Opacity 60-85%)，薄层区域更透明可见底下表面\",\"viscosity\":\"高粘度液体(类似蜂蜜稠度)，流动缓慢\",\"surface\":\"表面高光泽湿润(Roughness 0.05-0.15)，镜面高光强烈\"},\"optical\":{\"refraction\":\"液体折射底下表面(IOR约1.4-1.5)\",\"highlight\":\"每处液体有独立的镜面高光点，匹配环境光源方向\",\"fresnel\":\"液体边缘Fresnel反射增强\",\"sss\":\"薄层区域微弱的次表面散射透光效果\"},\"thickness_variation\":{\"logic\":\"液体厚薄不均：主流动路径最厚颜色最浓(不透明)，边缘最薄最透明\",\"natural\":\"分布呈自然的不规则形态，非均匀涂抹\"}},\"constraints\":{\"严禁\":\"改变模特身体形状/姿势\",\"禁止\":\"液体呈现均匀涂抹的人工感\"},\"integration\":{\"surface_contact\":\"液体与接触表面的边缘自然融合\",\"light_match\":\"液体高光方向与环境光一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

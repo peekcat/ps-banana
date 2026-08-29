@@ -1,0 +1,9 @@
+{
+  "id": "f_004",
+  "title": "CG感修容",
+  "content": "{\"role\":\"高精度CG转换工程师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"target\":\"实拍cosplay转高精度3D CG游戏美术级\",\"operations\":{\"face\":\"韩式VFace 16K皮肤纹理消除双下巴完美下颌线精致毛孔角色补妆\",\"hair\":\"XGEN精细毛发每根可辨\",\"clothing\":\"Marvelous Designer布料模拟垂坠纹理\",\"props\":\"Substance Painter 16K PBR\",\"lighting\":\"UE5 Lumen路径追踪三点光源\",\"res\":\"8K全局对焦锐化\"}}",
+  "category": "head",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

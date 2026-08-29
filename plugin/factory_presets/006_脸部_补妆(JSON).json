@@ -1,0 +1,9 @@
+{
+  "id": "f_005",
+  "title": "补妆(JSON)",
+  "content": "{\"task\":{\"role\":\"Professional Cosplay Retoucher\",\"objective\":\"Character-faithful makeup enhancement\"},\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"skin\":\"frequency separation uniform delicate pores ~60%\",\"structure\":\"sharp jawline remove double chin\",\"lips\":\"soften lip lines smooth hydrated glossy\",\"contextual\":\"analyze costume apply character-aligned makeup\"}",
+  "category": "head",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

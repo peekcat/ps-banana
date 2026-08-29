@@ -1,0 +1,966 @@
+/* ============================================================
+ *  tile-topbar.css — 顶栏锁定磁贴 (4x1, pinTop)
+ *  整合: 余额 (老 tile-balance) + 云服务 (老 tile-cloud) + 连接设置 (老 tile-settings)
+ * ============================================================ */
+
+/* ---------- 锁定磁贴外观 ---------- */
+.tile.locked-tile {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+.tile.locked-tile:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ---------- 独立 sticky 容器: 永远钉在 vp 顶部 ----------
+ * 顶栏不再侵入 #mainGrid, 这样主网格的 cellPx/gCoord 公式 (假设每行等高) 自动正确.
+ *
+ * z-index 600 — 高于 .expand-bg (400), 低于 .tile.expanded (700).
+ * 普通磁贴全屏展开时, 整张 tile (z=700) 盖住顶栏 → X 在顶 6px 位置正常可点.
+ * 顶栏自己 expand 时, host 内的 tile 受 host (600) 层叠上下文限制, 实际仍在 600 区域,
+ * 仍大于 .expand-bg (400) ✓.
+ */
+#topbarHost {
+  position: sticky;
+  top: 0;
+  z-index: 600;
+  height: 30px;
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* 顶栏底部渐变光晕 — 阴影向下"晕染", 比单纯 box-shadow 更柔, 暗示顶栏浮在内容之上.
+ * 不要在这里搞 backdrop-filter (UXP 兼容性差易翻车), 半透明效果靠 .tile 基类自带的 backdrop-filter blur 继承. */
+#topbarHost::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  top: 100%;
+  height: 6px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.28), rgba(0, 0, 0, 0));
+  z-index: 1;
+}
+
+/* host 内的顶栏磁贴撑满, 不再走 grid 布局 */
+#topbarHost .tile.locked-tile {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  /* 多层阴影 — 近距离硬阴影描边 + 远距离柔投影制造"浮起"感.
+   * 底边 inset 高光让顶栏自己显得有"厚度". 强度参考 (49), 不要加重 — 否则顶栏看起来不透明. */
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.35),
+    0 4px 10px rgba(0, 0, 0, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+ *  收纳态: 顶栏一行横排
+ * ============================================================ */
+.topbar-summary {
+  align-self: stretch;          /* 父 .tile-inner 是 column+align-items:center, 不强制会被居中收成内容宽 */
+  width: auto;
+  margin-right: 42px;           /* 让出 42px 给 ☰ 按钮 (用 margin 而非 width calc, 保证真撑满剩余宽) */
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 0 0 12px;
+  font-size: 11px;
+  transition: opacity 0.15s ease;   /* 折叠回来时淡入, 配合下面展开期隐藏, 掩盖收纳行瞬移 */
+  line-height: 1;
+  color: var(--text);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* 收纳行内容包一层, 铺满整行: 头衔顶左、Forge 顶右、中间项均匀撑开 (space-between).
+ * 仍是整体缩放的对象: 当面板极窄、即使均分也放不下时, JS 给它 transform:scale(<1)
+ * (transform-origin:left) 以左缘为锚等比缩小, 避免溢出糊到 ☰ 按钮. */
+.topbar-summary-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 6px;
+  white-space: nowrap;
+  transform-origin: left center;
+  transition: transform 0.12s ease;
+}
+.topbar-summary-inner > * { flex-shrink: 0; }   /* 子项不被压缩, 保持自然宽; 撑不下由整体缩放兜底 */
+
+/* 顶栏全屏展开/收回期间, 收纳行隐藏 — 顶栏没有 .tile-icon 做 FLIP 补偿,
+ * .tile-inner 在 center↔flex-start 之间突变会让收纳行瞬移 (展开/折叠那一帧都会).
+ * 展开期隐藏它, 折叠结束移除 class 后 .topbar-summary 在最终居中位置 opacity 淡入, 不再带着旧位置瞬移. */
+#topbarHost .tile.expanding .topbar-summary,
+#topbarHost .tile.expanded .topbar-summary {
+  opacity: 0;
+}
+
+/* ☰ 布局按钮 — 顶栏内右上角 30×30 正方形 (.tile.locked-tile 是 position:relative, 按钮绝对定位贴右) */
+.topbar-layout-btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  color: var(--text-sub);
+  cursor: pointer;
+  z-index: 2;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s, color 0.15s;
+}
+.topbar-layout-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+.topbar-layout-btn.is-active {
+  background: rgba(74, 158, 255, 0.15);
+  color: var(--accent, #4a9eff);
+}
+
+/* 布局面板: 固定定位, 从顶栏 ☰ 正下方掉下来 (锚定视口, 不随内容滚动).
+ * 之前是文档流里焊在页面最顶端, 一滚动展开就跑到屏幕外看不见 — 改成 fixed 修复.
+ * z-index 590 < #topbarHost(600), 面板顶端塞在顶栏底边下方, 看起来像从顶栏里滑出. */
+#topbarLayoutPanel {
+  position: fixed;
+  top: 30px;
+  left: 8px;
+  right: 8px;
+  z-index: 590;
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  background: rgba(30, 30, 46, 0.98);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  transition: max-height 0.25s ease, opacity 0.2s ease;
+}
+#topbarLayoutPanel.is-open {
+  max-height: calc(100% - 40px);
+  opacity: 1;
+  overflow-y: auto;
+}
+
+.topbar-divider {
+  color: var(--text-sub);
+  opacity: 0.4;
+  font-size: 11px;
+}
+
+/* 头衔 pill (用户标签) */
+.topbar-tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+}
+
+/* 各项指标 (AJI 余额 / 夏算力 / Forge) */
+.topbar-stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text);
+  font-size: 12px;
+  transition: color 0.2s, opacity 0.2s;
+}
+
+.topbar-stat-label {
+  color: var(--text-sub);
+  font-size: 10px;
+  letter-spacing: 0.4px;
+}
+
+.topbar-stat-val {
+  color: var(--text);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 未配置 / 未登录 → 灰掉 */
+.topbar-stat.topbar-stat-off {
+  opacity: 0.32;
+}
+.topbar-stat.topbar-stat-off .topbar-stat-val {
+  font-weight: 400;
+}
+
+/* 余额低于阈值 → 红字告警 */
+.topbar-stat.is-low .topbar-stat-val {
+  color: var(--danger, #f56c6c);
+}
+.topbar-stat.is-low .topbar-stat-label {
+  color: var(--danger, #f56c6c);
+  opacity: 0.7;
+}
+
+/* Forge 状态灯号 */
+.topbar-forge-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-sub);
+  opacity: 0.45;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0);
+  transition: background 0.25s, box-shadow 0.25s, opacity 0.25s;
+}
+.topbar-stat.topbar-forge.is-on .topbar-forge-dot {
+  background: var(--success, #4caf50);
+  opacity: 1;
+  box-shadow: 0 0 6px rgba(76, 175, 80, 0.55);
+}
+.topbar-stat.topbar-forge.topbar-stat-off .topbar-forge-dot {
+  background: var(--text-sub);
+  opacity: 0.2;
+}
+
+/* ============================================================
+ *  展开态: 内嵌面板
+ * ============================================================ */
+.w10-panel.topbar-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+}
+
+/* ---------- 顶部分类标签: 账户 / 算力 (分段控件) ---------- */
+.topbar-toptabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin: 0 0 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.topbar-toptab {
+  flex: 1;
+  text-align: center;
+  padding: 8px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-sub, #888);
+  cursor: pointer;
+  border-radius: 6px;
+  user-select: none;
+  transition: color 0.15s, background 0.15s;
+}
+.topbar-toptab:hover {
+  color: var(--text, #ddd);
+}
+.topbar-toptab.is-active {
+  color: #fff;
+  background: var(--accent, #4a9eff);
+}
+.topbar-toptab-panel[hidden] {
+  display: none;
+}
+.topbar-toptab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  /* ⚠ 不要给它加入场 animation: UXP 在 display none→flex 时会先画一帧终态
+     再从头播 animation, 表现为"闪两次/两次刷新"。tab 切换就该干脆直接。 */
+}
+
+/* ---------- 账号块: 未登录 - 登录/注册表单 ---------- */
+.topbar-login-form,
+.topbar-register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.topbar-login-form .w10-input,
+.topbar-register-form .w10-input {
+  width: 100%;
+}
+
+.topbar-login-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+.topbar-login-actions .w10-btn {
+  flex: 1;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.topbar-captcha-img {
+  display: inline-block;
+  height: 32px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  vertical-align: middle;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  margin-left: 6px;
+}
+.topbar-captcha-img:hover {
+  border-color: var(--accent);
+}
+
+.topbar-error {
+  color: var(--danger, #f56c6c);
+  font-size: 11px;
+  padding: 4px 0;
+  min-height: 16px;
+  line-height: 1.4;
+}
+
+/* ---------- 账号块: 已登录 - 用户信息 ---------- */
+.topbar-user-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 4px 0;
+}
+
+.topbar-user-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.topbar-tag-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 9px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.topbar-nickname {
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ---------- 积分卡片 ---------- */
+.topbar-points-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  margin: 4px 0;
+}
+
+.topbar-points-label {
+  color: var(--text-sub);
+  font-size: 11px;
+}
+
+.topbar-points-value {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 公告条 ---------- */
+.topbar-announcement {
+  font-size: 11px;
+  color: var(--text-sub);
+  line-height: 1.5;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.025);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 3px 3px 0;
+  margin: 4px 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ---------- 底部链接 (找回密码 / 客服) ---------- */
+.topbar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 0 0 0;
+  margin-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 11px;
+}
+
+.topbar-link {
+  color: var(--text-sub);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.topbar-link:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
+/* ---------- 云 Forge 服务器圆点 (顶栏面板内) ---------- */
+.topbar-forge-dot-mini {
+  font-size: 10px;
+  line-height: 1;
+  color: var(--text-sub);
+  flex-shrink: 0;
+}
+
+/* ---------- Key 输入框 + 眼睛按钮 ---------- */
+.key-eye-btn {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-sub);
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 3px;
+}
+.key-eye-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+/* 父行 (有眼睛按钮) 给输入框留出空间 */
+.w10-row-right:has(.key-eye-btn) {
+  position: relative;
+}
+.w10-row-right:has(.key-eye-btn) .w10-input {
+  padding-right: 30px;
+}
+
+/* ---------- 紧凑模式 (1x1 ~ 2x2 不需要; 4x1 是固定大小, 这块给老用户兜底) ---------- */
+.tile[data-w="4"][data-h="1"] .topbar-summary {
+  font-size: 12px;
+}
+
+/* ---------- 触感: 收纳行点击区域 ---------- */
+.tile.locked-tile .topbar-summary {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ============================================================
+ *  找回密码弹窗 (覆盖在顶栏面板上的模态层)
+ * ============================================================ */
+.pw-recovery-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: pwMaskFadeIn 0.18s ease;
+}
+@keyframes pwMaskFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.pw-recovery-dialog {
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 22px 24px;
+  width: 380px;
+  max-width: calc(100vw - 32px);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+  animation: pwDialogIn 0.22s cubic-bezier(.2, .9, .3, 1.2);
+}
+@keyframes pwDialogIn {
+  from { opacity: 0; transform: scale(0.92) translateY(-6px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.pw-recovery-dialog h3 {
+  margin: 0 0 14px 0;
+  font-size: 16px;
+  color: var(--text, #fff);
+  font-weight: 600;
+}
+
+.pw-recovery-dialog .pw-row {
+  margin-bottom: 12px;
+}
+
+.pw-recovery-dialog .pw-label {
+  display: block;
+  font-size: 12px;
+  color: var(--text-sub, #999);
+  margin-bottom: 4px;
+}
+
+.pw-recovery-dialog .pw-input-wrap {
+  position: relative;
+}
+
+.pw-recovery-dialog input {
+  width: 100%;
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text, #fff);
+  border-radius: 5px;
+  padding: 7px 9px;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.pw-recovery-dialog input:focus {
+  border-color: var(--accent, #4a9eff);
+}
+
+.pw-recovery-dialog .pw-input-wrap input[type="password"],
+.pw-recovery-dialog .pw-input-wrap input[type="text"].is-pw {
+  padding-right: 32px;
+}
+
+.pw-recovery-dialog .pw-eye {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--text-sub, #888);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 3px;
+}
+.pw-recovery-dialog .pw-eye:hover {
+  color: var(--text, #fff);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pw-recovery-dialog .pw-hint {
+  font-size: 11px;
+  color: var(--text-sub, #888);
+  line-height: 1.5;
+  margin-top: 3px;
+}
+
+.pw-recovery-dialog .pw-error {
+  background: rgba(255, 69, 58, 0.1);
+  border: 1px solid rgba(255, 69, 58, 0.3);
+  color: #ff8a8a;
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 12px;
+  margin: 8px 0 4px;
+  display: none;
+}
+.pw-recovery-dialog .pw-error.show { display: block; }
+
+.pw-recovery-dialog .pw-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.pw-recovery-dialog .pw-actions .pw-spacer {
+  flex: 1;
+}
+
+.pw-recovery-dialog .pw-support-link {
+  font-size: 12px;
+  color: var(--text-sub, #888);
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-top: 10px;
+  margin-top: 12px;
+  text-align: center;
+}
+.pw-recovery-dialog .pw-support-link a {
+  color: var(--accent, #4a9eff);
+  cursor: pointer;
+  text-decoration: none;
+}
+.pw-recovery-dialog .pw-support-link a:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   算力配置 section (tabs + radio + BYOK panel)
+   ============================================================ */
+.topbar-pwr-tabs {
+  display: flex;
+  gap: 4px;
+  margin: 6px 0 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.topbar-pwr-tab {
+  padding: 6px 12px;
+  font-size: 12px;
+  color: var(--text-sub, #888);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  user-select: none;
+}
+.topbar-pwr-tab:hover {
+  color: var(--text, #ddd);
+}
+.topbar-pwr-tab.is-active {
+  color: var(--accent, #4a9eff);
+  border-bottom-color: var(--accent, #4a9eff);
+}
+.topbar-pwr-panel {
+  padding-top: 4px;
+}
+
+/* BYOK 选择卡片组 (UXP 不支持原生 radio, 用 div 模拟) */
+.topbar-byok-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.topbar-byok-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.topbar-byok-option:hover {
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.15);
+}
+.topbar-byok-option.is-active {
+  background: rgba(74,158,255,0.08);
+  border-color: rgba(74,158,255,0.5);
+}
+.topbar-byok-option.is-disabled {
+  opacity: 0.55;
+}
+.topbar-byok-option.is-disabled .topbar-byok-label {
+  color: var(--text-sub, #888);
+}
+.topbar-byok-dot {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  margin-top: 2px;
+  border: 2px solid var(--text-sub, #888);
+  border-radius: 50%;
+  background: transparent;
+  box-sizing: border-box;
+  position: relative;
+  transition: border-color 0.15s;
+}
+.topbar-byok-option.is-active .topbar-byok-dot {
+  border-color: var(--accent, #4a9eff);
+}
+.topbar-byok-option.is-active .topbar-byok-dot::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--accent, #4a9eff);
+}
+.topbar-byok-main {
+  flex: 1;
+  min-width: 0;
+}
+.topbar-byok-label {
+  font-size: 12px;
+  color: var(--text, #ddd);
+  font-weight: 500;
+}
+.topbar-byok-option.is-active .topbar-byok-label {
+  color: var(--accent, #4a9eff);
+}
+.topbar-byok-hint {
+  font-size: 11px;
+  color: var(--text-sub, #888);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+
+/* 未登录说明条 */
+.topbar-login-hint {
+  font-size: 11px;
+  color: var(--text-sub, #888);
+  background: rgba(74,158,255,0.06);
+  border: 1px dashed rgba(74,158,255,0.25);
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 8px 0;
+  line-height: 1.6;
+}
+.topbar-login-hint b {
+  color: var(--accent, #4a9eff);
+}
+
+/* ============================================================
+   按钮 loading spinner (异步操作通用)
+   ============================================================ */
+.w10-btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+.w10-btn-loading::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  margin-top: -6px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  color: var(--text, #ddd);
+  animation: topbar-spin 0.7s linear infinite;
+}
+@keyframes topbar-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ============================================================
+   收纳态 "切换中" spinner (provider/BYOK 切换瞬间)
+   ============================================================ */
+.topbar-stat.is-switching .topbar-stat-val {
+  opacity: 0.5;
+}
+.topbar-stat.is-switching .topbar-stat-val::after {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border: 1px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: topbar-spin 0.8s linear infinite;
+  margin-left: 4px;
+  vertical-align: middle;
+}
+
+/* 未配置/异常 ⚙/! 槽位的可点击高亮 */
+.topbar-stat.is-clickable {
+  cursor: pointer;
+}
+.topbar-stat.is-clickable:hover {
+  background: rgba(255,255,255,0.05);
+  border-radius: 3px;
+}
+.topbar-stat.is-warn {
+  color: #ff9800;
+}
+
+/* 低额闪烁 */
+.topbar-stat.is-low .topbar-stat-val {
+  animation: topbar-low-pulse 1.4s ease-in-out infinite;
+}
+@keyframes topbar-low-pulse {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 1; }
+}
+
+/* 跳转目标高亮 (临时, 用户点击 ⚙ 跳到对应输入框时闪一下) */
+.topbar-jump-highlight {
+  animation: topbar-jump-flash 1.2s ease-out;
+}
+@keyframes topbar-jump-flash {
+  0%   { box-shadow: 0 0 0 2px rgba(74,158,255,0.8), 0 0 12px rgba(74,158,255,0.4); }
+  100% { box-shadow: 0 0 0 0 transparent, 0 0 0 transparent; }
+}
+
+/* ============================================================
+   🎛 算力槽位自定义 (slot editor) — 每行 grid 四列对齐
+   ============================================================ */
+.slot-intro {
+  font-size: 11px;
+  color: var(--text-sub, #888);
+  line-height: 1.6;
+  margin: 2px 0 10px;
+}
+
+/* 折叠/展开标题 */
+.slot-section-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.slot-toggle-arrow {
+  font-size: 10px;
+  color: var(--text-sub, #888);
+  width: 12px;
+  display: inline-block;
+}
+.slot-section-toggle:hover .slot-toggle-arrow {
+  color: var(--accent, #4a9eff);
+}
+
+.slot-card {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* 第4格(隐藏)卡片: 暗化提示不显示在顶栏/参数 */
+.slot-card-hidden {
+  opacity: 0.6;
+  border-style: dashed;
+}
+.slot-hidden-divider {
+  font-size: 11px;
+  color: var(--text-sub);
+  text-align: center;
+  margin: 6px 0 10px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.12);
+}
+
+/* 卡片头: 引擎名 + 格子显示名输入框 同一行, 底边分隔 */
+.slot-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.slot-card-eng {
+  flex: 0 0 auto;
+  min-width: 56px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent, #4a9eff);
+}
+.slot-card-name {
+  flex: 1;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* ▲▼ 调序按钮 (卡片头右侧) */
+.slot-card-move {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 3px;
+}
+.slot-move-btn {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  line-height: 1;
+  color: var(--text-sub, #888);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.slot-move-btn:hover {
+  background: rgba(74, 158, 255, 0.15);
+  color: var(--accent, #4a9eff);
+  border-color: rgba(74, 158, 255, 0.4);
+}
+
+/* 模型列表: 纵向滚动 */
+.slot-models {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+/* 关键: 列头与每个模型行共用同一 grid 模板 → 四列严格对齐
+ * [勾选 18] [全名 弹性] [短名 84] [真实ID 自适应] */
+.slot-row {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) 84px minmax(56px, 1.1fr);
+  align-items: center;
+  gap: 8px;
+}
+.slot-row-head {
+  font-size: 10px;
+  color: var(--text-sub, #888);
+  letter-spacing: 0.3px;
+  padding-bottom: 1px;
+}
+.slot-row-head span { white-space: nowrap; }
+
+.slot-row .w10-input {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.slot-chk {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  justify-self: center;
+}
+
+.slot-row-id {
+  font-size: 10px;
+  color: var(--text-sub, #888);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.slot-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+/* === v6.5.9 正面状态格点按反馈(它们可点跳转, 原来无任何按下确认) === */
+.topbar-stat { cursor: pointer; }
+.topbar-stat:hover { opacity: 0.85; }
+.topbar-stat:active { transform: scale(0.95); }
+.topbar-tag.is-clickable:active { transform: scale(0.95); }

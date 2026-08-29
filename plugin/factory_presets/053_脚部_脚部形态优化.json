@@ -1,0 +1,9 @@
+{
+  "id": "f_052",
+  "title": "脚部形态优化",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":\"保持脚部姿势角度不变\",\"preserve_skin_color\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析脚部形态问题：拇指外翻程度、小趾变形/重叠、脚趾间距、足弓高度、脚背弧度、脚趾粗细比例\"},\"foot_sculpting\":{\"toe_alignment\":{\"correction\":\"矫正拇指外翻(hallux valgus)使大脚趾回归自然直线排列\",\"spacing\":\"五个脚趾间距均匀自然，由大到小依次递减排列整齐\",\"shape\":\"每个脚趾修长圆润，趾尖自然圆弧收尖，无扁平变形\",\"little_toe\":\"矫正小趾弯曲或内翻，使其自然伸展\"},\"arch_optimization\":{\"foot_arch\":\"足弓呈现自然优美的弧度(内侧足弓高度约2-3cm参考)\",\"instep\":\"脚背弧线从脚踝到脚趾呈流畅优美曲线，骨骼和肌腱轮廓柔和可见\"},\"proportion\":{\"toe_length\":\"脚趾长度比例协调：大脚趾最长，依次递减或第二趾略长(希腊足型)均可\",\"width\":\"脚掌宽度与长度比例协调，不过宽不过窄\"},\"skin_quality\":{\"texture\":\"脚部皮肤细腻光滑，与腿部肤质一致\",\"joint\":\"脚趾关节处皮肤褶皱自然不过于松弛\"}},\"constraints\":{\"严禁\":\"改变脚部大小、改变姿势角度、脚趾数量变化\",\"禁止\":\"过度修正呈现不自然的完美对称\"},\"integration\":{\"light_match\":\"修正后脚部光影与原图一致\",\"noise_match\":\"噪点与原图一致\"}}",
+  "category": "feet",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,58 @@
+/* tile-stitch.css — 多区拼接磁贴 */
+.stitch-panel { display: flex; flex-direction: column; gap: 8px; }
+.stitch-count { font-size: 10px; color: var(--text-sub, #999); font-weight: normal; margin-left: 6px; }
+.stitch-desc { white-space: pre-line; font-size: 11px; line-height: 1.5; padding-bottom: 2px; }
+
+.stitch-list { display: flex; flex-direction: column; gap: 4px; }
+.stitch-empty {
+  font-size: 11px; color: var(--text-sub, #888);
+  padding: 18px 8px; text-align: center;
+  background: rgba(255, 255, 255, 0.03); border-radius: 6px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+}
+.stitch-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 8px; border-radius: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.stitch-thumb {
+  width: 44px; height: 44px; object-fit: cover;
+  border-radius: 4px; flex: 0 0 auto;
+  background: rgba(0, 0, 0, 0.3);
+}
+.stitch-info { flex: 1; min-width: 0; }
+.stitch-name { font-size: 12px; color: var(--text, #eee); }
+.stitch-dim { font-size: 10px; color: var(--text-sub, #999); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stitch-btns { display: flex; gap: 3px; flex: 0 0 auto; }
+.stitch-btns .w10-btn { font-size: 10px; padding: 2px 7px; }
+.stitch-btns .w10-btn:disabled { opacity: 0.3; }
+
+.stitch-est { font-size: 10px; color: var(--accent, #4a9eff); padding: 0 2px; }
+.stitch-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+.stitch-actions .w10-btn { font-size: 12px; }
+
+/* 区域编号徽章(与预览色块对应) */
+.stitch-badge {
+  width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: bold; color: #1a1a2e;
+  flex: 0 0 auto;
+}
+
+/* 1:1 排布预览 */
+.stitch-preview { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 4px 0; }
+.stitch-preview-cv {
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+.stitch-preview-lbl { font-size: 10px; color: var(--text-sub, #999); }
+
+/* 张数/自动排布行 */
+.stitch-opts { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.stitch-opt-lbl { font-size: 11px; color: var(--text-sub, #999); }
+.stitch-batch-group { display: flex; gap: 2px; }
+.stitch-batch-btn { font-size: 11px; padding: 2px 9px; }
+.stitch-preview-cv { cursor: grab; touch-action: none; }
+.stitch-preview-tip { font-size: 9px; color: var(--text-sub, #888); opacity: 0.8; }

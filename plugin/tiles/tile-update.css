@@ -1,0 +1,220 @@
+/* ============================================================
+ * tile-update.css — 在线更新磁贴的安装覆盖层
+ * ============================================================ */
+
+/* 分支切换 pill */
+.update-branch-pill {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 2px;
+  margin: 4px 0 8px;
+  font-size: 10px;
+  user-select: none;
+}
+.update-branch-opt {
+  padding: 3px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--text-sub, #aaa);
+  transition: background 0.15s, color 0.15s;
+}
+.update-branch-opt:hover {
+  color: var(--text-main, #fff);
+}
+.update-branch-opt.active {
+  background: var(--accent, #4fc3f7);
+  color: #000;
+  font-weight: 600;
+}
+/* 灰度测试版 pill - 橙色, 一眼区别于普通分支 */
+.update-branch-opt.update-branch-alpha {
+  color: #ff9800;
+}
+.update-branch-opt.update-branch-alpha:hover {
+  color: #ffb74d;
+}
+.update-branch-opt.update-branch-alpha.active {
+  background: #ff9800;
+  color: #000;
+}
+
+.update-install-box {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: 6px;
+  border: 1px solid rgba(105, 240, 174, 0.3);
+  margin-top: 8px;
+}
+
+.update-install-title {
+  font-size: 14px;
+  color: #69f0ae;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+  animation: update-flash 1.2s infinite;
+}
+
+.update-install-steps {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.7;
+  padding-left: 22px;
+  margin: 8px 0;
+}
+
+.update-install-steps li {
+  margin-bottom: 2px;
+}
+
+.update-install-steps b {
+  color: #4fc3f7;
+}
+
+.update-install-steps .warn {
+  color: #ff5252;
+  font-weight: 700;
+}
+
+.update-install-btn {
+  width: 100%;
+  font-size: 13px;
+  padding: 10px;
+  margin-top: 6px;
+  animation: update-flash 1.4s infinite;
+}
+
+.update-install-btn:disabled {
+  animation: none;
+  opacity: 0.6;
+}
+
+.update-install-note {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  margin-top: 6px;
+  word-break: break-all;
+}
+
+.update-install-note code {
+  font-family: monospace;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1px 4px;
+  border-radius: 2px;
+}
+
+@keyframes update-flash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* ============================================================
+ * 启动时自动检查 — 中央对话框
+ * ============================================================ */
+.update-auto-dialog-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: update-auto-fadein 0.18s ease;
+}
+@keyframes update-auto-fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.update-auto-dialog {
+  width: 460px;
+  max-width: 92vw;
+  max-height: 80vh;
+  background: var(--bg, #1e1e1e);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  animation: update-auto-pop 0.2s cubic-bezier(0.2, 1.4, 0.5, 1);
+}
+@keyframes update-auto-pop {
+  from { transform: scale(0.94); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.update-auto-dialog-head {
+  padding: 14px 18px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.update-auto-dialog-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text, #fff);
+  margin-bottom: 4px;
+}
+.update-auto-dialog-version {
+  font-size: 12px;
+  color: var(--accent, #4fc3f7);
+  font-variant-numeric: tabular-nums;
+}
+.update-auto-dialog-body {
+  padding: 12px 18px;
+  overflow-y: auto;
+  flex: 1;
+}
+.update-auto-dialog-clog {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text, #ddd);
+  white-space: pre-wrap;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  padding: 10px 12px;
+  max-height: 360px;
+  overflow-y: auto;
+}
+.update-auto-dialog-actions {
+  padding: 10px 18px 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.update-auto-dialog-actions .w10-btn {
+  flex: 1 1 auto;
+  font-size: 12px;
+  padding: 8px 10px;
+  white-space: nowrap;
+}
+.update-auto-dialog-close {
+  flex-basis: 100% !important;
+  margin-top: 2px;
+  color: var(--text-sub, #888) !important;
+  background: transparent !important;
+  border: 1px dashed rgba(255, 255, 255, 0.15) !important;
+}
+
+/* 启动时检查开关 */
+.update-auto-row {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+}
+.update-auto-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--text-sub, #aaa);
+  user-select: none;
+}
+.update-auto-switch input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--accent, #4fc3f7);
+}

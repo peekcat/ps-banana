@@ -1,0 +1,721 @@
+/* ============================================================
+ * tile-conversation.css — 对话式生成磁贴
+ * 全部 conv-* 前缀,不污染其他磁贴
+ * ============================================================ */
+
+.conv-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  gap: 8px;
+}
+
+.conv-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.conv-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.conv-count {
+  font-size: 10px;
+  color: var(--text-sub);
+  font-variant-numeric: tabular-nums;
+}
+/* 三个图标按钮(📁🗑️⬇)定死盒子尺寸 — 高度不许字符说了算:
+   ⬇ 的字形天生比彩色 emoji 高, 只统一 font-size 治不住, 必须锁 height */
+.conv-btn-folder, .conv-btn-clear, .conv-btn-bottom {
+  font-size: 11px;
+  padding: 0 8px;
+  height: 24px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.conv-tip {
+  font-size: 10px;
+  color: var(--text-sub);
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* === 消息列表 === */
+.conv-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-right: 2px;
+}
+
+.conv-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 11px;
+  color: var(--text-sub);
+  opacity: 0.6;
+  padding: 24px;
+  line-height: 1.7;
+}
+
+.conv-row {
+  display: flex;
+  width: 100%;
+}
+/* v6.5.6b: 不再左右分侧(颜色已区分角色), 气泡全宽, 左右边距一致 */
+.conv-row-user { justify-content: stretch; }
+.conv-row-ai { justify-content: stretch; }
+
+.conv-bubble {
+  width: 100%;   /* v6.5.6b: 全宽铺满, 两侧边距一致(撤销 86% 固定宽的错误理解) */
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  word-wrap: break-word;
+  word-break: break-word;
+  position: relative;
+}
+
+/* 单条删除按钮 — hover 在气泡上才显示 */
+.conv-msg-del {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  background: rgba(20, 20, 20, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, color 0.15s, transform 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+.conv-bubble:hover .conv-msg-del {
+  opacity: 1;
+}
+.conv-msg-del:hover {
+  background: rgba(255, 80, 80, 0.85);
+  color: #fff;
+  border-color: rgba(255, 80, 80, 0.95);
+  transform: scale(1.1);
+}
+
+.conv-bubble-user {
+  background: rgba(80, 140, 220, 0.18);
+  border: 1px solid rgba(80, 140, 220, 0.35);
+  border-bottom-right-radius: 2px;
+}
+.conv-bubble-ai {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom-left-radius: 2px;
+}
+.conv-bubble-error {
+  background: rgba(255, 80, 80, 0.12);
+  border: 1px solid rgba(255, 80, 80, 0.35);
+  border-bottom-left-radius: 2px;
+}
+.conv-bubble-mixed {
+  background: rgba(255, 180, 60, 0.1);
+  border: 1px solid rgba(255, 180, 60, 0.3);
+  border-bottom-left-radius: 2px;
+}
+
+/* ×N 批次角标(在用户气泡 meta 行尾) */
+.conv-badge-x {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  background: rgba(255, 200, 80, 0.18);
+  border: 1px solid rgba(255, 200, 80, 0.4);
+  color: rgba(255, 220, 140, 0.95);
+  border-radius: 8px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  vertical-align: middle;
+}
+
+.conv-meta {
+  font-size: 9px;
+  color: var(--text-sub);
+  opacity: 0.85;
+  letter-spacing: 0.2px;
+}
+
+.conv-text {
+  font-size: 11px;
+  color: var(--text);
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+.conv-text-pending {
+  color: var(--text-sub);
+  font-style: italic;
+}
+
+/* 可折叠提示词 */
+.conv-text-collapsible {
+  cursor: pointer;
+  position: relative;
+}
+.conv-text-collapsible .conv-text-content {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.conv-text-collapsible.is-collapsed .conv-text-content {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  /* 渐隐底部:让被裁的文字看起来自然消失 */
+  mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+}
+.conv-text-toggle {
+  display: inline-block;
+  margin-top: 2px;
+  font-size: 10px;
+  color: var(--accent);
+  user-select: none;
+  letter-spacing: 0.3px;
+}
+.conv-text-toggle:hover {
+  text-decoration: underline;
+}
+.conv-text-collapsible:hover .conv-text-toggle {
+  text-decoration: underline;
+}
+
+/* === 缩略图区 === */
+.conv-imgs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+.conv-img-wrap {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(20, 20, 20, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  cursor: pointer;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.conv-img-wrap:hover {
+  transform: scale(1.05);
+  border-color: var(--accent);
+}
+.conv-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.conv-img-tag {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  padding: 1px 4px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 600;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* 等待中占位(正在保存图片 / 还没回包) */
+.conv-img-pending,
+.conv-img-waiting {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.conv-img-pending:hover,
+.conv-img-waiting:hover {
+  transform: none;
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.conv-img-spinner {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: -2px;
+  animation: convPulse 1.4s ease-in-out infinite;
+}
+@keyframes convPulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+/* 失败占位 */
+.conv-img-fail {
+  background: rgba(255, 80, 80, 0.1);
+  border: 1px solid rgba(255, 80, 80, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: default;
+}
+.conv-img-fail:hover {
+  transform: none;
+  border-color: rgba(255, 80, 80, 0.6);
+}
+.conv-img-fail-icon {
+  font-size: 22px;
+  opacity: 0.7;
+}
+
+/* === 全屏预览 overlay === */
+.conv-preview-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+  animation: convFadeIn 0.18s ease;
+}
+.conv-preview-overlay img {
+  max-width: 92%;
+  max-height: 92%;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.7);
+}
+.conv-preview-close {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  line-height: 1;
+}
+.conv-preview-close:hover { color: #ff5252; }
+@keyframes convFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* === Solo 圆点(缩略图右上角) === */
+.conv-solo-dot {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 11px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 5;
+  transition: all 0.15s;
+  font-family: 'Segoe UI', sans-serif;
+  font-weight: 600;
+}
+.conv-solo-dot:hover {
+  transform: scale(1.12);
+}
+.conv-solo-dot.is-on {
+  background: #aa78ff;
+  border-color: #c8a8ff;
+  color: #fff;
+  box-shadow: 0 0 0 2px rgba(170, 120, 255, 0.35);
+}
+.conv-solo-dot.is-off {
+  color: rgba(255, 255, 255, 0.65);
+}
+.conv-solo-dot.is-off:hover {
+  background: rgba(170, 120, 255, 0.35);
+  border-color: rgba(170, 120, 255, 0.7);
+  color: #fff;
+}
+.conv-solo-dot.is-pending {
+  opacity: 0.35;
+  cursor: wait;
+  pointer-events: none;
+}
+.conv-solo-dot.is-lost {
+  background: rgba(255, 80, 80, 0.4);
+  border-color: rgba(255, 80, 80, 0.6);
+  color: #fff;
+  cursor: not-allowed;
+}
+
+/* 选中态:缩略图整体加紫色环 + 微亮 */
+.conv-img-wrap.is-solo-selected {
+  outline: 2px solid #aa78ff;
+  outline-offset: -2px;
+  box-shadow: 0 0 0 3px rgba(170, 120, 255, 0.25);
+}
+.conv-img-wrap.is-solo-selected .conv-img {
+  filter: brightness(1.08);
+}
+
+/* === 大图预览顶部工具条 === */
+.conv-preview-bar {
+  position: absolute;
+  top: 16px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+}
+.conv-preview-bar > * {
+  pointer-events: auto;
+}
+.conv-preview-solo {
+  padding: 8px 18px;
+  background: rgba(170, 120, 255, 0.18);
+  border: 1px solid rgba(170, 120, 255, 0.5);
+  color: #e0c8ff;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+  letter-spacing: 0.3px;
+  transition: all 0.15s;
+}
+.conv-preview-solo:hover {
+  background: rgba(170, 120, 255, 0.32);
+  border-color: rgba(170, 120, 255, 0.85);
+  color: #fff;
+}
+.conv-preview-solo.is-on {
+  background: #aa78ff;
+  border-color: #c8a8ff;
+  color: #fff;
+  box-shadow: 0 0 0 3px rgba(170, 120, 255, 0.3);
+}
+.conv-preview-solo.is-on:hover {
+  filter: brightness(1.1);
+}
+.conv-preview-solo.is-lost {
+  background: rgba(120, 120, 120, 0.2);
+  border-color: rgba(120, 120, 120, 0.5);
+  color: #888;
+  cursor: not-allowed;
+}
+
+/* === v6.5.0 生成中心: 活气泡控制条 / 待返回按钮条 === */
+.conv-bubble-live {
+  border-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+.conv-live-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0 6px;
+  flex-wrap: wrap;
+}
+.conv-live-cd {
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 12px;
+  flex: 0 0 auto;
+}
+.conv-live-label {
+  font-size: 11px;
+  color: var(--text-sub);
+  flex: 0 0 auto;
+}
+.conv-live-prog {
+  flex: 1;
+  min-width: 60px;
+  height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.conv-live-fill {
+  height: 100%;
+  width: 100%;
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+.conv-live-btn {
+  font-size: 10px;
+  padding: 2px 7px;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.conv-ar-on { color: #5be37b; }
+.conv-ar-off { color: #ffcc80; }
+.conv-pending-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 0 2px;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  margin-top: 6px;
+}
+.conv-pending-label {
+  flex: 1;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* === v6.5.0: 用户气泡横排(图左字右) + 隐藏态 + 放大导航 === */
+.conv-user-flex {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  align-items: flex-start;
+}
+.conv-user-flex .conv-imgs-user {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+}
+.conv-user-flex .conv-imgs-user .conv-img-wrap {
+  width: 52px;
+  height: 52px;
+}
+.conv-user-flex .conv-user-texts {
+  flex: 1;
+  min-width: 0;
+}
+.conv-user-hidden {
+  font-size: 10px;
+  color: var(--text-sub);
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.04);
+  cursor: pointer;
+  user-select: none;
+}
+.conv-user-hidden:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+.conv-preview-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 3;
+  width: 40px;
+  height: 64px;
+  border: none;
+  border-radius: 4px;
+  background: rgba(0,0,0,0.45);
+  color: #eee;
+  font-size: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+.conv-preview-arrow:hover { opacity: 1; background: rgba(0,0,0,0.7); }
+.conv-preview-arrow-l { left: 10px; }
+.conv-preview-arrow-r { right: 10px; }
+.conv-preview-pos { color: rgba(255,255,255,0.6); font-size: 12px; margin-left: 8px; }
+
+/* === v6.5.1: 顶栏防换行/防竖排 === */
+.conv-head {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.conv-head .conv-title {
+  white-space: nowrap;
+  writing-mode: horizontal-tb;   /* 防窄容器把标题挤成竖排 */
+  flex-shrink: 0;
+}
+.conv-head-opt {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.conv-head-opt-txt {
+  font-size: 10px;
+  color: var(--text-sub);
+  white-space: nowrap;
+  writing-mode: horizontal-tb;
+}
+.conv-head-tog { flex-shrink: 0; }
+.conv-head .conv-btn-folder,
+.conv-head .conv-btn-clear,
+.conv-head .conv-btn-bottom {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+/* 窄面板: 藏文字标签只留开关(开关自带 title 提示) */
+.panel-sz-narrow .conv-head-opt-txt,
+.panel-sz-tall .conv-head-opt-txt { display: none; }
+
+/* v6.5.3: 顶栏文字按钮开关(替代臃肿toggle) — 高度与图标按钮组锁齐 */
+.conv-opt-btn {
+  font-size: 10px;
+  padding: 0 9px;
+  height: 24px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+/* v6.5.4: 自动校色中 — 缩略图呼吸动画 */
+.conv-img-colorgrading {
+  animation: convCmBreath 1.2s ease-in-out infinite;
+  position: relative;
+}
+.conv-img-colorgrading::after {
+  content: '🎨';
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  font-size: 11px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.8));
+}
+@keyframes convCmBreath {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* v6.5.4: 校色完成 — 传回按钮浮层 */
+.conv-img-cm-done {
+  position: relative;
+  cursor: pointer;
+}
+/* 校色完成常驻标识: 🎨 固定在右下角(和校色中闪烁图标同一位置), 不悬停也能看见 */
+.conv-img-cm-done::after {
+  content: '🎨';
+  position: absolute;
+  right: 2px;
+  bottom: 2px;
+  font-size: 11px;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.8));
+}
+.conv-img-cm-done::before {
+  content: '🎨 传回校色';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 4px 8px;
+  background: rgba(0, 120, 215, 0.92);
+  color: white;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.conv-img-cm-done:hover::before {
+  opacity: 1;
+}
+
+/* v6.5.9: 后台完成·未贴回 — 传回按钮浮层 */
+.conv-img-unplaced {
+  position: relative;
+  cursor: pointer;
+}
+.conv-img-unplaced::before {
+  content: '点 ⏸ 传回';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 4px 8px;
+  background: rgba(255, 140, 0, 0.92);
+  color: white;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.conv-img-unplaced:hover::before {
+  opacity: 1;
+}
+
+/* 圆点样式扩展 */
+.conv-solo-dot.is-unplaced {
+  background: rgba(255, 140, 0, 0.9);
+  color: white;
+}
+
+/* v6.5.6: 预览缩放 */
+.conv-preview-overlay img{ transition:transform 0.08s ease-out; will-change:transform; user-select:none; -webkit-user-drag:none; }
+
+/* === v6.5.9 体感: 可点元素补按下反馈(原来只有 hover 没有 active) === */
+.conv-msg-del:active,
+.conv-badge-x:active,
+.conv-live-btn:active,
+.conv-nav:active,
+.conv-preview-close:active,
+.conv-preview-solo:active,
+.conv-head-opt:active,
+.conv-btn-folder:active,
+.conv-btn-clear:active,
+.conv-btn-bottom:active {
+  transform: scale(0.9);
+}
+.conv-msg-del, .conv-badge-x, .conv-live-btn, .conv-nav,
+.conv-preview-close, .conv-preview-solo, .conv-head-opt,
+.conv-btn-folder, .conv-btn-clear, .conv-btn-bottom {
+  transition: transform 0.1s, background 0.15s, color 0.15s, opacity 0.15s;
+}
+/* 图片卡点开预览前给一点按下暗示 */
+.conv-img-wrap:active { transform: scale(0.98); }
+.conv-img-wrap { transition: transform 0.12s, border-color 0.15s; }

@@ -1,0 +1,9 @@
+{
+  "id": "f_031",
+  "title": "绷紧衣服",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_costume_design\":\"完全不改变服装款式、材质种类、颜色、图案、配饰位置\",\"preserve_pose\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析服装当前状态：不美观的塌陷褶皱/堆积褶皱位置、布料松弛区域、服装与身体的贴合度、面料类型(棉/丝/皮革/针织)\"},\"tightening_operations\":{\"fit_enhancement\":{\"action\":\"让服装整体更贴身绷紧，呈现自然的受力张力\",\"degree\":\"紧绷程度增加约15-25%，让服装更好地展现身体曲线\",\"body_contact\":\"服装面料更紧密贴合身体表面轮廓，减少空隙\"},\"wrinkle_cleanup\":{\"remove\":\"移除不美观的塌陷褶皱(重力导致的松弛堆积)、堆积褶皱(布料多余导致的团状折叠)\",\"preserve\":\"仅保留符合受力逻辑的张力褶(拉伸产生的放射状细纹)和转折褶(弯曲部位的自然折叠)\",\"redistribute\":\"褶皱重新分布到关节弯曲处和服装受力点\"},\"fabric_refresh\":{\"surface\":\"布料表面更崭新顺滑，消除使用痕迹和起球\",\"tension_lines\":\"在胸部/腰部/臀部等受力区域可见微弱的张力纹，体现服装紧绷的物理真实性\",\"material_sheen\":\"面料光泽恢复到崭新状态：丝绸光滑、棉织紧密、皮革光亮\"}},\"constraints\":{\"严禁\":\"改变服装款式剪裁/材质/颜色/图案、改变配饰位置、改变模特动作\",\"禁止\":\"服装过紧呈现不自然的真空贴合、褶皱完全消除呈塑料感\"},\"integration\":{\"light_match\":\"布料收紧后高光和阴影根据新曲面重新计算\",\"noise_match\":\"噪点一致\"}}",
+  "category": "torso",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

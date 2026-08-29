@@ -1,0 +1,100 @@
+/* tile-comfyui.css - ComfyUI 磁贴特有样式 */
+
+/* 连接栏 */
+.comfy-connection-bar {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.comfy-url-input {
+  flex: 1;
+  min-width: 120px;
+}
+.comfy-status {
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--text-sub, #888);
+}
+
+/* 参数容器 */
+.comfy-params-container {
+  max-height: 320px;
+  overflow-y: auto;
+  margin-bottom: 8px;
+}
+.comfy-param-row .w10-row-label {
+  font-size: 10px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.comfy-param-textarea {
+  min-height: 40px;
+  resize: vertical;
+}
+
+/* 进度条 */
+.comfy-progress {
+  position: relative;
+  height: 18px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.comfy-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent, #4fc3f7) 0%, #29b6f6 100%);
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
+.comfy-progress-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* 操作栏 */
+.comfy-action-bar {
+  margin-top: 6px;
+}
+.comfy-generate-btn {
+  width: 100%;
+}
+
+/* Square 布局网格 */
+.comfy-square-grid {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.comfy-square-left {
+  flex: 1;
+}
+.comfy-square-right {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+}
+
+/* WideShort 横条 */
+.comfy-wideshort-strip {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: nowrap;
+}

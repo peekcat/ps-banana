@@ -1,0 +1,9 @@
+{
+  "id": "f_012",
+  "title": "下颌线优化",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_expression\":true,\"preserve_face_features\":\"严格锁定五官位置、眼睛大小、嘴型、鼻型不偏移\",\"preserve_skin_color\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析模特面部角度(正面/3/4侧/侧面)、下颌区域脂肪堆积程度、原图光源方向和强度、颈部与下颌的交界位置\"},\"jawline_sculpting\":{\"double_chin_removal\":{\"action\":\"完全消除双下巴区域的脂肪堆积和皮肤松弛\",\"method\":\"将下颌线以下到颈部之间的冗余组织液化收紧，使下颌骨轮廓清晰外露\",\"skin_rebuild\":\"消除后的区域重建为紧致皮肤质感，肤色与面部完全一致，毛孔密度匹配邻近区域\"},\"jawline_definition\":{\"contour\":\"从耳垂下方到下巴尖端形成流畅的V型/U型曲线，线条锐利清晰但不刻意\",\"symmetry\":\"左右下颌线对称度误差不超过2mm，根据面部角度做透视修正\",\"angle\":\"下颌角度约120-130°，呈现精致骨骼感\"},\"shadow_highlight\":{\"jaw_shadow\":\"下颌线下方根据原图光源方向生成自然阴影，阴影硬度与面部其他阴影一致\",\"jaw_highlight\":\"下颌线上沿根据光源添加细微高光，增强骨骼棱角的立体感\",\"neck_transition\":\"下颌到颈部的阴影过渡柔和自然，无硬切边，符合圆柱体光影逻辑\"}},\"constraints\":{\"严禁\":\"改变五官位置、改变面部表情、改变嘴型、液化导致面部扭曲变形\",\"禁止\":\"下颌线过度锐利呈现刀削感，必须保持自然骨骼轮廓\"},\"integration\":{\"skin_continuity\":\"修改区域皮肤纹理(毛孔/汗毛)与周围完全一致\",\"edge_blend\":\"下颌线修改区域边缘与未修改区域无缝融合，无可见修图痕迹\",\"noise_match\":\"修改区域噪点颗粒度与原图完全一致\"}}",
+  "category": "head",
+  "subCategory": "face_shape",
+  "refImages": [],
+  "_isFactory": true
+}

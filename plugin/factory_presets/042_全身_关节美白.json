@@ -1,0 +1,9 @@
+{
+  "id": "f_041",
+  "title": "关节美白",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":true,\"preserve_body_structure\":\"保持关节骨骼结构和体积感不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别全身各处关节的色素沉淀暗沉区域：膝盖(前面和侧面)、手肘(内外侧)、脚踝(内外踝周围)、指关节(手指各关节背面)、脚趾关节、腕关节\",\"identify_skin\":\"分析各关节周围正常皮肤的肤色基准和光影状态\"},\"whitening_operations\":{\"pigment_reduction\":{\"action\":\"将关节处暗沉/发黑/发灰/泛黄的色素沉淀区域提亮\",\"target_color\":\"目标肤色与该关节周围的正常皮肤颜色一致\",\"method\":\"渐进式提亮，从暗沉中心向边缘逐渐过渡到正常肤色，无硬边\",\"degree\":\"提亮程度以消除不自然的暗沉为准，保留关节自然的微弱色差(关节处天然比四肢中段略深1-3%)\"},\"texture_preservation\":{\"joint_lines\":\"保留关节处自然的皮肤纹路和弯曲褶皱线\",\"bone_shadow\":\"保留关节骨骼结构造成的自然光影(膝盖骨凸起的高光、膝窝的凹陷阴影等)\",\"skin_texture\":\"保持关节处皮肤的自然纹理(比四肢中段略粗糙是正常的)\"},\"roughness_reduction\":{\"action\":\"适度柔化关节处皮肤的粗糙感和干燥纹\",\"degree\":\"降低粗糙感约30-50%，保留自然质感不做过度磨皮\"}},\"constraints\":{\"严禁\":\"改变关节骨骼结构体积、消除所有关节阴影(那是光影不是暗沉)、皮肤过白呈假白感\",\"禁止\":\"各关节处理程度不统一、处理后关节处比周围皮肤更白\"},\"integration\":{\"bilateral_symmetry\":\"左右对称关节处理程度一致\",\"color_continuity\":\"从关节到四肢中段肤色过渡自然\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

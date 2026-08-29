@@ -1,0 +1,9 @@
+{
+  "id": "f_090",
+  "title": "火焰特效(环绕)",
+  "content": "{\"role\":\"VFX特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析模特/武器位置、光源方向、环绕火焰的覆盖范围\"},\"flame_generation\":{\"fire_shape\":{\"coverage\":\"火焰环绕人物/武器周围，从底部向上升腾\",\"form\":\"火焰具有流体动态形态(Houdini Pyro级模拟)，火舌呈不规则撕裂状湍流\",\"height\":\"火焰高度根据覆盖范围调整，底部浓烈顶部消散\"},\"color_gradient\":{\"base\":\"火焰底部高温区域为蓝白色(色温8000K+)\",\"mid\":\"中段过渡为亮黄至橙色(色温2500-4000K)\",\"top\":\"顶部为橙红色至暗红消散\",\"core\":\"火焰核心区域过曝偏白，Bloom强烈\"},\"heat_distortion\":{\"action\":\"火焰上方的空气因高温产生折射扭曲\",\"effect\":\"火焰上方画面有微弱的热浪折射变形(Heat Haze)\",\"opacity\":\"扭曲效果Opacity 10-25%，不过度影响画面清晰度\"},\"illumination\":{\"mapped_light\":\"火焰对周围物体(模特皮肤/服装/背景)产生暖色映射光(色温2800-3500K)\",\"intensity\":\"映射光使受照面亮度提升20-40%\",\"dynamic_shadow\":\"火焰作为动态光源在对侧产生微弱跳动投影\"},\"particles\":{\"embers\":\"火焰释放上升的火星余烬粒子(1-4px)，向上飘散渐隐\",\"smoke\":\"火焰顶部有少量灰色/暗色烟雾升腾(Opacity 10-20%)\",\"sparks\":\"火焰底部偶尔迸射出明亮火花\"}},\"constraints\":{\"严禁\":\"火焰遮挡模特面部、改变画面整体HSL\",\"禁止\":\"火焰呈现2D贴图的扁平感\"},\"integration\":{\"depth_occlusion\":\"火焰与物体遮挡关系正确\",\"volume\":\"火焰具有3D体积感\",\"noise_match\":\"噪点一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

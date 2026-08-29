@@ -1,0 +1,9 @@
+{
+  "id": "f_096",
+  "title": "光翼生成",
+  "content": "{\"role\":\"特效后期师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_background\":true,\"preserve_lighting_global\":true,\"preserve_body_pose\":true,\"preserve_costume\":true,\"no_rotation_scale_flip\":true,\"preserve_global_hsl_gamma\":true},\"description\":\"在人物背部生成发光的能量翅膀/光翼效果——半透明光芒组成的翅膀形态，自带柔和发光照亮周围，可控制大小和发光强度\",\"detection\":{\"analyze\":\"分析人物背部位置和朝向、肩胛骨位置(翅膀生长点)、画面光源方向和整体色调\"},\"@param:翅膀大小\":0.6,\"@param:翅膀大小_desc\":\"0=无翅膀;0.2=小型光翼(肩宽的0.5倍高度约30cm)紧贴背部如光芒点缀;0.4=中小型光翼(肩宽的0.8倍高度约50cm)初具翅膀形态;0.6=中型光翼(与肩同宽高度约80cm)标准天使翅膀比例;0.8=大型光翼(肩宽1.5倍高度约120cm)气势磅礴;1=极大型光翼(肩宽2倍+高度约180cm)铺满画面的巨型翅膀\",\"@param:发光强度\":0.7,\"@param:发光强度_desc\":\"0=几乎不发光半透明轮廓可见;0.2=微弱柔光朦胧的光芒轮廓;0.4=中等发光翅膀清晰可见散发柔和光芒;0.6=较强发光明亮的光翼照亮背部附近区域;0.7=强烈发光翅膀如实体光源照亮周围环境;0.85=非常强烈的发光翅膀光芒四射;1=极致炽烈发光如太阳般耀眼的光翼\",\"operations\":{\"wing_shape\":{\"action\":\"从肩胛骨位置生成对称的翅膀形态\",\"form\":\"羽翼状/能量束状/几何光阵可根据角色风格选择\",\"layers\":\"翅膀由多层半透明光带叠加组成增加层次感\"},\"glow_effect\":{\"action\":\"翅膀本身作为光源发光\",\"color\":\"基于画面主色调或角色元素色(白金/蓝/绿/红)\",\"bloom\":\"光晕溢出范围根据发光参数从5px到50px\",\"illumination\":\"根据发光参数在人物背部和周围环境添加对应的照明效果\"},\"transparency\":{\"action\":\"翅膀保持半透明可透过看到部分背景\",\"opacity\":\"整体不透明度30%-70%\",\"edge\":\"边缘更透明向中心更实\"}},\"constraints\":{\"严禁\":\"翅膀遮挡人物面部\",\"禁止\":\"翅膀发光的色彩与画面风格严重不协调\"},\"integration\":{\"symmetry\":\"左右翅膀严格对称\",\"depth\":\"翅膀在人物身后(不遮挡身体)\",\"light_cast\":\"发光翅膀在周围产生对应的光照效果\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

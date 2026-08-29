@@ -1,0 +1,9 @@
+{
+  "id": "f_109",
+  "title": "暗黑哥特风格化",
+  "content": "{\"role\":\"暗黑风格后期调色师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":\"保持人物不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析当前画面色调和亮度分布、模特角色属性\"},\"gothic_conversion\":{\"tone\":{\"darkness\":\"整体画面压暗(曝光-0.5至-1.0EV)\",\"contrast\":\"明暗对比度大幅增强(+30-50%)\",\"vignette\":\"画面四角添加浓重暗角(Opacity 40-70%)，引导视线聚焦中心模特\"},\"color_grade\":{\"saturation\":\"低饱和度(-20-40%)，色彩抽离压抑\",\"cool\":\"整体偏冷紫色调(Hue向紫色偏移，Tint偏品红)\",\"shadow_color\":\"暗部偏深紫/深蓝\",\"highlight\":\"保留极少高光区域呈冷白色\",\"skin\":\"肤色偏苍白但保持基本健康感，不发灰发绿\"},\"shadow_enhancement\":{\"depth\":\"阴影更深更浓(暗部进一步压暗)\",\"drama\":\"面部和身体的明暗交界线更锐利，增强戏剧性\"},\"optional_elements\":{\"fog\":\"可添加微弱的暗色烟雾/薄雾(Opacity 10-20%)增加神秘氛围\",\"particles\":\"可在暗处添加几个微弱的暗色浮游粒子\",\"creatures\":\"可在角落/暗处添加1-2个微小的乌鸦/蝙蝠/蛛网等暗黑元素剪影\"}},\"constraints\":{\"严禁\":\"改变模特任何特征(模特本身不变只改氛围)\",\"禁止\":\"画面过暗看不清模特面部\"},\"integration\":{\"model_visibility\":\"模特面部和关键细节始终清晰可见\",\"noise_match\":\"噪点一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,23 @@
+{
+  "id": "ff_005",
+  "name": "0有腮红平整修脸重锁边",
+  "displayName": "有腮红平整修脸重锁边",
+  "category": "head",
+  "data": {
+    "model": "xxmix9realistic_v40.safetensors [5f41c4861c]",
+    "lora": "yiyuyun-zhuangrong-000005",
+    "loraWeight": "0.8",
+    "redrawAmount": "0.34",
+    "imageCount": "3",
+    "resolution": "768",
+    "positivePrompt": "8k RAW, best quality, ultra high res, extreme_detail, sharp focus, (photorealistic:1.4), masterpiece, (ulzzang-6500:0.8),(masterpiece:1.2),smooth skin, blemish free skin, HD skin texture,,yiyuyun,1girl,solo,portrait,realistic,close-up,black hair,bangs,brown hair,looking at viewer,",
+    "negativePrompt": "paintings, sketches, (worst quality:2), (low quality:2), (normal quality:2), lowres, normal quality, ((monochrome)), ((grayscale)), skin spots, acnes, skin blemishes, age spot, glans, anime, watermark, username, signature, text",
+    "selectedControlNetModule": "lineart_realistic",
+    "controlNetModel": "control_v11p_sd15_lineart [43d4be0d]",
+    "controlNetWeight": "1.1",
+    "step": "20",
+    "selectedName": "DPM++ 2M",
+    "selectedScheduler": "automatic"
+  },
+  "_isFactory": true
+}

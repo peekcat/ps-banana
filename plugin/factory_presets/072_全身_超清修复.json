@@ -1,0 +1,9 @@
+{
+  "id": "f_071",
+  "title": "超清修复",
+  "content": "{\"role\":\"超分辨率画质修复师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":\"面部不变形\",\"preserve_global_hsl\":\"不改变色相饱和度伽马对比度\",\"no_scale_rotate_translate\":\"不能有任何变形\"},\"detection\":{\"identify_materials\":\"分析画面中每个区域的材质类型(皮肤/毛发/金属/布料/皮革/塑料/背景)\",\"identify_edges\":\"识别不同材质之间的边界区域\"},\"quality_upgrade\":{\"texture_enhancement\":{\"action\":\"将所有区域纹理精度提升至4K画质水平\",\"skin\":\"皮肤纹理清晰但不过密(毛孔大小与原图区域比例一致)\",\"fabric\":\"布料编织纹理更清晰可辨\",\"metal\":\"金属表面划痕和反射细节更锐利\",\"hair\":\"发丝细节更清晰可辨\"},\"material_detection\":{\"action\":\"根据内容判断材质类型并赋予对应的清晰度提升策略\",\"different_treatment\":\"不同材质使用不同的锐化强度和去噪策略\"},\"edge_enhancement\":{\"action\":\"不同材质边缘区分明显\",\"border\":\"皮肤与服装、服装与背景、道具与环境等交界处保持锐利清晰\",\"rim_light\":\"可在关键轮廓添加微弱边缘光(Opacity 5-10%)增强层次分离\"},\"denoise\":{\"action\":\"降噪提升画面纯净度\",\"preserve\":\"保留必要的微观纹理细节，不过度降噪导致涂抹感\"}},\"constraints\":{\"严禁\":\"产生任何形变/扭曲、改变色相饱和度伽马对比度\",\"禁止\":\"面部皮肤材质过密(过度锐化)、整体画面出现AI超分辨率的不自然锐化伪影\"},\"integration\":{\"consistency\":\"全图画质提升程度统一\",\"noise_match\":\"处理后噪点均匀自然\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

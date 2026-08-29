@@ -1,0 +1,9 @@
+{
+  "id": "f_072",
+  "title": "场照轮椅一键处理",
+  "content": "{\"role\":\"Cosplay人像后期综合一键处理师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face_features\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析全图：背景穿帮元素、身材比例、头发状态、道具材质、皮肤状态\"},\"comprehensive_pipeline\":{\"step1_background\":{\"action\":\"清除背景路人/摄影灯/灯架/穿帮杂物\",\"inpaint\":\"使用周围材质智能重建被清除区域\"},\"step2_body\":{\"action\":\"轻微液化身材优化\",\"slim\":\"腰部/腿部/颈部/手臂轻微收缩(5-10%)\",\"enhance\":\"胸部/臀部轻微增大(10-15%)\",\"bg_fix\":\"液化导致的背景变形修复\"},\"step3_hair\":{\"action\":\"头发CG质感升级\",\"cleanup\":\"移除杂发碎发飞散毛发\",\"material\":\"消除假发塑料光泽，升级为CG写实毛发质感\",\"sheen\":\"各向异性自然光泽\"},\"step4_props\":{\"action\":\"塑料道具升级为金属材质\",\"method\":\"保留道具原始颜色和设计，仅将塑料/树脂表面替换为金属质感(Metalness 0.7-0.9)\",\"detail\":\"增加金属微细划痕和反射细节\"},\"step5_skin\":{\"action\":\"全身磨皮美颜\",\"technique\":\"中性灰+高低频分离精修\",\"cleanup\":\"消除瑕疵/色斑/毛孔粗大\",\"preserve\":\"保留30-40%自然纹理避免塑料感\",\"color\":\"统一肤色与面部一致\"}},\"constraints\":{\"严禁\":\"改变面部五官表情、改变动作姿势\",\"禁止\":\"任何单步处理过度\"},\"integration\":{\"coherent\":\"所有步骤处理后整体协调自然\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,154 @@
+/* ============================================================
+ *  tile-camera.css — 3D 镜头控制样式
+ * ============================================================ */
+
+.cam3d-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Canvas 容器(相对定位,装 canvas + 缩放滑块 + 截图按钮) */
+.cam3d-canvas-wrap {
+  position: relative;
+  width: 100%;
+  background: #242424;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.cam3d-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #242424;
+  cursor: crosshair;
+}
+
+.cam3d-zoom-slider {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  writing-mode: vertical-lr;
+  direction: rtl;
+  height: 60px;
+  width: 12px;
+  accent-color: rgba(255, 255, 255, 0.4);
+  cursor: ns-resize;
+  opacity: 0.35;
+  transition: opacity 0.2s;
+}
+.cam3d-zoom-slider:hover {
+  opacity: 0.8;
+}
+
+.cam3d-capture-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+.cam3d-capture-btn:hover {
+  background: rgba(0, 0, 0, 0.75);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* 参数行(方位/仰角/距离) */
+.cam3d-controls {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  border-radius: 4px;
+  padding: 8px 10px 6px;
+}
+.cam3d-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.cam3d-row:last-child { margin-bottom: 0; }
+.cam3d-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cam3d-dot-az { background: #54c2ff; box-shadow: 0 0 4px #54c2ff; }
+.cam3d-dot-el { background: #bb73ff; box-shadow: 0 0 4px #bb73ff; }
+.cam3d-dot-ds { background: #ff9438; box-shadow: 0 0 4px #ff9438; }
+
+.cam3d-label {
+  min-width: 46px;
+  margin: 0;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.3px;
+}
+.cam3d-slider {
+  flex: 1;
+  height: 4px;
+}
+.cam3d-slider-az { accent-color: #54c2ff; }
+.cam3d-slider-el { accent-color: #bb73ff; }
+.cam3d-slider-ds { accent-color: #ff9438; }
+
+.cam3d-val {
+  font-size: 10px;
+  min-width: 28px;
+  text-align: right;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.cam3d-val-az { color: #54c2ff; }
+.cam3d-val-el { color: #bb73ff; }
+.cam3d-val-ds { color: #ff9438; }
+
+.cam3d-reset {
+  cursor: pointer;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.2);
+  transition: color 0.2s;
+  padding: 2px 4px;
+}
+.cam3d-reset:hover {
+  color: var(--accent);
+}
+
+/* 提示词预览 */
+.cam3d-preview {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 6px 10px;
+  font-size: 9px;
+  color: rgba(0, 255, 136, 0.7);
+  font-family: 'Consolas', 'Monaco', monospace;
+  word-break: break-all;
+  line-height: 1.5;
+  letter-spacing: 0.2px;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+/* 生成按钮 */
+.cam3d-btn-go {
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-top: 6px;
+}

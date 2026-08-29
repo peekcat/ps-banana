@@ -1,0 +1,9 @@
+{
+  "id": "f_038",
+  "title": "手指纤细美化",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_hand_pose\":\"保持手指姿势角度不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析手指当前粗细、关节肿胀程度、指甲状态、手部姿势\"},\"finger_sculpting\":{\"liquify\":{\"method\":\"对每根手指进行向内液化收缩(5-10%)\",\"proportion\":\"指节长度比例保持协调(远节:中节:近节≈1:1.2:1.5)\",\"taper\":\"从指根到指尖自然渐细\",\"joint\":\"消除关节处粗大肿胀，但保持微弱的关节骨骼感\"},\"skin\":{\"wrinkle\":\"消除手指皱纹和干纹约50%\",\"color\":\"统一手指肤色，消除关节暗沉\",\"texture\":\"皮肤光滑细腻，保留自然纹理\",\"moisture\":\"指尖呈现粉嫩水润感\"},\"nail\":{\"shape\":\"指甲形状整齐统一(圆弧/方圆)\",\"surface\":\"甲面光滑有自然光泽\",\"color\":\"粉色健康指甲色(或保持原甲油色)\",\"cuticle\":\"甲沟整洁\"},\"spacing\":{\"action\":\"手指间距自然均匀，不过密不过疏\"}},\"background_repair\":\"液化导致的背景变形修复\",\"constraints\":{\"严禁\":\"改变手指姿势弯曲角度、手指过细呈骨骼感、手指数量变化\",\"禁止\":\"液化导致背景变形\"},\"integration\":{\"light_match\":\"光影一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "hands",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

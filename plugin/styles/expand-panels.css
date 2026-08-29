@@ -1,0 +1,1361 @@
+/* === expand-panels.css — Win10风格展开面板 === */
+
+/* === 隐藏所有展开面板内部的滚动条(保留滚动能力) ===
+   理由:就地展开动画过程中,内容已渲染但容器高度未到位 → 滚动条出现 → 动画结束后消失,
+   出现/消失会引起内容左右抖动。把滚动条彻底隐藏可消除抖动,不影响鼠标滚轮/触摸板滚动。
+   主面板 .vp 的滚动条不在本规则范围,保留可见以便用户感知滚动位置。 */
+.tile-expand-content,
+.tile-expand-content *,
+.inline-panel-content,
+.inline-panel-content *,
+.tile.panel-mode .tile-expand-content,
+.tile.panel-mode .tile-expand-content * {
+  scrollbar-width: none;            /* Firefox / future spec */
+}
+.tile-expand-content::-webkit-scrollbar,
+.tile-expand-content *::-webkit-scrollbar,
+.inline-panel-content::-webkit-scrollbar,
+.inline-panel-content *::-webkit-scrollbar,
+.tile.panel-mode .tile-expand-content::-webkit-scrollbar,
+.tile.panel-mode .tile-expand-content *::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+  display: none;
+}
+
+/* === 面板内容区 === */
+.tile-expand-content{
+  padding:0;
+  background:rgba(32,32,32,var(--bg-opacity));
+  backdrop-filter:blur(var(--tile-blur));-webkit-backdrop-filter:blur(var(--tile-blur));
+}
+
+/* === Win10风格面板容器 === */
+.w10-panel{
+  padding:16px 20px;
+  height:100%;
+  overflow-y:auto;
+}
+
+/* === Win10 内容入场动画 === */
+@keyframes w10SlideIn{
+  from{opacity:0;transform:translateY(8px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.w10-panel > .w10-section-title,
+.w10-panel > .w10-row{
+  animation:w10SlideIn 0.25s cubic-bezier(.4,0,.2,1) backwards;
+}
+.w10-panel > :nth-child(1){animation-delay:0.05s}
+.w10-panel > :nth-child(2){animation-delay:0.08s}
+.w10-panel > :nth-child(3){animation-delay:0.11s}
+.w10-panel > :nth-child(4){animation-delay:0.14s}
+.w10-panel > :nth-child(5){animation-delay:0.17s}
+.w10-panel > :nth-child(6){animation-delay:0.20s}
+.w10-panel > :nth-child(7){animation-delay:0.23s}
+.w10-panel > :nth-child(8){animation-delay:0.26s}
+.w10-panel > :nth-child(9){animation-delay:0.29s}
+.w10-panel > :nth-child(10){animation-delay:0.32s}
+.w10-panel > :nth-child(11){animation-delay:0.35s}
+.w10-panel > :nth-child(12){animation-delay:0.38s}
+.w10-panel > :nth-child(n+13){animation-delay:0.40s}
+
+/* === 分类标题 === */
+.w10-section-title{
+  font-size:11px;font-weight:600;color:var(--accent);
+  margin-top:20px;margin-bottom:10px;padding-bottom:6px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  text-transform:uppercase;letter-spacing:0.5px;
+}
+.w10-section-title:first-child{margin-top:0}
+
+/* === 设置行 === */
+.w10-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 0;min-height:40px;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.w10-row:last-child{border-bottom:none}
+
+.w10-row-left{
+  display:flex;flex-direction:column;gap:2px;flex:1;min-width:0;
+}
+.w10-row-label{
+  font-size:11px;color:var(--text);font-weight:500;
+}
+.w10-row-desc{
+  font-size:9px;color:var(--text-sub);line-height:1.3;
+}
+
+.w10-row-right{
+  flex-shrink:0;margin-left:12px;display:flex;align-items:center;gap:8px;
+}
+
+/* === Win10 Toggle 开关 === */
+.w10-toggle{
+  position:relative;width:40px;height:20px;
+  background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.3);
+  border-radius:10px;cursor:pointer;transition:all 0.2s;
+  flex-shrink:0;
+}
+.w10-toggle::after{
+  content:'';position:absolute;top:2px;left:2px;
+  width:12px;height:12px;border-radius:50%;
+  background:rgba(255,255,255,0.5);transition:all 0.2s;
+}
+.w10-toggle.on{
+  background:var(--accent);border-color:var(--accent);
+}
+.w10-toggle.on::after{
+  left:22px;background:#fff;
+}
+
+/* === Win10 滑块 === */
+.w10-slider{
+  display:flex;align-items:center;gap:8px;min-width:120px;
+}
+.w10-slider input[type=range]{
+  flex:1;height:4px;-webkit-appearance:none;appearance:none;
+  background:rgba(255,255,255,0.1);border-radius:2px;outline:none;
+  border:none;box-shadow:none;
+}
+.w10-slider input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+  background:var(--accent);cursor:pointer;border:2px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,0.3);
+}
+.w10-slider-val{
+  font-size:10px;color:var(--text-sub);min-width:28px;text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+
+/* === Win10 下拉选择 === */
+.w10-select{
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+  color:var(--text);font-size:10px;padding:4px 8px;border-radius:4px;
+  outline:none;cursor:pointer;min-width:80px;
+}
+.w10-select:focus{border-color:var(--accent)}
+
+/* === Win10 输入框 === */
+.w10-input{
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+  border-bottom:2px solid rgba(255,255,255,0.15);
+  color:var(--text);font-size:11px;padding:6px 10px;border-radius:4px 4px 0 0;
+  outline:none;width:100%;transition:border-color 0.15s;
+}
+.w10-input:focus{
+  border-bottom-color:var(--accent);
+}
+
+/* === Win10 按钮 === */
+.w10-btn{
+  padding:5px 14px;font-size:10px;border-radius:4px;cursor:pointer;
+  border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.05);
+  color:var(--text);transition:all 0.15s;font-weight:500;
+}
+.w10-btn:hover{background:rgba(255,255,255,0.1)}
+.w10-btn:active{transform:scale(0.97)}
+.w10-btn-accent{
+  background:var(--accent);border-color:var(--accent);color:#111;font-weight:600;
+}
+.w10-btn-accent:hover{filter:brightness(1.1)}
+
+/* === Win10 颜色选择 === */
+.w10-colors{
+  display:flex;gap:6px;flex-wrap:wrap;align-items:center;
+}
+.w10-color{
+  width:24px;height:24px;border-radius:4px;cursor:pointer;
+  border:2px solid transparent;transition:all 0.15s;
+}
+.w10-color:hover{transform:scale(1.1)}
+.w10-color.active{border-color:#fff;box-shadow:0 0 0 1px var(--accent)}
+
+/* 自定义主题色取色标 (原生取色器, 做成和色块一样大小的方块) */
+.w10-color-picker{
+  width:24px;height:24px;border-radius:4px;cursor:pointer;
+  padding:0;background:transparent;
+  border:2px dashed rgba(255,255,255,0.35);
+  -webkit-appearance:none;appearance:none;
+  transition:all 0.15s;
+}
+.w10-color-picker:hover{transform:scale(1.1);border-color:rgba(255,255,255,0.6)}
+.w10-color-picker.active{border-style:solid;border-color:#fff;box-shadow:0 0 0 1px var(--accent)}
+.w10-color-picker::-webkit-color-swatch-wrapper{padding:0}
+.w10-color-picker::-webkit-color-swatch{border:none;border-radius:2px}
+.w10-color-pick-label{
+  font-size:9px;color:var(--text-sub);user-select:none;margin-left:2px;
+}
+
+/* === 响应式布局：根据容器宽度分三档 ===
+   narrow  < 200px  — 极窄：label纵向排列，desc隐藏，按钮撑满宽度
+   compact 200-350px — 窄：保持横向，desc隐藏，按钮紧凑
+   wide    >= 350px  — 宽：全量显示（默认样式）
+*/
+
+/* === 极窄：label 和控件 纵向叠放 === */
+.w10-panel.panel-sz-narrow{padding:10px 12px}
+.w10-panel.panel-sz-narrow .w10-section-title{
+  font-size:10px;margin-top:14px;margin-bottom:6px;padding-bottom:4px;
+}
+
+/* === 窄（保留通用响应式兜底） === */
+.w10-panel.panel-sz-compact .w10-row-desc{display:none}
+.w10-panel.panel-sz-compact .w10-section-title{margin-top:16px}
+.w10-panel.panel-sz-compact .w10-btn{padding:5px 10px;font-size:10px}
+
+/* === 面板模式下磁贴自定义布局的通用工具类 === */
+
+/* 紧凑按钮（icon-only） */
+.run-btn-big{
+  width:100%;min-height:30px;font-size:14px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  padding:0!important;
+}
+/* 极窄横排(2x1 / 3x1):按钮等分 + 更小字号 */
+.run-btns-tiny{
+  display:flex;gap:3px;margin-bottom:0;height:100%;align-items:stretch;
+}
+.run-btns-tiny .run-btn-big{
+  flex:1;min-width:0;min-height:0;height:auto;
+  font-size:12px;padding:2px 0!important;
+}
+.run-stack-narrow{
+  display:flex;flex-direction:column;gap:3px;height:100%;
+}
+.run-stack-narrow .run-btn-big{
+  flex:1;min-height:0;
+  padding:2px 0!important;
+}
+.run-btn-stop{
+  color:#ff6b6b!important;border-color:rgba(255,100,100,0.3)!important;
+}
+.run-btn-main{
+  padding:8px 16px;font-size:12px;font-weight:600;
+}
+
+/* 极窄/瘦高下的副文案 */
+.run-task-narrow{
+  font-size:9px;color:var(--text-sub);text-align:center;
+}
+
+/* 紧凑正方：两按钮横排 */
+.run-btns-row{
+  display:flex;gap:6px;
+}
+.run-btns-row .w10-btn{flex:1}
+
+/* 横长条：左右两栏 */
+.run-panel-horiz{
+  display:flex;gap:16px;align-items:flex-start;height:100%;
+}
+.run-horiz-left{
+  display:flex;flex-direction:column;gap:8px;
+  flex:0 0 160px;
+}
+.run-horiz-right{
+  flex:1;min-width:0;overflow-y:auto;
+}
+.run-horiz-right .w10-section-title{margin-top:0}
+
+/* === 任务列表磁贴 === */
+.tasks-area{display:flex;flex-direction:column;gap:6px;padding:4px 0}
+.tasks-empty{color:var(--text-sub);font-size:10px;text-align:center;padding:20px 0}
+
+.task-item{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:8px 10px;border-radius:4px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);
+}
+
+/* 任务行缩略图(点击跳转 PS 选区) */
+.task-thumb{
+  flex-shrink:0;width:32px;height:32px;
+  border-radius:3px;overflow:hidden;
+  background:rgba(255,255,255,0.05);
+  cursor:pointer;
+  transition:transform 0.12s, box-shadow 0.12s;
+}
+.task-thumb:hover{
+  transform:scale(1.08);
+  box-shadow:0 0 0 1px var(--accent);
+}
+.task-thumb:active{ transform:scale(0.95); }
+.task-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* 历史/批处理缩略图点击反馈 */
+.hist-thumb[data-jump],
+.batch-item-thumb[data-jump]{
+  cursor:pointer;
+  transition:transform 0.12s, box-shadow 0.12s;
+}
+.hist-thumb[data-jump]:hover,
+.batch-item-thumb[data-jump]:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 0 1px var(--accent);
+}
+.hist-thumb[data-jump]:active,
+.batch-item-thumb[data-jump]:active{ transform:scale(0.96); }
+
+/* 参考图缩略图点击跳转反馈 */
+.refimg-thumb-wrap[data-jump-main],
+.refimg-thumb-wrap[data-jump-ref],
+.refimg-main-thumb[data-jump-main],
+.refimg-card-thumb[data-jump-ref]{
+  transition:transform 0.12s, box-shadow 0.12s;
+}
+.refimg-thumb-wrap[data-jump-main]:hover,
+.refimg-thumb-wrap[data-jump-ref]:hover,
+.refimg-main-thumb[data-jump-main]:hover,
+.refimg-card-thumb[data-jump-ref]:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 0 1px var(--accent);
+}
+.refimg-thumb-wrap[data-jump-main]:active,
+.refimg-thumb-wrap[data-jump-ref]:active,
+.refimg-main-thumb[data-jump-main]:active,
+.refimg-card-thumb[data-jump-ref]:active{ transform:scale(0.96); }
+.task-item.task-running{border-left:2px solid var(--accent)}
+.task-item.task-pending{border-left:2px solid #16a34a}
+.task-item.task-engine-row-forge{border-left:2px solid #ff9f55}
+
+.task-engine-badge{
+  display:inline-block;
+  width:14px;height:14px;line-height:14px;
+  margin-right:4px;
+  font-size:9px;font-weight:700;
+  text-align:center;
+  border-radius:2px;
+  font-family:monospace;
+  vertical-align:middle;
+}
+.task-engine-banana{background:rgba(84,194,255,0.2);color:#54c2ff;}
+.task-engine-forge{background:rgba(255,159,85,0.22);color:#ff9f55;}
+/* bug ⑪ 新增引擎徽章 */
+.task-engine-grs{background:rgba(120,200,120,0.22);color:#7ed27e;}
+.task-engine-others{background:rgba(180,140,255,0.22);color:#b48cff;}
+.task-engine-momo{background:rgba(255,140,190,0.22);color:#ff8cbe;}
+.task-engine-tiled{background:rgba(255,210,90,0.22);color:#ffd24a;}
+/* 自适应 Grs 这种 3 字宽度 */
+.task-engine-badge{min-width:14px;width:auto;padding:0 3px;box-sizing:border-box;}
+/* 内容类型小图标 (放在引擎徽章后面) */
+.task-kind-icon{
+  display:inline-block;font-size:10px;line-height:14px;
+  vertical-align:middle;margin-right:4px;
+  opacity:0.85;
+}
+
+/* bug ⑩ B: 分块放大用 4 宫格图标代替缩略图 */
+.task-thumb-tiled{
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,210,90,0.08);
+  border:1px solid rgba(255,210,90,0.3);
+}
+.task-thumb-tiled .tt-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+  gap:2px;
+  width:18px;height:18px;
+}
+.task-thumb-tiled .tt-grid span{
+  background:#ffd24a;
+  border-radius:1px;
+  opacity:0.85;
+}
+
+/* 待返回卡片: 同款排版 + 脉冲进度条 */
+.task-progress-pending{
+  position:relative;overflow:hidden;
+}
+.task-progress-pending .task-progress-fill{
+  animation:taskPendingPulse 1.6s ease-in-out infinite;
+}
+@keyframes taskPendingPulse{
+  0%   { opacity:0.55; }
+  50%  { opacity:1; }
+  100% { opacity:0.55; }
+}
+
+.task-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+.task-title{font-size:10px;color:var(--text);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.task-sub{font-size:9px;color:var(--text-sub)}
+
+/* 任务进度条 */
+.task-progress-bar{
+  position:relative;width:100%;height:3px;
+  background:rgba(255,255,255,0.06);
+  border-radius:1.5px;overflow:hidden;
+  margin-top:2px;
+}
+.task-progress-fill{
+  position:absolute;top:0;left:0;right:0;bottom:0;width:100%;
+  border-radius:1.5px;
+  transition:background 0.3s cubic-bezier(.4,0,.2,1);
+}
+.task-pct{font-variant-numeric:tabular-nums;color:var(--accent)}
+
+/* 任务磁贴背面 */
+.task-back-item{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:4px;width:100%;
+}
+.task-back-row1{
+  font-size:12px;font-weight:700;color:var(--text);
+  font-variant-numeric:tabular-nums;letter-spacing:0.3px;
+}
+.task-back-row2{
+  font-size:11px;font-weight:600;
+  font-variant-numeric:tabular-nums;font-family:monospace;
+}
+.task-back-more{
+  font-size:8px;color:var(--text-sub);
+  margin-top:2px;opacity:0.7;
+}
+
+.task-btns{display:flex;gap:4px;flex-shrink:0}
+.task-btn{padding:4px 10px;font-size:10px;flex-shrink:0}
+.task-btn-stop{color:#ff6b6b!important;border-color:rgba(255,100,100,0.3)!important}
+
+/* 倒计时文字 */
+.task-cd{display:inline-block;padding:0 2px;letter-spacing:0.5px;transition:color 0.2s}
+/* 紧急倒计时弹跳 */
+.task-cd.task-cd-bump{animation:task-cd-bump 0.3s cubic-bezier(.36,.07,.19,.97)}
+@keyframes task-cd-bump{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.25)}
+  100%{transform:scale(1)}
+}
+
+/* per-task 自动/手动回传切换按钮 */
+.task-ar{min-width:36px}
+.task-ar.task-ar-on{color:var(--accent);border-color:rgba(0,120,212,0.35)}
+.task-ar.task-ar-off{color:var(--text-sub);border-color:rgba(255,255,255,0.08)}
+
+/* 窄态下任务项：按钮变小 */
+.w10-panel.panel-sz-narrow .task-item,
+.w10-panel.panel-sz-tall .task-item{padding:6px 8px;gap:4px}
+.w10-panel.panel-sz-narrow .task-btn,
+.w10-panel.panel-sz-tall .task-btn{padding:4px 6px;min-width:26px}
+.w10-panel.panel-sz-narrow .task-title,
+.w10-panel.panel-sz-tall .task-title{font-size:9px}
+
+/* === 面板占位（开发中） === */
+.panel-placeholder{
+  display:flex;align-items:center;justify-content:center;
+  min-height:120px;color:var(--text-sub);font-size:11px;
+  flex-direction:column;gap:8px;padding:16px;
+}
+.panel-placeholder-icon{font-size:36px;opacity:0.2}
+.panel-placeholder-text{opacity:0.4;font-size:10px}
+
+/* === 确认弹窗 === */
+.confirm-overlay{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:99998;
+  background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;
+}
+.confirm-box{
+  background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;
+  padding:20px 24px;max-width:300px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.5);
+}
+.confirm-msg{font-size:12px;color:var(--text);margin-bottom:16px;line-height:1.5}
+.confirm-btns{display:flex;gap:8px;justify-content:flex-end}
+.confirm-btn{
+  padding:6px 20px;border-radius:4px;font-size:11px;cursor:pointer;border:none;
+  transition:all 0.15s;font-weight:500;
+}
+.confirm-btn-yes{background:var(--accent);color:#111;font-weight:600}
+.confirm-btn-yes:hover{filter:brightness(1.1)}
+.confirm-btn-no{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text-sub)}
+.confirm-btn-no:hover{background:rgba(255,255,255,0.1)}
+
+/* === Toast提示 === */
+.toast{
+  position:fixed;top:8px;left:50%;transform:translateX(-50%);z-index:99999;
+  padding:8px 20px;border-radius:4px;font-size:10px;font-weight:600;
+  pointer-events:none;opacity:0;transition:opacity 0.3s;
+}
+.toast.show{opacity:1}
+.toast-success{background:#16a34a;color:#fff}
+.toast-error{background:#dc2626;color:#fff}
+.toast-info{background:var(--accent);color:#111}
+
+/* === 历史磁贴 === */
+.hist-empty{
+  color:var(--text-sub);font-size:10px;text-align:center;padding:20px 0;
+}
+
+.hist-entry{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:4px;cursor:pointer;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);
+  transition:background 0.15s ease, border-color 0.15s ease;
+  margin-bottom:4px;
+  position:relative;
+}
+.hist-entry:last-child{margin-bottom:0}
+.hist-entry:hover{
+  background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.1);
+}
+
+/* 单条删除按钮 — hover 才显示 */
+.hist-del-btn{
+  position:absolute;
+  top:2px;right:2px;
+  width:18px;height:18px;padding:0;
+  background:rgba(20,20,20,0.85);
+  border:1px solid rgba(255,255,255,0.2);
+  border-radius:50%;
+  color:rgba(255,255,255,0.6);
+  font-size:13px;line-height:1;
+  cursor:pointer;
+  opacity:0;
+  transition:opacity 0.15s, background 0.15s, color 0.15s, transform 0.15s;
+  display:flex;align-items:center;justify-content:center;
+  z-index:2;
+}
+.hist-entry:hover .hist-del-btn{ opacity:1; }
+.hist-del-btn:hover{
+  background:rgba(255,80,80,0.85);
+  color:#fff;
+  border-color:rgba(255,80,80,0.95);
+  transform:scale(1.1);
+}
+
+.hist-main{
+  flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;
+}
+.hist-prompt{
+  font-size:10px;color:var(--text);font-weight:500;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+/* hist 引擎徽章已与 .task-engine-badge / .task-kind-icon 统一 (见上方 task-* 规则).
+ * 历史条目里直接复用同一套 class, 不再有 .hist-engine-* 独立样式. */
+.hist-meta{
+  font-size:9px;color:var(--text-sub);display:flex;gap:6px;align-items:center;
+}
+.hist-time{font-variant-numeric:tabular-nums}
+.hist-model{
+  padding:1px 5px;border-radius:2px;
+  background:rgba(255,255,255,0.06);font-size:8px;
+}
+
+.hist-thumb{
+  flex-shrink:0;width:32px;height:32px;border-radius:3px;overflow:hidden;
+  background:rgba(255,255,255,0.05);
+}
+.hist-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+
+.hist-restore-btn{
+  flex-shrink:0;padding:4px 8px!important;font-size:10px;
+}
+
+/* 紧凑模式（narrow/tall） */
+.hist-list-compact .hist-entry{padding:6px 8px;gap:6px}
+.hist-list-compact .hist-prompt{font-size:9px}
+.hist-list-compact .hist-thumb{width:24px;height:24px;border-radius:2px;}
+.hist-list-compact .task-engine-badge{width:11px;height:11px;line-height:11px;font-size:8px;margin-right:3px;}
+.hist-list-compact .task-kind-icon{font-size:9px;line-height:11px;margin-right:2px;}
+
+/* === 预设磁贴 === */
+
+/* 分类过滤条(被 tile-bodypreset 的 bodypreset:select 事件激活) */
+.preset-cat-bar{
+  position:relative;
+  display:flex;align-items:center;gap:6px;
+  flex-wrap:wrap;
+  padding:4px 6px;margin-bottom:4px;
+  background:rgba(0,120,212,0.08);
+  border-left:2px solid var(--accent);
+  border-radius:3px;
+  flex-shrink:0;
+}
+.preset-cat-label{
+  flex:1;min-width:0;
+  font-size:11px;color:var(--accent);font-weight:600;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+@keyframes preset-cat-label-flash{
+  0%{opacity:0.3;transform:translateY(-2px);}
+  100%{opacity:1;transform:none;}
+}
+.preset-cat-label-flash{
+  animation:preset-cat-label-flash 0.22s cubic-bezier(.4,0,.2,1);
+}
+
+.preset-cat-clear{
+  flex-shrink:0;font-size:10px;padding:3px 10px;
+}
+/* 列表内搜索框: 占位展示在 categoryBar 下方一行, 风格跟 home 视图搜索框一致 */
+.preset-list-search{
+  flex-basis:100%;
+  z-index:10;
+  padding:4px 0 0;
+  max-height:50px;overflow:hidden;opacity:1;
+  transition:max-height 0.2s ease, opacity 0.2s ease, padding 0.2s ease;
+}
+.preset-list-search-hidden{
+  max-height:0!important;opacity:0;padding:0!important;
+  pointer-events:none;
+}
+.preset-list-search .w10-input{
+  width:100%;height:24px;font-size:10px;
+  padding:2px 8px!important;
+}
+.preset-back-btn{
+  flex-shrink:0;
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.12);
+  border-radius:3px;
+  color:var(--text);font-size:14px;line-height:1;
+  cursor:pointer;padding:0;
+  transition:all 0.15s;
+}
+.preset-back-btn:hover{
+  background:rgba(255,255,255,0.12);
+  border-color:rgba(255,255,255,0.24);
+  color:var(--accent);
+}
+.preset-back-btn:active{ transform:translateX(-1px); }
+
+/* ============================================================
+ * 预设磁贴:分类卡片主页
+ * ============================================================ */
+.preset-home-panel{
+  display:flex;flex-direction:column;gap:3px;
+  height:100%;box-sizing:border-box;
+  padding:0!important;
+}
+/* 预设列表面板:和主页一样贴边,不留左右空白 */
+.preset-list-panel{
+  display:flex;flex-direction:column;gap:6px;
+  height:100%;box-sizing:border-box;
+  padding:0!important;
+}
+.preset-home-head{
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:6px;padding:2px 2px 3px;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  flex-wrap:nowrap;min-width:0;flex-shrink:0;
+}
+.preset-home-title{
+  font-size:12px;font-weight:600;color:var(--accent);
+  letter-spacing:0.3px;
+  white-space:nowrap;flex-shrink:0;
+}
+.preset-home-meta{
+  font-size:9px;color:var(--text-sub);
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+  min-width:0;
+}
+.preset-home-search{ flex-shrink:0;
+  max-height:32px;overflow:hidden;
+  transition:max-height 0.2s ease, opacity 0.2s ease, margin 0.2s ease;
+}
+.preset-home-search-hidden{
+  max-height:0!important;opacity:0;margin:0!important;
+  pointer-events:none;
+}
+.preset-home-search .w10-input{
+  width:100%;height:24px;
+  font-size:10px;
+  padding:2px 8px!important;
+}
+
+.preset-search-toggle{
+  flex-shrink:0;
+  width:22px;height:22px;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;
+  border:none;
+  color:var(--text-sub);
+  font-size:13px;line-height:1;
+  cursor:pointer;padding:0;
+  border-radius:3px;
+  transition:all 0.15s;
+}
+.preset-search-toggle:hover{
+  color:var(--accent);
+  background:rgba(255,255,255,0.06);
+}
+.preset-search-toggle.active{
+  color:var(--accent);
+  background:rgba(0,120,212,0.12);
+}
+
+.preset-cat-grid{
+  flex:1;min-height:0;
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:2px;
+  overflow-y:auto;
+  padding:0;
+}
+
+/* stagger 入场 */
+@keyframes preset-cat-card-in{
+  from{opacity:0;transform:translateY(6px) scale(0.96);}
+  to{opacity:1;transform:none;}
+}
+.preset-cat-card{
+  position:relative;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  aspect-ratio:1.1/1;
+  gap:2px;
+  padding:4px 3px;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:var(--tile-radius);
+  cursor:pointer;
+  transition:background 0.15s, border-color 0.15s, transform 0.15s;
+  text-align:center;
+  user-select:none;
+  min-width:0;
+  animation:preset-cat-card-in 0.28s cubic-bezier(.4,0,.2,1) backwards;
+}
+.preset-cat-card:nth-child(1){animation-delay:0.02s}
+.preset-cat-card:nth-child(2){animation-delay:0.04s}
+.preset-cat-card:nth-child(3){animation-delay:0.06s}
+.preset-cat-card:nth-child(4){animation-delay:0.08s}
+.preset-cat-card:nth-child(5){animation-delay:0.10s}
+.preset-cat-card:nth-child(6){animation-delay:0.12s}
+.preset-cat-card:nth-child(7){animation-delay:0.14s}
+.preset-cat-card:nth-child(8){animation-delay:0.16s}
+.preset-cat-card:nth-child(9){animation-delay:0.18s}
+.preset-cat-card:nth-child(10){animation-delay:0.20s}
+.preset-cat-card:nth-child(n+11){animation-delay:0.22s}
+.preset-cat-card:hover{
+  background:rgba(0,120,212,0.12);
+  border-color:var(--accent);
+  transform:translateY(-1px);
+}
+.preset-cat-card:active{ transform:translateY(0) scale(0.97); }
+.preset-cat-card-all{
+  background:rgba(0,120,212,0.1);
+  border-color:rgba(0,120,212,0.3);
+}
+.preset-cat-card-icon{
+  font-size:20px;line-height:1;
+}
+.preset-cat-card-name{
+  font-size:10px;font-weight:600;color:var(--text);
+  line-height:1.1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  max-width:100%;
+}
+.preset-cat-card-count{
+  position:absolute;top:3px;right:4px;
+  font-size:8px;color:var(--accent);
+  font-variant-numeric:tabular-nums;
+  background:rgba(0,120,212,0.15);
+  border-radius:8px;padding:0 5px;
+  line-height:1.4;
+}
+
+/* 窄磁贴:默认 3 列,除非宽度不够放下 */
+/* (已去掉 panel-sz-narrow/tall 的 2 列强制规则,默认 3 列即可) */
+
+.preset-home-actions{
+  display:flex;gap:4px;
+  flex-wrap:nowrap;flex-shrink:0;
+  padding-top:4px;
+  border-top:1px solid rgba(255,255,255,0.04);
+}
+.preset-home-actions .w10-btn{
+  flex:1;min-width:0;
+  font-size:10px;padding:4px 4px;
+  white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis;
+}
+
+/* 搜索栏容器 */
+.preset-search-wrap{margin-bottom:8px}
+
+/* 列表滚动区 */
+.preset-list-area{display:flex;flex-direction:column;gap:4px;padding:2px 0}
+.preset-list-scroll{overflow-y:auto;flex:1;min-height:0}
+
+/* 空状态 */
+.preset-empty{color:var(--text-sub);font-size:10px;text-align:center;padding:20px 0}
+.preset-more{color:var(--text-sub);font-size:9px;text-align:center;padding:6px 0}
+
+/* 预设行 */
+.preset-item{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 10px;border-radius:4px;cursor:pointer;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);
+  transition:background 0.15s ease, border-color 0.15s ease;
+}
+.preset-item:hover{
+  background:rgba(255,255,255,0.07);border-color:rgba(255,255,255,0.1);
+}
+.preset-item-compact{padding:6px 8px;gap:6px}
+.preset-item-compact .preset-item-title{font-size:10px}
+
+/* Forge 预设左上角小旗 */
+.preset-item{position:relative}
+.preset-forge-flag{
+  position:absolute;top:0;left:0;
+  width:14px;height:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:700;line-height:1;
+  color:#fff;
+  background:linear-gradient(135deg, #ff6b35 0%, #f7b42c 100%);
+  border-radius:4px 0 6px 0;
+  pointer-events:none;
+  letter-spacing:-0.5px;
+  box-shadow:0 1px 2px rgba(0,0,0,0.3);
+}
+.preset-item-forge{
+  background:rgba(255,140,60,0.05);
+  border-color:rgba(255,140,60,0.18);
+}
+.preset-item-forge:hover{
+  background:rgba(255,140,60,0.1);
+  border-color:rgba(255,140,60,0.3);
+}
+
+/* 示例「粒子特效」行: 点击展开 kao 面板 (区别于普通预设) */
+.preset-item-example{
+  background:linear-gradient(135deg, rgba(120,90,255,0.10), rgba(255,120,200,0.08));
+  border-color:rgba(160,120,255,0.28);
+}
+.preset-item-example:hover{
+  background:linear-gradient(135deg, rgba(120,90,255,0.18), rgba(255,120,200,0.14));
+  border-color:rgba(160,120,255,0.5);
+}
+.preset-example-icon{
+  flex-shrink:0;font-size:13px;line-height:1;
+}
+.preset-example-go{
+  flex-shrink:0;margin-left:auto;
+  font-size:13px;font-weight:700;line-height:1;
+  color:rgba(200,170,255,0.9);
+}
+
+/* 收藏星 */
+.preset-star{
+  flex-shrink:0;font-size:13px;cursor:pointer;color:var(--text-sub);
+  transition:color 0.15s;line-height:1;
+}
+.preset-star:hover{color:var(--accent)}
+.preset-star.starred{color:#f59e0b}
+
+/* 预设信息区 */
+.preset-item-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.preset-item-title{
+  font-size:11px;color:var(--text);font-weight:500;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.preset-item-preview{
+  font-size:9px;color:var(--text-sub);line-height:1.3;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.preset-item-cat{
+  display:inline-block;font-size:8px;color:var(--text-sub);
+  padding:1px 5px;border-radius:2px;background:rgba(255,255,255,0.06);
+  margin-top:2px;
+}
+.preset-item-subcat{
+  font-size:9px;color:var(--text-sub);margin-left:6px;font-weight:400;
+}
+
+/* 行内操作按钮 */
+.preset-item-actions{display:flex;gap:4px;flex-shrink:0}
+.preset-item-btn{padding:3px 8px!important;font-size:9px!important;min-width:24px}
+.preset-item-btn-del{color:#ff6b6b!important;border-color:rgba(255,100,100,0.3)!important}
+
+/* 操作按钮行（square底部） */
+.preset-actions-row{display:flex;gap:6px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,0.06)}
+.preset-actions-row .w10-btn{flex:1}
+
+/* 紧凑操作按钮（narrow底部） */
+.preset-actions-compact{display:flex;gap:6px;margin-top:8px;justify-content:center}
+.preset-actions-compact .w10-btn{padding:4px 12px;font-size:10px}
+
+/* 横向双栏布局（wideshort） */
+.preset-layout-horiz{display:flex;gap:16px;height:100%}
+.preset-horiz-left{flex:1;min-width:0;display:flex;flex-direction:column}
+.preset-horiz-right{flex:0 0 150px;display:flex;flex-direction:column;gap:6px}
+.preset-horiz-right .w10-section-title{margin-top:0}
+.preset-action-btn{width:100%;text-align:center}
+
+/* 工具栏（wide顶部） */
+.preset-toolbar{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+
+/* 分组折叠头 */
+.preset-group-header{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 4px;cursor:pointer;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  transition:background 0.15s;
+}
+.preset-group-header:hover{background:rgba(255,255,255,0.03)}
+.preset-group-arrow{
+  font-size:10px;color:var(--text-sub);transition:transform 0.2s;display:inline-block;
+}
+.preset-group-arrow.collapsed{transform:rotate(-90deg)}
+.preset-group-name{font-size:11px;color:var(--accent);font-weight:600;flex:1}
+.preset-group-count{font-size:9px;color:var(--text-sub);font-variant-numeric:tabular-nums}
+.preset-group-body{
+  padding-left:4px;
+  overflow:hidden;
+  transition:max-height 0.22s ease, opacity 0.18s ease;
+  max-height:2000px;
+  opacity:1;
+}
+.preset-group-body.collapsed{
+  max-height:0!important;
+  opacity:0;
+  pointer-events:none;
+}
+
+/* 保存对话框 overlay */
+.preset-save-overlay{
+  position:absolute;top:0;left:0;right:0;bottom:0;z-index:100;
+  background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.preset-save-dialog{
+  background:#2a2a2a;border:1px solid rgba(255,255,255,0.1);border-radius:8px;
+  padding:16px 20px;max-width:340px;width:90%;box-shadow:0 16px 48px rgba(0,0,0,0.5);
+}
+.preset-save-title{
+  font-size:13px;color:var(--text);font-weight:600;margin-bottom:12px;
+  padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);
+}
+.preset-save-btns{
+  display:flex;gap:8px;justify-content:flex-end;margin-top:14px;
+  padding-top:10px;border-top:1px solid rgba(255,255,255,0.06);
+}
+
+/* 响应式：narrow/tall 下预设行更紧凑 */
+.w10-panel.panel-sz-narrow .preset-item,
+.w10-panel.panel-sz-tall .preset-item{padding:5px 6px;gap:4px}
+
+/* 双列网格（wideshort） */
+.hist-grid-2col{
+  display:grid;grid-template-columns:1fr 1fr;gap:4px;
+}
+.hist-entry-grid{margin-bottom:0}
+
+/* === 批处理磁贴 === */
+.batch-narrow-stack{display:flex;flex-direction:column;gap:6px;align-items:center}
+.batch-narrow-badge{font-size:20px;font-weight:700;color:var(--accent);text-align:center;padding:8px 0}
+.batch-narrow-progress{font-size:9px;color:var(--text-sub);text-align:center}
+.batch-empty{color:var(--text-sub);font-size:10px;text-align:center;padding:16px 0;line-height:1.5}
+.batch-btns-row{display:flex;gap:6px;margin-top:8px}
+.batch-btns-row .w10-btn{flex:1}
+.batch-horiz{display:flex;gap:16px;height:100%}
+.batch-horiz-left{flex:1;min-width:0;overflow-y:auto}
+.batch-horiz-right{flex:0 0 130px;display:flex;flex-direction:column;gap:6px}
+.batch-item-compact{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 8px;border-radius:4px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);
+  border-left:2px solid var(--accent);
+}
+.batch-item-idx{font-size:9px;color:var(--text-sub);font-weight:600;flex-shrink:0;width:16px;text-align:center}
+.batch-item-prompt-short{flex:1;min-width:0;font-size:10px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.batch-item-count{font-size:9px;color:var(--accent);font-weight:600;flex-shrink:0}
+.batch-item-del{padding:2px 6px!important;font-size:9px!important;color:#ff6b6b!important;border-color:rgba(255,100,100,0.2)!important;flex-shrink:0}
+.batch-queue-full{display:flex;flex-direction:column;gap:8px;padding:4px 0}
+.batch-queue-compact{display:flex;flex-direction:column;gap:4px;padding:4px 0;overflow-y:auto;max-height:200px}
+.batch-item-full{
+  display:flex;gap:10px;padding:10px;border-radius:4px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);
+  border-left:2px solid var(--accent);
+}
+.batch-item-thumbs-col{flex-shrink:0;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.batch-item-thumb{flex-shrink:0;width:56px;height:56px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,0.05);display:flex;align-items:center;justify-content:center;position:relative}
+.batch-item-thumb img{width:100%;height:100%;object-fit:cover}
+.batch-item-thumb-empty{font-size:9px;color:var(--text-sub)}
+.batch-thumb-badge-main{
+  position:absolute;top:2px;left:2px;
+  padding:1px 4px;font-size:8px;line-height:1;
+  background:rgba(0,0,0,0.65);color:var(--accent);
+  border-radius:2px;pointer-events:none;
+}
+/* 批处理:主卡下方的参考图缩略图行 */
+.batch-ref-thumbs{display:flex;gap:3px;flex-wrap:wrap;width:56px}
+.batch-ref-thumb{
+  width:26px;height:26px;border-radius:3px;overflow:hidden;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+  position:relative;
+}
+.batch-ref-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.batch-ref-thumb[data-jumpref]{
+  cursor:pointer;
+  transition:transform 0.12s, box-shadow 0.12s;
+}
+.batch-ref-thumb[data-jumpref]:hover{
+  transform:scale(1.1);
+  box-shadow:0 0 0 1px var(--accent);
+}
+.batch-ref-thumb[data-jumpref]:active{ transform:scale(0.95); }
+
+/* 批处理:紧凑行(square/wideshort/narrow)的缩略图 */
+.batch-item-thumb-sm{
+  flex-shrink:0;width:32px;height:32px;
+  border-radius:3px;overflow:hidden;
+  background:rgba(255,255,255,0.05);
+}
+.batch-item-thumb-sm img{width:100%;height:100%;object-fit:cover;display:block}
+.batch-item-thumb-sm[data-jump]{
+  cursor:pointer;
+  transition:transform 0.12s, box-shadow 0.12s;
+}
+.batch-item-thumb-sm[data-jump]:hover{
+  transform:scale(1.08);
+  box-shadow:0 0 0 1px var(--accent);
+}
+.batch-item-thumb-sm[data-jump]:active{ transform:scale(0.95); }
+.batch-ref-thumbs-sm{display:inline-flex;gap:2px;margin-left:6px;vertical-align:middle}
+.batch-ref-thumb-sm{
+  width:18px;height:18px;border-radius:2px;overflow:hidden;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.08);
+}
+.batch-ref-thumb-sm img{width:100%;height:100%;object-fit:cover;display:block}
+.batch-ref-thumb-sm[data-jumpref]{
+  cursor:pointer;
+  transition:transform 0.12s, box-shadow 0.12s;
+}
+.batch-ref-thumb-sm[data-jumpref]:hover{
+  transform:scale(1.12);
+  box-shadow:0 0 0 1px var(--accent);
+}
+.batch-ref-thumb-sm[data-jumpref]:active{ transform:scale(0.92); }
+.batch-item-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.batch-item-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.batch-item-title{font-size:10px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.batch-item-prompt{font-size:10px;color:var(--text-sub);line-height:1.4;max-height:42px;overflow:hidden;cursor:pointer;word-break:break-all}
+.batch-item-prompt:hover{color:var(--text)}
+.batch-item-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:2px}
+.batch-tag{
+  font-size:9px;padding:2px 8px;border-radius:3px;
+  background:rgba(255,255,255,0.06);color:var(--text-sub);
+  cursor:pointer;user-select:none;transition:all 0.15s;
+  border:1px solid rgba(255,255,255,0.05);
+}
+.batch-tag:hover{background:rgba(255,255,255,0.1);color:var(--text)}
+.batch-tag-model{color:var(--accent)}
+.batch-tag-count,.batch-tag-timeout{cursor:ns-resize}
+.batch-inline-edit{width:100%;resize:vertical;min-height:40px;font-size:10px}
+.batch-progress-bar-wrap{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin:8px 0 4px}
+.batch-progress-bar{height:100%;background:var(--accent);border-radius:2px;transition:width 0.3s cubic-bezier(.4,0,.2,1)}
+.batch-progress-text{font-size:9px;color:var(--text-sub);text-align:center}
+
+/* === 抗截断磁贴 === */
+.anti-stack-narrow{display:flex;flex-direction:column;gap:6px;align-items:stretch;padding:4px 0}
+.anti-stack-narrow .w10-btn{width:100%;padding:8px;font-size:11px}
+.anti-btns-row{display:flex;gap:6px;margin-bottom:8px}
+.anti-btns-row .w10-btn{flex:1}
+.anti-row-split{display:flex;gap:16px;align-items:center}
+.anti-row-split .anti-btns-row{flex:0 0 auto;margin:0}
+.anti-desc-side{color:var(--text-sub);font-size:10px;flex:1;line-height:1.5}
+.anti-desc-block{color:var(--text-sub);font-size:10px;line-height:1.5;padding:8px 0}
+
+/* === 参考图磁贴 === */
+
+/* 缩略图网格（通用） */
+.refimg-grid{display:flex;gap:6px;flex-wrap:wrap;align-items:flex-start}
+.refimg-grid-narrow{display:flex;gap:4px;flex-wrap:wrap;justify-content:center;padding:4px 0}
+
+/* 缩略图外壳 */
+.refimg-thumb-wrap{position:relative;flex-shrink:0}
+
+/* 主图角标 */
+.refimg-badge-main{
+  position:absolute;bottom:2px;left:2px;
+  font-size:8px;font-weight:700;color:#111;
+  background:var(--accent);padding:1px 4px;border-radius:2px;
+  line-height:1.2;z-index:2;
+}
+
+/* narrow 底部按钮行 */
+.refimg-btns-narrow{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.refimg-btns-narrow .w10-btn{padding:6px 12px;font-size:12px}
+
+/* 添加单元格（square / wideshort grid 内的 + 按钮） */
+.refimg-add-cell{
+  border-radius:4px;border:1px dashed rgba(255,255,255,0.15);
+  background:rgba(255,255,255,0.03);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background 0.15s,border-color 0.15s;
+  flex-shrink:0;
+}
+.refimg-add-cell:hover{background:rgba(255,255,255,0.07);border-color:var(--accent)}
+
+/* wideshort 双栏 */
+.refimg-layout-horiz{display:flex;gap:16px;height:100%}
+.refimg-horiz-left{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;min-width:100px}
+.refimg-horiz-right{flex:1;min-width:0;display:flex;flex-direction:column}
+
+/* wide 主图卡片 */
+.refimg-main-card{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:4px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);
+  margin-bottom:4px;
+}
+.refimg-main-thumb{flex-shrink:0}
+.refimg-main-actions{display:flex;gap:6px;flex-wrap:wrap}
+
+/* wide 参考图卡片 */
+.refimg-card{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:4px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);
+  margin-bottom:4px;
+}
+.refimg-card-thumb{flex-shrink:0}
+.refimg-card-info{flex:1;min-width:0}
+.refimg-card-label{font-size:10px;color:var(--text);font-weight:500}
+.refimg-card-actions{display:flex;gap:4px;flex-shrink:0;flex-wrap:wrap}
+
+/* 空状态 */
+.refimg-empty{color:var(--text-sub);font-size:10px;text-align:center;padding:16px 0}
+
+/* 响应式微调 */
+.w10-panel.panel-sz-narrow .refimg-grid-narrow{gap:3px}
+.w10-panel.panel-sz-tall .refimg-grid-narrow{gap:3px}
+
+/* === sf-pill 按钮组（共享组件，用于 settings 等磁贴） === */
+.sf-pill {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+.sf-pill-opt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.15s;
+  letter-spacing: 0.2px;
+}
+.sf-pill-opt:hover {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+.sf-pill-opt.active {
+  color: #fff;
+  background: var(--accent, #0078d4);
+  border-color: var(--accent, #0078d4);
+}
+
+/* ============================================================
+   PS 风格细条滑块 (.w10-ps-slider) — 移植自 tile-prompt 参数滑块
+   细轨道 + --fill accent 填充 + 三角手柄 + 数值 bump 动画。
+   用法: 容器加 .w10-ps-slider, 内含 input[type=range] (设 style="--fill:xx%")
+         + .w10-ps-val 数值 span。
+   ============================================================ */
+.w10-ps-slider{ width:100%; display:block; }
+.w10-ps-slider input[type=range]{
+  -webkit-appearance:none; appearance:none;
+  width:100%; height:3px; margin:0;
+  background:linear-gradient(to right,
+    var(--accent) 0%,
+    var(--accent) var(--fill, 0%),
+    rgba(255,255,255,0.1) var(--fill, 0%),
+    rgba(255,255,255,0.1) 100%);
+  border:none; border-radius:0; outline:none; cursor:pointer; box-shadow:none;
+}
+.w10-ps-slider input[type=range]::-webkit-slider-runnable-track{
+  height:3px; background:transparent; border:none;
+}
+.w10-ps-slider input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:0; height:0; margin-top:3px;
+  border-left:5px solid transparent;
+  border-right:5px solid transparent;
+  border-bottom:7px solid rgba(255,255,255,0.95);
+  border-top:none;
+  background:transparent; border-radius:0;
+  box-shadow:0 1px 2px rgba(0,0,0,0.4); cursor:pointer;
+}
+.w10-ps-slider input[type=range]:disabled{ opacity:0.4; cursor:default; }
+/* 覆盖 tiles.css 在「全屏展开态」强制原生 range 外观的规则 (那条权重 3 类),
+   用更高权重(4 类)只对 PS 细条滑块恢复自定义三角外观; 同时覆盖提示词参数滑块。 */
+.tile.expanded .tile-expand-content .w10-ps-slider input[type=range],
+.tile.expanded .tile-expand-content .params-slider-ctrl input[type=range]{
+  -webkit-appearance:none; appearance:none;
+}
+.w10-ps-val{
+  flex-shrink:0; font-size:10px; color:var(--text-sub);
+  font-variant-numeric:tabular-nums; min-width:34px; text-align:right;
+}
+@keyframes w10-val-bump{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.22); color:var(--accent); }
+  100%{ transform:scale(1); }
+}
+.w10-ps-val.bump{ animation:w10-val-bump 0.18s cubic-bezier(.4,0,.2,1); display:inline-block; }
+
+/* 参数名可点/可悬停提示 (配合 TileTip) */
+.w10-tip-label{ cursor:help; }
+.w10-tip-label:hover{ color:var(--accent); }
+
+/* ============================================================
+   全局解释浮层 (.tile-tip) — 由 core/ui-tooltip.js 驱动
+   ============================================================ */
+.tile-tip{
+  position:fixed; z-index:99999; pointer-events:none;
+  max-width:280px; padding:8px 10px;
+  background:rgba(28,28,30,0.96);
+  -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.12); border-radius:6px;
+  color:var(--text, #f0f0f0); font-size:11px; line-height:1.5;
+  box-shadow:0 6px 24px rgba(0,0,0,0.45);
+  opacity:0; transform:translateY(3px);
+  transition:opacity 0.14s cubic-bezier(.4,0,.2,1), transform 0.14s cubic-bezier(.4,0,.2,1);
+  white-space:normal; word-break:break-word;
+}
+.tile-tip.tile-tip-in{ opacity:1; transform:none; }
+.tile-tip.tile-tip-below{ transform:translateY(-3px); }
+.tile-tip.tile-tip-below.tile-tip-in{ transform:none; }
+
+/* === v6.5.0 组件化: 页签(w10-tab*) — 批量工场等壳磁贴用 === */
+.w10-tabbar{
+  display:flex; gap:4px; margin-bottom:10px; flex-wrap:wrap;
+}
+.w10-tab{
+  padding:5px 14px; font-size:12px; border-radius:3px; cursor:pointer;
+  background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08);
+  color:var(--text-sub); transition:background 0.15s,color 0.15s;
+}
+.w10-tab:hover{ background:rgba(255,255,255,0.1); color:var(--text); }
+.w10-tab.on{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.w10-tabbody{ min-height:80px; }        /* 不用 height:100%, 防塌陷 */
+/* v6.5.0: 就地展开时页签内容是延帧挂载的, 量高瞬间是空的 → 保底高度防面板锁死成一条(同 rb-grid 修法) */
+.inline-panel .w10-tabbody{ min-height:380px; }
+
+/* === v6.5.6 参考图 1xN 紧凑版 === */
+.refimg-strip{ padding:6px!important; }
+.refimg-strip-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:4px;
+}
+.refimg-strip-cell{
+  aspect-ratio:1;
+  min-width:0;
+  border-radius:4px;
+  overflow:hidden;
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(255,255,255,0.08);
+}
+.refimg-strip-cell img{
+  width:100%;height:100%;object-fit:cover;display:block;
+}
+.refimg-strip-add{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  color:var(--text-sub);cursor:pointer;
+  border-style:dashed;
+}
+.refimg-strip-add-plus{ font-size:20px;line-height:1; }
+.refimg-strip-add-txt{ font-size:9px; }
+.refimg-strip-add:hover{ color:var(--accent);border-color:var(--accent); }
+.refimg-strip-recap{
+  position:absolute;left:2px;bottom:2px;
+  width:16px;height:16px;font-size:9px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,0.65);border-radius:3px;cursor:pointer;z-index:2;
+}
+
+/* ============================================================
+   v6.5.9 体感流畅专项 — 交互反馈与微动画统一补齐
+   ============================================================ */
+
+/* --- toast: 下滑入场(原来只有透明度, 位置是死的) --- */
+.toast{transform:translateX(-50%) translateY(-8px);transition:opacity 0.25s ease, transform 0.25s cubic-bezier(.2,.8,.3,1)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+/* --- 禁用按钮终于长得像禁用了 --- */
+.w10-btn:disabled,.w10-btn.disabled{opacity:0.4;cursor:default;pointer-events:none}
+
+/* --- 按钮 loading 转圈: 从 tile-topbar.css 提升为公共组件, 全插件可用 --- */
+.w10-btn-loading{position:relative;color:transparent!important;pointer-events:none}
+.w10-btn-loading::after{
+  content:'';position:absolute;left:50%;top:50%;width:12px;height:12px;
+  margin:-7px 0 0 -7px;border:2px solid rgba(255,255,255,0.25);
+  border-top-color:#fff;border-radius:50%;
+  animation:w10BtnSpin 0.7s linear infinite;
+}
+@keyframes w10BtnSpin{to{transform:rotate(360deg)}}
+
+/* --- 密码眼睛/小图标按钮: 补 hover/按下反馈 ---
+   (不能用 transform: 有的实例自带内联 translateY(-50%), 会被覆盖错位) */
+.key-eye-btn{opacity:0.55;transition:opacity 0.15s, filter 0.1s}
+.key-eye-btn:hover{opacity:1}
+.key-eye-btn:active{filter:brightness(0.6)}
+
+/* --- 原生 checkbox: 至少给个 hover 亮度和按下缩放(自绘成本高, 先统一手感) --- */
+input[type="checkbox"]{transition:transform 0.1s;cursor:pointer}
+input[type="checkbox"]:hover{filter:brightness(1.3)}
+input[type="checkbox"]:active{transform:scale(0.85)}
+
+/* --- 开关联动详情区: display 硬切 → 滑开/收起 ---
+   JS 把 display:none/block 换成切 .w10-details-hidden 类 */
+.w10-details-anim{
+  overflow:hidden;max-height:600px;opacity:1;
+  transition:max-height 0.25s ease, opacity 0.2s ease, margin 0.25s ease;
+}
+.w10-details-hidden{max-height:0!important;opacity:0;margin-top:0!important;margin-bottom:0!important;pointer-events:none}
+
+/* --- 数字/文本值更新时的一下"脉冲"确认(JS 加类, 动画结束自动摘) --- */
+@keyframes w10ValuePulse{0%{color:var(--accent);transform:scale(1.12)}100%{color:inherit;transform:scale(1)}}
+.w10-value-pulse{display:inline-block;animation:w10ValuePulse 0.35s ease}
+
+/* --- 通用删除/移除淡出(JS 加类, 0.18s 后再真正从 DOM 摘) --- */
+@keyframes w10ItemOut{to{opacity:0;transform:scale(0.9)}}
+.w10-item-removing{animation:w10ItemOut 0.18s ease forwards;pointer-events:none}
+
+/* --- 通用新条目淡入 --- */
+@keyframes w10ItemIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.w10-item-entering{animation:w10ItemIn 0.22s ease}
+
+/* ============================================================
+   v6.5.9 动画补齐二期 — 弹窗/tab/折叠 统一动画语言
+   节奏对齐 uik-dlg: 遮罩淡入 0.18s + 卡片 scale(0.96→1)
+   用 keyframes(元素插入自动播), JS 零改动
+   ============================================================ */
+@keyframes w10OverlayIn{from{opacity:0}to{opacity:1}}
+@keyframes w10DialogIn{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+
+/* 各处手写弹窗遮罩: 与 uik-dlg-overlay 同节奏淡入
+   (conv-preview-overlay 已有自己的 convFadeIn, 不重复) */
+.forge-save-overlay,
+.preset-save-overlay,
+.cm-modal-mask,
+.rb-preview-overlay{
+  animation:w10OverlayIn 0.18s ease;
+}
+/* 弹窗卡片本体: 轻缩放入场 */
+.forge-save-dialog,
+.preset-save-dialog,
+.cm-modal-card,
+.rb-preview-card{
+  animation:w10DialogIn 0.18s cubic-bezier(.2,.8,.3,1);
+}
+
+/* --- tab 页身淡入: MountKit / 顶栏 toptab 共用 --- */
+@keyframes w10TabIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* w10-tab-entering 已废弃: "已存在元素加 class 播 animation"在 UXP 上会先画一帧终态再播
+   = 闪两次。入场动画一律用 ①插入 DOM 时元素自带 keyframe ②JS 先设起点、双 rAF 后给 transition */

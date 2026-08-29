@@ -1,0 +1,9 @@
+{
+  "id": "f_046",
+  "title": "白丝生成优化",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":true,\"preserve_leg_shape\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析腿部当前状态：是否已有白丝(需优化)或裸腿(需生成)、肤色、光源方向\"},\"white_hosiery\":{\"generation\":{\"denier\":\"10-20旦尼尔半透明白色尼龙丝袜\",\"color\":\"纯白色至奶白色(RGB 250-255,245-252,240-250)\",\"transparency\":\"皮肤色调透过白丝隐约可见，呈现粉白色透肉效果(Opacity 65-80%)\"},\"material\":{\"texture\":\"均匀细密的尼龙编织纹理\",\"sheen\":\"表面具有柔和自然光泽(Anisotropic highlight)，大腿和小腿正面光泽最明显\",\"roughness\":\"Roughness 0.2-0.35，丝滑光泽质感\",\"no_plastic\":\"禁止出现塑料感的过亮反光\"},\"quality\":{\"uniform\":\"丝袜纹理均匀无破损、起球、勾丝\",\"seam\":\"后缝线(如有)笔直居中\",\"toe\":\"脚尖加固区域(Opacity略高)\",\"top\":\"袜口位置自然贴合大腿，弹性袜口不勒肉\"},\"skin_blend\":{\"visible\":\"透过白丝可见皮肤自然色调和微弱的肌肉轮廓\",\"shadow\":\"大腿内侧和膝窝处丝袜下的阴影自然\"}},\"constraints\":{\"严禁\":\"改变腿部形状粗细、丝袜出现破损污渍\",\"禁止\":\"白丝不透明呈白色紧身裤感、光泽过强呈塑料感\"},\"integration\":{\"light_match\":\"丝袜光泽方向与光源一致\",\"color_harmony\":\"白丝颜色与服装色调协调\",\"noise_match\":\"噪点一致\"}}",
+  "category": "legs",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

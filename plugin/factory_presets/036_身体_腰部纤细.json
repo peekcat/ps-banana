@@ -1,0 +1,9 @@
+{
+  "id": "f_035",
+  "title": "腰部纤细",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":true,\"preserve_pose\":\"严禁改变模特动作姿势\",\"preserve_costume_design\":\"服装款式材质花纹不变，仅跟随身体调整\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析模特腰部当前围度、腰臀比、服装类型(贴身/宽松)、腰部可见范围(全露/半露/服装遮挡)、光源方向\"},\"waist_sculpting\":{\"liquify\":{\"method\":\"对腰部两侧进行向内液化收缩，缩减量控制在原腰围的5-12%\",\"target_shape\":\"目标呈现自然的沙漏曲线：从胸腔下沿平滑收窄到腰部最窄处，再平滑展开到髋部\",\"anatomical\":\"保持自然的人体解剖比例，腰最窄处位于肋骨下缘和髋骨上缘之间(约肚脐位置)\",\"bilateral\":\"左右两侧收缩对称，除非模特侧身则根据透视做适当调整\"},\"skin_detail\":{\"texture\":\"腰部皮肤纹理(毛孔/肌理)保持自然，无拉伸模糊\",\"navel\":\"如果肚脐可见，保持其位置和形态自然不变形\",\"muscle_line\":\"保留腰部自然的肌肉线条(腹外斜肌轮廓)，纤细但不失力量感\"},\"clothing_follow\":{\"action\":\"服装跟随液化后的腰部曲线自然贴合\",\"belt_waistband\":\"腰带/裤腰/裙腰跟随调整，保持水平不倾斜\",\"wrinkle_logic\":\"服装褶皱重新分布，在腰部收窄处可能产生新的合理拉伸纹\"}},\"background_repair\":{\"action\":\"液化导致的背景变形必须完全修复\",\"method\":\"直线保持直线，背景纹理不弯曲，修补区域与周围无缝衔接\"},\"constraints\":{\"严禁\":\"改变动作姿势、腰部过细呈现不健康感或变形、影响胸部和臀部区域\",\"禁止\":\"背景出现可见液化变形、服装纹理拉伸扭曲\"}}",
+  "category": "torso",
+  "subCategory": "waist",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,206 @@
+/* tile-satellite — 卫星插件磁贴 */
+
+.sat-panel {
+  display: flex; flex-direction: column;
+  gap: 8px; padding: 8px;
+  font-size: 11px;
+}
+
+.sat-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed rgba(255,255,255,0.06);
+}
+.sat-row:last-child { border-bottom: 0; }
+
+.sat-row-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+.sat-row-toggle input[type="checkbox"] {
+  cursor: pointer;
+  accent-color: var(--accent);
+  width: 14px; height: 14px;
+}
+
+.sat-section-title {
+  font-size: 10px;
+  color: var(--text-sub);
+  margin-top: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sat-status.is-on { color: #4caf50; }
+.sat-status.is-off { color: var(--text-sub); }
+
+.sat-info {
+  font-size: 10px;
+  color: var(--text-sub);
+  line-height: 1.6;
+  background: rgba(0,0,0,0.15);
+  padding: 8px;
+  border-radius: 2px;
+}
+.sat-info code {
+  background: rgba(255,255,255,0.06);
+  padding: 1px 4px;
+  border-radius: 2px;
+  font-family: 'Consolas', monospace;
+  color: var(--accent);
+}
+.sat-info .w10-btn {
+  margin-top: 6px;
+}
+
+/* ============================================================
+   安装引导弹窗 — 仿更新磁贴的 _renderInstallOverlay 风格,
+   但做成 modal overlay, 让 tile-satellite 和 tile-firstrun-satellite 都能调
+   ============================================================ */
+.sat-guide-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 9999992;
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 12px;
+  animation: satGuideFade 0.22s ease-out;
+}
+@keyframes satGuideFade { from { opacity: 0; } to { opacity: 1; } }
+
+.sat-guide-card {
+  width: 100%;
+  max-width: 460px;
+  background: #1c1f28;
+  border: 1px solid rgba(105, 240, 174, 0.35);
+  border-radius: 10px;
+  box-shadow: 0 12px 50px rgba(0,0,0,0.7), 0 0 24px rgba(105,240,174,0.08);
+  color: #d9dde6;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: satGuidePop 0.3s cubic-bezier(.22,1,.36,1);
+}
+@keyframes satGuidePop {
+  from { transform: translateY(20px) scale(0.96); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.sat-guide-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: rgba(105,240,174,0.05);
+}
+.sat-guide-title {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 700;
+  color: #69f0ae;
+}
+.sat-guide-ver {
+  color: rgba(105,240,174,0.85);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.sat-guide-close {
+  width: 24px; height: 24px;
+  border: none; background: transparent;
+  color: #888;
+  font-size: 18px; line-height: 1;
+  cursor: pointer; padding: 0;
+  border-radius: 4px;
+  transition: background 0.12s, color 0.12s;
+}
+.sat-guide-close:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+.sat-guide-body {
+  padding: 12px 16px;
+}
+.sat-guide-sub {
+  font-size: 11px;
+  color: #aab;
+  margin-bottom: 10px;
+}
+
+.sat-guide-steps {
+  font-size: 12px;
+  color: rgba(255,255,255,0.88);
+  line-height: 1.85;
+  padding-left: 24px;
+  margin: 6px 0 10px;
+}
+.sat-guide-steps li {
+  margin-bottom: 3px;
+  padding-left: 2px;
+}
+.sat-guide-steps b {
+  color: #4fc3f7;
+}
+.sat-guide-steps .sat-guide-warn {
+  color: #ff5252;
+  font-weight: 700;
+}
+
+.sat-guide-note {
+  font-size: 10px;
+  color: rgba(255,255,255,0.45);
+  background: rgba(255,255,255,0.025);
+  padding: 6px 8px;
+  border-radius: 4px;
+  word-break: break-all;
+  margin-top: 4px;
+}
+.sat-guide-note code {
+  font-family: 'Consolas', monospace;
+  background: rgba(255,255,255,0.06);
+  padding: 1px 4px;
+  border-radius: 2px;
+  color: #9cc8ff;
+}
+
+.sat-guide-status {
+  margin-top: 8px;
+  min-height: 18px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.sat-guide-status-info { color: #9cc8ff; }
+.sat-guide-status-ok   { color: #69f0ae; font-weight: 600; }
+.sat-guide-status-err  { color: #ff7a7a; }
+
+.sat-guide-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 10px 14px 14px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: rgba(0,0,0,0.15);
+}
+.sat-guide-actions .w10-btn {
+  min-width: 88px;
+  font-size: 12px;
+}
+.sat-guide-go {
+  font-size: 13px !important;
+  padding: 8px 18px !important;
+  animation: satGuideGoFlash 1.6s ease-in-out infinite;
+}
+.sat-guide-go:disabled {
+  animation: none;
+  opacity: 0.65;
+}
+@keyframes satGuideGoFlash {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(105,240,174,0); }
+  50%      { box-shadow: 0 0 0 4px rgba(105,240,174,0.18); }
+}

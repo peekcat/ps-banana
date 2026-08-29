@@ -1,0 +1,9 @@
+{
+  "id": "f_025",
+  "title": "CG写实毛发",
+  "content": "{\"role\":\"CG毛发渲染后期师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":true,\"preserve_hairstyle\":\"保持发型结构颜色长度不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析当前头发材质(假发合成纤维/真发)、光泽类型、毛躁程度、发色\"},\"cg_hair_conversion\":{\"strand_detail\":{\"resolution\":\"每根发丝独立可辨的XGEN级CG毛发质感\",\"diameter\":\"发丝呈自然的粗细渐变：根部较粗(约60-80μm)，尖端极细(约20-30μm)\",\"curvature\":\"每根发丝有微弱的自然弯曲弧度，非完美直线\"},\"material_override\":{\"remove_synthetic\":\"完全消除合成纤维假发的塑料光泽(overly specular/plastic sheen)\",\"cuticle\":\"添加真实的角质层光泽(anisotropic highlight)，高光沿发丝方向呈条带状分布\",\"roughness\":\"表面Roughness 0.35-0.55，呈现真发级哑光丝滑质感\",\"double_highlight\":\"可见双重高光(primary specular + secondary color-shifted specular)模拟真实毛发的Marschner光学模型\"},\"shadow_detail\":{\"self_shadow\":\"发束之间产生自然的自投影，增加层次感和体积感\",\"ao\":\"发丝根部和密集区域有微弱的环境光遮蔽(AO)暗角\",\"transmission\":\"逆光时发丝边缘呈现SSS透光效果(暖色透射光)\"},\"cleanup\":{\"flyaways\":\"移除杂发碎发\",\"frizz\":\"消除毛躁\",\"split_ends\":\"修复分叉发尾\"}},\"constraints\":{\"严禁\":\"改变发型/发色/发量、改变面部\",\"禁止\":\"CG效果过度呈现游戏渲染的假人感\"},\"integration\":{\"face_boundary\":\"头发与面部边界自然过渡\",\"light_match\":\"头发高光方向与光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "hair",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

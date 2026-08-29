@@ -1,0 +1,9 @@
+{
+  "id": "f_100",
+  "title": "毒雾腐蚀特效",
+  "content": "{\"role\":\"VFX特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_scene\":\"分析场景布局和光源方向\",\"identify_surfaces\":\"识别可能被腐蚀影响的表面材质(金属/石材/植物/地面)\"},\"poison_fog\":{\"fog_generation\":{\"color\":\"黄绿色至暗绿色半透明毒雾(Opacity 20-50%)\",\"volume\":\"使用Volume Rendering模拟有体积感的烟雾，内部密度不均匀\",\"behavior\":\"缓慢翻滚扩散，底部较浓顶部稀薄(毒气比空气重沉向地面)\",\"turbulence\":\"Perlin Noise(频率0.5-1.2)驱动的缓慢卷曲形态变化\"},\"internal_fx\":{\"glow\":\"雾气内部有微弱的绿色自发光粒子(Opacity 10-25%)，随机分布\",\"bubbles\":\"偶尔可见气泡在浓雾中升起破裂(3-8个，直径2-8px)\",\"sparks\":\"毒雾与物体接触面冒出嘶嘶的黄绿色微光(化学反应)\"},\"corrosion_effect\":{\"surface_damage\":\"被毒雾接触的金属/石材表面出现腐蚀纹理：锈蚀斑点、坑洞、表层剥落\",\"discoloration\":\"腐蚀区域颜色变化：金属→暗绿锈/棕锈，石材→黄褐变色\",\"organic\":\"植物/有机物接触区域枯萎发黑\"},\"atmosphere\":{\"overall_mood\":\"整体氛围阴暗诡异，对比度略降\",\"color_shift\":\"毒雾影响范围内环境色偏黄绿\",\"light_absorption\":\"毒雾吸收部分光线，雾中区域比周围暗10-20%\"}},\"constraints\":{\"严禁\":\"毒雾完全遮挡模特面部、改变画面整体HSL(仅雾影响区域偏色)\",\"禁止\":\"毒雾呈现不透明的绿色烟饼效果\"},\"integration\":{\"depth_occlusion\":\"毒雾与物体正确遮挡\",\"noise_match\":\"噪点一致\"}}",
+  "category": "fullbody",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

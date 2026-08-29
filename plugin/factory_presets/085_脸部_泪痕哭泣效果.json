@@ -1,0 +1,9 @@
+{
+  "id": "f_084",
+  "title": "泪痕哭泣效果",
+  "content": "{\"role\":\"ACG情感特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face_structure\":\"保持面部五官位置不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析面部朝向角度、眼睛位置、脸颊曲面、光源方向\"},\"tear_generation\":{\"tear_track\":{\"path\":\"从眼角(内眼角或外眼角)沿脸颊自然向下流淌的泪水轨迹\",\"shape\":\"泪痕呈微弯曲的不规则条纹(跟随脸颊的骨骼和肌肉曲面)\",\"width\":\"泪痕宽度约1-3mm，时宽时窄自然变化\",\"count\":\"单侧或双侧1-2条泪痕轨迹\"},\"tear_liquid\":{\"material\":\"泪液高度透明(IOR 1.33)，呈薄层水膜状态\",\"wet_sheen\":\"泪痕经过的区域皮肤呈现湿润光泽(Specular提高30-50%)\",\"highlight\":\"泪液沿途有2-4个细长的镜面高光条(匹配光源方向)\",\"droplet\":\"在泪痕末端(下巴或脸颊下方)可悬挂一颗欲滴未滴的泪珠(球形，直径约2-3mm，有独立镜面高光)\"},\"redness\":{\"eye_rim\":\"眼眶(上下眼睑边缘)微微泛红(Hue偏红，Saturation+15-25%)\",\"nose\":\"鼻尖微微泛红\",\"lacrimal\":\"泪阜(内眼角)区域略微红肿湿润\"},\"lash_wetness\":{\"action\":\"睫毛呈现被泪水打湿的效果\",\"clump\":\"睫毛几根粘连成束(wet clumping)\",\"darken\":\"湿润睫毛颜色加深\"}},\"constraints\":{\"严禁\":\"改变五官位置表情(除非微调嘴角微撇)、泪痕过多呈不自然感\",\"禁止\":\"泪液呈不透明白色\"},\"integration\":{\"light_match\":\"泪液高光方向与面部光源一致\",\"skin_blend\":\"泪痕边缘与皮肤自然融合\",\"noise_match\":\"噪点一致\"}}",
+  "category": "head",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

@@ -1,0 +1,184 @@
+/* ============================================================
+ *  tile-scope.css — 示波器磁贴样式
+ *  达芬奇风格: 纯黑底, 绿色高光, 等宽数字字体
+ * ============================================================ */
+
+.scope-panel {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    padding: 6px;
+    gap: 6px;
+    min-height: 0;
+}
+
+.scope-grid {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;   /* 方形格子水平居中 */
+    gap: 6px;
+    overflow-y: auto;      /* 极窄面板放不下时纵向滚动兜底 */
+    overflow-x: hidden;
+}
+
+.scope-cell {
+    position: relative;
+    flex: 0 0 auto;        /* 不被 flex 压扁, 尺寸由 JS 按 1:1 算好 */
+    background: #0a0a0a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+    min-width: 0;
+    min-height: 0;
+}
+
+.scope-cell canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* ─── cell 内顶部小工具栏 (覆盖在 canvas 上方) ─── */
+.scope-celltool {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 2px 4px;
+    font-size: 10px;
+    font-family: 'Consolas', 'Menlo', monospace;
+    backdrop-filter: blur(4px);
+    z-index: 5;
+}
+
+.scope-toollabel {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 10px;
+    padding: 0 2px;
+}
+
+/* ─── 按钮组 (单选) ─── */
+.scope-btng {
+    display: inline-flex;
+    border-radius: 3px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.scope-btng-btn {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-sub, #aaa);
+    border: none;
+    padding: 3px 7px;
+    font-size: 11px;
+    font-family: 'Consolas', 'Menlo', monospace;
+    cursor: pointer;
+    outline: none;
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    transition: background 0.12s, color 0.12s;
+    min-width: 22px;
+}
+
+.scope-btng-btn:last-child {
+    border-right: none;
+}
+
+.scope-btng-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text, #fff);
+}
+
+.scope-btng-btn.is-on {
+    background: var(--accent, #4a9eff);
+    color: #fff;
+    font-weight: 600;
+}
+
+/* ─── 切换按钮 (toggle) ─── */
+.scope-tbtn {
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-sub, #aaa);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 3px;
+    padding: 3px 7px;
+    font-size: 11px;
+    font-family: 'Consolas', 'Menlo', monospace;
+    cursor: pointer;
+    outline: none;
+    min-width: 22px;
+    transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+
+.scope-tbtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text, #fff);
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+.scope-tbtn.is-on {
+    background: var(--accent, #4a9eff);
+    color: #fff;
+    border-color: var(--accent, #4a9eff);
+}
+
+/* ─── 底部状态栏 ─── */
+.scope-bar {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 2px;
+    font-size: 12px;
+    color: var(--text-sub);
+    font-family: 'Consolas', 'Menlo', monospace;
+    flex-wrap: wrap;
+}
+
+.scope-bar .w10-btn {
+    padding: 4px 10px;
+    font-size: 12px;
+}
+
+.scope-status {
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+    margin-left: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ─── 全屏展开时放大 ─── */
+.tile.expanded .scope-panel,
+.tile.expanding .scope-panel {
+    padding: 12px;
+    gap: 12px;
+}
+.tile.expanded .scope-grid,
+.tile.expanding .scope-grid {
+    gap: 12px;
+}
+.tile.expanded .scope-celltool,
+.tile.expanding .scope-celltool {
+    top: 8px;
+    right: 8px;
+    padding: 4px 6px;
+    gap: 6px;
+}
+.tile.expanded .scope-btng-btn,
+.tile.expanded .scope-tbtn,
+.tile.expanding .scope-btng-btn,
+.tile.expanding .scope-tbtn {
+    padding: 4px 10px;
+    font-size: 12px;
+    min-width: 28px;
+}

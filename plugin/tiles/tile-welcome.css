@@ -1,0 +1,361 @@
+/* ============================================================
+ *  tile-welcome.css —— 启动遮罩 + 欢迎页(Win10 设置风格)
+ *  整个文件分两块:
+ *    1. 启动遮罩(#bootOverlay) —— 页面加载瞬间显示,也承载欢迎页
+ *    2. 欢迎页内容(.welcome-card) —— 公告/联系/按钮
+ *  Braille 转圈动画 .boot-spinner 是共用组件,启动 loading 和公告 loading 都用它
+ * ============================================================ */
+
+/* ============================================================
+ *  启动遮罩 & Braille 转圈
+ * ============================================================ */
+.boot-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;     /* 纯黑打底,避免白屏闪 */
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+.boot-overlay.boot-exit {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.boot-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+.boot-stage {
+  position: relative;
+  z-index: 1;
+  width: 90%;
+  max-width: 460px;
+  max-height: 92vh;
+  /* 不再承担滚动,把滚动交给 .welcome-card(吸底 sticky 才能生效) */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ============================================================
+ *  Win10 风格圆环点转圈(GPU 合成,60fps 丝滑)
+ *
+ *  用法:
+ *    <span class="boot-spinner">
+ *      <span></span><span></span><span></span><span></span>
+ *      <span></span><span></span><span></span><span></span>
+ *    </span>
+ *  每个 <span> 是一个点,绕圆周均布,opacity 周期脉冲,错相位启动。
+ * ============================================================ */
+.boot-spinner {
+  display: inline-block;
+  position: relative;
+  width: 40px;
+  height: 40px;
+  color: var(--accent, #0078d4);
+}
+.boot-spinner span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0;
+  transform-origin: 3px 3px;
+  animation: boot-dot-pulse 1.2s linear infinite;
+  /* will-change 告诉浏览器把这个元素提升到独立合成层,走 GPU */
+  will-change: opacity;
+}
+/* 8 个点绕圆周均布(每个 45°),半径由 translateY 控制 */
+.boot-spinner span:nth-child(1) { transform: rotate(  0deg) translateY(-14px); animation-delay: 0s;     }
+.boot-spinner span:nth-child(2) { transform: rotate( 45deg) translateY(-14px); animation-delay: -1.05s; }
+.boot-spinner span:nth-child(3) { transform: rotate( 90deg) translateY(-14px); animation-delay: -0.9s;  }
+.boot-spinner span:nth-child(4) { transform: rotate(135deg) translateY(-14px); animation-delay: -0.75s; }
+.boot-spinner span:nth-child(5) { transform: rotate(180deg) translateY(-14px); animation-delay: -0.6s;  }
+.boot-spinner span:nth-child(6) { transform: rotate(225deg) translateY(-14px); animation-delay: -0.45s; }
+.boot-spinner span:nth-child(7) { transform: rotate(270deg) translateY(-14px); animation-delay: -0.3s;  }
+.boot-spinner span:nth-child(8) { transform: rotate(315deg) translateY(-14px); animation-delay: -0.15s; }
+
+@keyframes boot-dot-pulse {
+  0%, 40%, 100% { opacity: 0.15; }
+  20%           { opacity: 1; }
+}
+
+/* 小号(公告区用) */
+.boot-spinner.boot-spinner-sm {
+  width: 22px;
+  height: 22px;
+}
+.boot-spinner.boot-spinner-sm span {
+  width: 3px;
+  height: 3px;
+  margin: -1.5px 0 0 -1.5px;
+}
+.boot-spinner.boot-spinner-sm span:nth-child(1) { transform: rotate(  0deg) translateY(-8px); }
+.boot-spinner.boot-spinner-sm span:nth-child(2) { transform: rotate( 45deg) translateY(-8px); }
+.boot-spinner.boot-spinner-sm span:nth-child(3) { transform: rotate( 90deg) translateY(-8px); }
+.boot-spinner.boot-spinner-sm span:nth-child(4) { transform: rotate(135deg) translateY(-8px); }
+.boot-spinner.boot-spinner-sm span:nth-child(5) { transform: rotate(180deg) translateY(-8px); }
+.boot-spinner.boot-spinner-sm span:nth-child(6) { transform: rotate(225deg) translateY(-8px); }
+.boot-spinner.boot-spinner-sm span:nth-child(7) { transform: rotate(270deg) translateY(-8px); }
+.boot-spinner.boot-spinner-sm span:nth-child(8) { transform: rotate(315deg) translateY(-8px); }
+
+/* 启动初始 loading(遮罩中心的"正在启动...") */
+.boot-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 30px;
+}
+.boot-msg {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  letter-spacing: 2px;
+}
+
+/* ============================================================
+ *  欢迎页内容卡片
+ * ============================================================ */
+.welcome-card {
+  position: relative;
+  width: 100%;
+  max-height: 92vh;
+  overflow-y: auto;
+  /* padding-bottom 给 sticky 按钮区预留空间 */
+  padding: 28px 26px 0;
+  background: rgba(28, 28, 30, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  color: var(--text, #f0f0f0);
+  transform: translateY(12px) scale(0.98);
+  opacity: 0;
+  transition: transform 0.32s cubic-bezier(.22,1,.36,1), opacity 0.32s ease;
+}
+.welcome-card.welcome-visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.welcome-card::-webkit-scrollbar { width: 6px; }
+.welcome-card::-webkit-scrollbar-track { background: transparent; }
+.welcome-card::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+/* ======= 标题区 ======= */
+.welcome-head {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.welcome-logo {
+  font-size: 40px;
+  line-height: 1;
+  color: var(--accent);
+}
+.welcome-titles { flex: 1; }
+.welcome-title {
+  font-size: 20px;
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.welcome-subtitle {
+  font-size: 11px;
+  color: var(--text-sub, rgba(255,255,255,0.4));
+  letter-spacing: 1.5px;
+}
+
+/* ======= 标签 ======= */
+.welcome-badges {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.welcome-badge {
+  padding: 3px 10px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  border: 1px solid;
+  border-radius: 2px;
+}
+.welcome-badge-green { color: #50fa7b; border-color: rgba(80,250,123,0.25); background: rgba(80,250,123,0.06); }
+.welcome-badge-blue  { color: #4fc3f7; border-color: rgba(79,195,247,0.25); background: rgba(79,195,247,0.06); }
+.welcome-badge-accent{ color: var(--accent); border-color: rgba(0,120,212,0.35); background: rgba(0,120,212,0.08); }
+
+/* ======= 公告 ======= */
+.welcome-announce {
+  background: rgba(255,255,255,0.03);
+  border-left: 2px solid var(--accent);
+  border-radius: 0 2px 2px 0;
+  padding: 10px 14px;
+  margin-bottom: 20px;
+  min-height: 48px;
+}
+.welcome-announce-head {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  color: var(--accent);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.welcome-announce-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 0;
+  font-size: 11px;
+  color: var(--text-sub);
+}
+.welcome-announce-loading.is-hidden { display: none; }
+.welcome-announce-body {
+  font-size: 12px;
+  line-height: 1.65;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+  /* 不再限高,公告一次性完整显示 */
+}
+.welcome-announce-body.is-hidden { display: none; }
+.welcome-announce-body a { color: var(--accent); text-decoration: underline; }
+.welcome-announce-body.is-error { color: #ff9800; font-style: italic; }
+
+/* ======= 分段标题 ======= */
+.welcome-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-sub);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin: 20px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+/* ======= 联系方式 ======= */
+.welcome-contacts { display: flex; flex-direction: column; }
+.welcome-contact {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  font-size: 12px;
+}
+.welcome-contact:last-child { border-bottom: none; }
+.welcome-contact-label { color: var(--text-sub); }
+.welcome-contact-val {
+  color: var(--text);
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 2px;
+  transition: background 0.12s, color 0.12s;
+  font-family: 'Consolas', 'Menlo', monospace;
+}
+.welcome-contact-val[data-copy]:hover { background: rgba(255,255,255,0.06); color: var(--accent); }
+.welcome-contact-val.welcome-link:hover { color: var(--accent); }
+
+/* ======= 免责 ======= */
+.welcome-disclaimer {
+  margin-top: 16px;
+  padding: 10px 12px;
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--text-sub);
+  background: rgba(255,255,255,0.02);
+  border-left: 2px solid rgba(255,200,0,0.4);
+  border-radius: 0 2px 2px 0;
+}
+.welcome-disclaimer strong { color: rgba(255,200,0,0.85); font-weight: 600; }
+
+/* ======= 操作区(吸底) =======
+ * sticky 粘在滚动容器(.welcome-card)的底部
+ * 内容区足够长时,按钮始终可见;短时按钮位置自然靠底
+ */
+.welcome-actions-sticky {
+  position: sticky;
+  bottom: 0;
+  margin: 20px -26px 0;        /* 抵消 card padding,让吸底区域横跨整个卡片宽度 */
+  padding: 14px 26px 16px;
+  background: linear-gradient(
+    to bottom,
+    rgba(28, 28, 30, 0) 0%,
+    rgba(28, 28, 30, 0.85) 14%,
+    rgba(28, 28, 30, 0.96) 100%
+  );
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  z-index: 2;
+}
+
+.welcome-actions {
+  display: flex;
+  gap: 8px;
+}
+.welcome-actions .w10-btn {
+  flex: 1;
+  padding: 10px 18px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.welcome-btn-primary { font-weight: 600; }
+
+/* ======= 页脚 ======= */
+.welcome-foot {
+  margin-top: 10px;
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 1px;
+  color: rgba(255,255,255,0.2);
+}
+
+/* ======= 尺寸过小时的引导提示 =======
+ * 默认隐藏,面板过窄/过矮时才显示
+ */
+.welcome-hint-resize {
+  display: none;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--accent);
+  background: rgba(0, 120, 212, 0.08);
+  border: 1px dashed rgba(0, 120, 212, 0.35);
+  border-radius: 2px;
+}
+
+/* ======= 小窗口响应式 ======= */
+@media (max-height: 520px) {
+  .welcome-hint-resize { display: block; }
+}
+@media (max-width: 280px) {
+  .welcome-hint-resize { display: block; }
+}
+@media (max-height: 600px) {
+  .welcome-card { padding: 20px 22px 0; }
+  .welcome-actions-sticky { margin: 16px -22px 0; padding: 12px 22px 14px; }
+  .welcome-head { margin-bottom: 10px; }
+  .welcome-badges { margin-bottom: 14px; }
+}
+

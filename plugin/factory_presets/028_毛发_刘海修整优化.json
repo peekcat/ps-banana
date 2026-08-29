@@ -1,0 +1,9 @@
+{
+  "id": "f_027",
+  "title": "刘海修整优化",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":\"严禁改变面部五官表情\",\"preserve_hairstyle\":\"保持刘海整体形状和长度不变\",\"preserve_hair_color\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析刘海当前状态：碎发飞散程度、发量稀疏区域、假发网/发际线是否露出、发丝走向混乱区域、分叉干枯程度\"},\"bangs_refinement\":{\"cleanup\":{\"stray_removal\":\"移除刘海区域的杂碎发和飞散毛发，让线条干净整齐\",\"direction\":\"统一刘海发丝走向，所有发丝流向一致且自然\",\"tip_smoothing\":\"发梢收尖整齐，消除分叉、干枯、毛糙的发尾\"},\"density_fix\":{\"sparse_fill\":\"填补刘海稀疏区域，使发量分布均匀\",\"method\":\"新增发丝的颜色、粗细、光泽与原有刘海完全匹配\",\"hairline\":\"如果假发网或真实发际线露出，使用刘海发丝自然遮盖\"},\"texture_upgrade\":{\"material\":\"刘海材质呈现CG级丝滑质感，消除合成纤维的塑料光泽\",\"highlight\":\"自然的各向异性高光(Anisotropic)沿刘海弧度分布\",\"strand_detail\":\"发丝根根可辨，每根具有自然的粗细渐变\"},\"shape_maintain\":{\"contour\":\"保持刘海原有的剪裁轮廓(齐刘海/斜刘海/空气刘海等)\",\"curve\":\"刘海的弧度和蓬松感保持一致\",\"forehead_coverage\":\"刘海对额头的遮盖范围不变\"}},\"constraints\":{\"严禁\":\"改变刘海形状和长度、改变发色、遮挡眼睛(除非原本就遮挡)\",\"禁止\":\"刘海看起来过于规整呈假发感\"},\"integration\":{\"face_blend\":\"刘海与额头皮肤的交界处过渡自然\",\"light_match\":\"刘海高光方向与面部光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "hair",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

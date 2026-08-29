@@ -1,0 +1,9 @@
+{
+  "id": "f_060",
+  "title": "肩带内衣带移除",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_costume_design\":\"严禁改变服装款式设计，仅移除不属于角色服装的内衣肩带\",\"preserve_skin_color\":true,\"preserve_pose\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify_straps\":\"自动识别画面中露出的不属于角色服装设计的肩带类型：文胸肩带/内衣带(通常为肉色/白色/黑色窄带)、运动内衣可见带子、胸贴边缘\",\"distinguish_costume\":\"区分角色服装本身的肩带设计(如吊带裙/背带)和内衣肩带——仅移除后者\",\"identify_skin\":\"分析肩带下方的皮肤肤色、纹理、光影走向，用于精确重建\"},\"removal_operations\":{\"strap_erase\":{\"action\":\"完全移除所有识别到的内衣肩带/文胸带，不留任何残余\",\"edge_cleanup\":\"肩带边缘和扣环位置彻底清除，消除带子在皮肤上留下的压痕/勒痕红印\"},\"skin_rebuild\":{\"texture\":\"在肩带移除位置重建自然皮肤纹理，毛孔大小和密度与邻近肩部皮肤完全一致\",\"color\":\"重建区域肤色与周围皮肤完全统一，消除肩带遮挡造成的色差(肩带下方皮肤可能偏白)\",\"shadow\":\"根据原图光源方向重建正确的肩部光影过渡(锁骨阴影/肩峰高光)\",\"bone_structure\":\"如果肩带原本遮挡了锁骨/肩骨区域，重建后需显示自然的骨骼轮廓\"}},\"constraints\":{\"严禁\":\"移除属于角色服装设计的装饰性肩带、改变服装领口位置和形状\",\"禁止\":\"重建区域出现涂抹感或模糊、皮肤纹理与周围不一致\"},\"integration\":{\"seamless\":\"移除区域与周围皮肤无缝融合，无可见修图边界\",\"noise_match\":\"修补区域噪点与原图一致\"}}",
+  "category": "clothing",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

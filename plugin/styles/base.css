@@ -1,0 +1,87 @@
+/* === base.css — 全局变量 / 重置 / 基础排版 === */
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+/* v6.5.0: 全局禁文字选中 — UI 标签/按钮/磁贴不该被框选拖蓝。
+   白名单(真正需要输入/复制的地方)在下面显式放开。 */
+body{user-select:none;-webkit-user-select:none}
+input, textarea, select,
+[contenteditable],
+.conv-text, .conv-text-content,             /* 生成中心气泡的提示词正文 */
+.rb-info-prompt-box,                        /* 生成记录预览的提示词框 */
+.rb-info-err b,                             /* 生成记录预览的报错 */
+.log-entry, .log-msg,                       /* 日志面板 */
+.chat-bubble,                               /* AI 助手消息气泡 */
+.support-msg,                               /* 客服消息 */
+.qa-md, .qa-answer-body,                    /* FAQ 答案 */
+.w10-input, .hs-field,                      /* 各面板输入框(类名兜底) */
+code, pre{
+  user-select:text;-webkit-user-select:text
+}
+
+:root{
+  /* 磁贴网格 */
+  --cols:4;
+  --rows:8;
+  --cell:60px;
+  --gap:4px;
+
+  /* 背景 */
+  --bg:#1e1e2e;
+  --bg-opacity:0.88;
+
+  /* 磁贴 */
+  --tile-bg:rgba(255,255,255,0.05);
+  --tile-border:rgba(255,255,255,0.06);
+  --tile-radius:2px;
+  --tile-color-opacity:0.1;   /* 用户染色时的背景 alpha,边框按 2.5 倍算 */
+  --tile-blur:16px;
+
+  /* 主题色 (可被theme-engine动态覆盖) */
+  --accent:#0078d4;
+  --accent-hover:#1a8aff;
+  --accent-dark:#005a9e;
+  --accent-glow:rgba(0,120,212,0.35);
+
+  /* 文字 */
+  --text:#f0f0f0;
+  --text-sub:rgba(255,255,255,0.4);
+  --text-main:#eeeeee;
+
+  /* 输入框 */
+  --input-bg:#262626;
+  --border-color:#4a4a4a;
+}
+
+html,body{
+  width:100%;height:100%;overflow:hidden;
+  font-family:'Segoe UI',-apple-system,sans-serif;
+  color:var(--text);
+  font-size:12px;
+}
+
+/* === 背景层 === */
+.bg-layer{
+  position:fixed;top:-20px;left:-20px;right:-20px;bottom:-20px;z-index:0;
+  background:var(--bg);background-size:cover;background-position:center;background-repeat:no-repeat;
+  pointer-events:none;   /* 纯装饰层,不吃鼠标事件,让滚轮能传到 .vp */
+}
+.bg-blur{
+  position:fixed;top:0;left:0;right:0;bottom:0;z-index:1;
+  background:rgba(30,30,46,var(--bg-opacity));
+  pointer-events:none;   /* 同上 */
+}
+
+/* === 滚动条 === */
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:rgba(255,255,255,0.2)}
+
+/* === 选择 === */
+::selection{background:var(--accent);color:#fff}
+
+/* === v6.5.9 主题色"晕开": 换色瞬间 body 挂此类 0.3s, 全部主题色元素渐变过去 === */
+.theme-color-transition, .theme-color-transition *{
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease !important;
+}

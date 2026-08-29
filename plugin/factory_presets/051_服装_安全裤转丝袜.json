@@ -1,0 +1,9 @@
+{
+  "id": "f_050",
+  "title": "安全裤转丝袜",
+  "content": "{\"role\":\"Cosplay服装后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_pose\":true,\"preserve_costume_upper\":\"上半身服装完全不变\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"识别画面中模特穿着的安全裤/打底裤区域——通常为肉色/黑色/白色不透明紧身短裤，区别于外层服装\",\"identify_hosiery\":\"识别安全裤下方或腿部其他区域的原有丝袜类型和质感\"},\"replacement_operations\":{\"safety_shorts_removal\":{\"action\":\"完全移除安全裤/打底裤\",\"scope\":\"从腰际到大腿中段(安全裤覆盖范围)全部清除\"},\"hosiery_generation\":{\"material\":\"在移除区域生成15-20旦尼尔黑色半透明连裤袜质感\",\"transparency\":\"透过丝袜可隐约看到皮肤色(Opacity约70-80%)\",\"texture\":\"尼龙织物的细微编织纹理，手感丝滑\",\"sheen\":\"表面具有丝袜特有的柔和光泽(Anisotropic highlight)，大腿正面和外侧光泽最明显\",\"reinforcement\":\"裆部和腰部可有T型加固区域(Opacity略高约85-90%)\",\"waistband\":\"腰际处有窄幅弹性裤腰带(约1-2cm)，贴合腰部皮肤\"},\"seamless_match\":{\"action\":\"新生成的丝袜质感必须与腿部原有丝袜区域完全一致\",\"color\":\"颜色色号统一无色差\",\"transparency\":\"透明度一致\",\"texture\":\"编织纹理密度方向连续\"}},\"body_under_hosiery\":{\"skin\":\"丝袜下的皮肤呈现自然肤色，臀部和大腿曲线饱满光滑\",\"shadow\":\"大腿内侧和臀下的阴影自然，符合光源方向\"},\"constraints\":{\"严禁\":\"改变腿部姿势粗细、改变外层服装\",\"禁止\":\"新旧丝袜区域出现可见接缝/色差\"},\"integration\":{\"light_match\":\"丝袜反光方向与腿部光源一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "clothing",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

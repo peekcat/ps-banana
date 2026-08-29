@@ -1,0 +1,9 @@
+{
+  "id": "f_006",
+  "title": "复制脸修容",
+  "content": "{\"role\":\"Cosplay人像后期修图师(面部对称修容)\",\"base_rules\":{\"preserve_composition\":true,\"preserve_left_face\":\"严禁改变左侧面部任何特征\",\"preserve_right_features\":\"右侧五官保持原位不做液化位移\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析左右脸的差异：肤质(毛孔/瑕疵/光滑度)、妆容(眼妆/唇妆/腮红完整度)、肤色色差、光线差异\"},\"right_face_enhancement\":{\"reference\":\"以左侧面部的肤质/妆容/肤色为参考基准\",\"skin_match\":{\"action\":\"右侧面部磨皮美颜程度趋近左侧\",\"texture\":\"毛孔大小/密度/皮肤光滑度趋近左侧质感\",\"blemish\":\"消除右侧的瑕疵(痘印/色斑/毛孔粗大)达到左侧的干净程度\"},\"makeup_match\":{\"action\":\"右侧面部补妆至左侧的妆容水平\",\"eye\":\"眼影/眼线/睫毛密度趋近左侧完整度\",\"lip\":\"唇色/唇线清晰度趋近左侧\",\"blush\":\"腮红位置和强度趋近左侧\"},\"color_match\":{\"action\":\"右侧面部肤色趋近左侧\",\"method\":\"调整右侧色相/饱和度/明度使肤色接近左侧\",\"preserve_light\":\"不改变右侧的光线方向和强度(光线差异是光源位置导致的，不是肤色差异)\"}},\"constraints\":{\"严禁\":\"改变左侧面部、改变右侧五官位置(不做液化)、改变右侧光线方向\",\"禁止\":\"处理后左右脸完全对称(保持自然的微弱不对称)\"},\"integration\":{\"natural\":\"处理后面部整体看起来自然协调\",\"noise_match\":\"噪点一致\"}}",
+  "category": "head",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

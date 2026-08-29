@@ -1,0 +1,9 @@
+{
+  "id": "f_098",
+  "title": "萤火虫光粒子",
+  "content": "{\"role\":\"VFX环境特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析画面氛围(夜景/森林/梦幻)、光源环境、景深范围\"},\"firefly_particles\":{\"generation\":{\"count\":\"画面中生成15-50个漂浮光粒子(根据画面大小)\",\"size\":\"光点核心1-4px，大小随机\",\"shape\":\"光点呈圆形或略椭圆(运动方向拉伸)\"},\"distribution\":{\"depth\":\"光粒子分布在不同景深层：前景(大且Bokeh散焦)、中景(清晰)、背景(小且模糊)\",\"spatial\":\"随机但疏密有致地分布在画面中，模特周围密度略高\"},\"color_options\":{\"warm\":\"暖黄色(RGB 255,220,100至255,180,50)——模拟真实萤火虫\",\"cool\":\"冷蓝色(RGB 100,180,255至150,200,255)——模拟魔法粒子\",\"white\":\"白色(RGB 240,245,255)——模拟光之粒子\",\"auto\":\"根据画面整体氛围自动选择暖/冷色调\"},\"glow_properties\":{\"core\":\"光点核心最亮(接近纯白/浅色)\",\"inner_glow\":\"核心周围有属性色辉光(Opacity 40-70%，半径=核心2-4倍)\",\"outer_glow\":\"外层辉光更柔和(Opacity 10-25%，半径=核心5-10倍)\",\"bloom\":\"每个光粒子产生微弱Bloom效果\"},\"micro_illumination\":{\"action\":\"每个光粒子照亮其附近极小范围(半径约光点大小的8-15倍)\",\"intensity\":\"微光照明强度很弱(仅影响最近的表面约5-10%提亮)\",\"color\":\"微光颜色与光粒子颜色一致\"}},\"constraints\":{\"严禁\":\"光粒子遮挡模特面部、光点过密过大\",\"禁止\":\"光粒子排列规则呈网格感、所有光点大小亮度完全一致\"},\"integration\":{\"dof_match\":\"不同景深的光粒子模糊度匹配画面景深\",\"atmosphere\":\"光粒子增加画面梦幻/浪漫/神秘氛围\",\"noise_match\":\"噪点一致\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

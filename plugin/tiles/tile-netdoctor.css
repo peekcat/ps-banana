@@ -1,0 +1,35 @@
+/* tile-netdoctor.css — 网络体检磁贴 */
+.nd-panel { display: flex; flex-direction: column; gap: 8px; }
+.nd-desc { white-space: pre-line; font-size: 11px; line-height: 1.6; }
+.nd-actions { display: flex; gap: 6px; }
+.nd-actions .w10-btn { font-size: 12px; }
+
+.nd-verdict {
+  font-size: 12px; line-height: 1.6; padding: 10px 12px;
+  border-radius: 6px; color: var(--text, #eee);
+  background: rgba(255, 180, 77, 0.10);
+  border: 1px solid rgba(255, 180, 77, 0.35);
+}
+.nd-verdict.nd-ok {
+  background: rgba(126, 224, 129, 0.10);
+  border-color: rgba(126, 224, 129, 0.35);
+}
+.nd-time { font-size: 10px; color: var(--text-sub, #999); margin-top: 4px; }
+
+.nd-report {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 10px; line-height: 1.7;
+  color: var(--text-sub, #bbb);
+  background: rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px; padding: 10px;
+  white-space: pre-wrap; word-break: break-all;
+  max-height: 320px; overflow-y: auto;
+  margin: 0; user-select: text;
+}
+.nd-empty {
+  font-size: 11px; color: var(--text-sub, #888);
+  padding: 16px 8px; text-align: center;
+  background: rgba(255, 255, 255, 0.03); border-radius: 6px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+}

@@ -1,0 +1,9 @@
+{
+  "id": "f_095",
+  "title": "暗影黑雾特效",
+  "content": "{\"role\":\"VFX特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model_body\":true,\"preserve_face_visibility\":\"模特面部必须保持可见\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析模特位置姿势和光源方向\"},\"shadow_fog\":{\"generation\":{\"color\":\"深紫黑色半透明暗影烟雾(HSV: H270-300, S40-70, V5-25)\",\"opacity\":\"雾气Opacity 25-60%，边缘区域更稀薄(10-20%)\",\"behavior\":\"暗影从人物身体周围/脚下蔓延升腾，如同黑暗实体从体内溢出\",\"volume\":\"Volume Rendering体积渲染，内部密度不均匀呈卷曲流动状态\",\"turbulence\":\"Perlin/Curl Noise驱动缓慢的翻滚飘散形态\"},\"edge_glow\":{\"color\":\"暗影边缘有微弱的紫色/暗紫辉光(Opacity 15-30%)\",\"width\":\"辉光宽度约雾气边缘2-5px\",\"effect\":\"辉光呈现能量边界的视觉效果，暗中带光的诡异美感\"},\"light_absorption\":{\"action\":\"暗影吞噬附近光源，使被暗影笼罩的区域变暗15-35%\",\"gradient\":\"从暗影中心向外逐渐恢复正常亮度\",\"light_bending\":\"暗影边缘光线微弱弯曲扭曲(引力透镜效果)\"},\"particles\":{\"type\":\"暗色微粒(1-3px)在暗影中缓慢飘散\",\"glow\":\"部分微粒有微弱暗紫自发光\",\"count\":\"15-30个散布在暗影范围内\"}},\"constraints\":{\"严禁\":\"暗影遮挡模特面部使之不可辨认、改变画面整体HSL\",\"禁止\":\"暗影呈现纯黑不透明遮挡效果\"},\"integration\":{\"depth\":\"暗影与场景正确遮挡\",\"noise_match\":\"噪点一致\"}}",
+  "category": "lighting",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

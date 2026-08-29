@@ -1,0 +1,9 @@
+{
+  "id": "f_042",
+  "title": "修长美腿",
+  "content": "{\"role\":\"Cosplay人像后期修图师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_face\":true,\"preserve_expression\":true,\"preserve_costume_design\":\"服装款式材质花纹完全不变，仅跟随身体液化自然调整\",\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析模特腿部比例(大腿/小腿长度比)、当前腿围、膝关节位置、站姿重心分布、服装与腿部的贴合关系\"},\"leg_sculpting\":{\"liquify\":{\"method\":\"对大腿和小腿区域进行向内液化收缩，整体缩减量控制在原腿围的5-12%\",\"proportion\":\"保持大腿:小腿的自然比例(约5:4)，小腿线条从膝盖到脚踝呈流畅的锥形收窄\",\"symmetry\":\"双腿液化程度一致，左右对称\",\"muscle_line\":\"保留自然的肌肉线条轮廓：小腿肚的柔和弧线、膝盖内外侧轮廓、大腿内侧线条\",\"knee_joint\":\"膝盖区域不过度液化，保持关节的自然骨骼感和凹凸结构\"},\"skin_continuity\":{\"texture\":\"液化后皮肤纹理(毛孔/质感)保持自然，无拉伸变形或模糊\",\"color\":\"液化区域肤色均匀一致，无色块或色差\"},\"clothing_follow\":{\"action\":\"服装(裤子/裙摆/丝袜)跟随液化后的腿部轮廓自然贴合\",\"wrinkle\":\"服装褶皱重新分布，符合液化后的新身体曲面\",\"edge\":\"服装边缘(裙摆/袜口)自然，无扭曲变形\"}},\"background_repair\":{\"action\":\"液化导致的背景变形区域必须完全修复\",\"method\":\"使用周围背景纹理精确重建，保持直线仍为直线，纹理不弯曲\"},\"constraints\":{\"严禁\":\"改变模特动作姿势、腿部过细呈现不健康的竹竿感、膝盖反关节变形\",\"禁止\":\"液化导致背景出现可见变形、服装纹理出现拉伸扭曲\"}}",
+  "category": "legs",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}

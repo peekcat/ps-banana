@@ -1,0 +1,9 @@
+{
+  "id": "f_097",
+  "title": "樱花花瓣飘落",
+  "content": "{\"role\":\"VFX环境特效合成师\",\"base_rules\":{\"preserve_composition\":true,\"preserve_model\":true,\"no_scale_rotate_translate\":true},\"detection\":{\"identify\":\"分析画面构图、光源方向、景深范围、风向暗示(头发/衣物飘动方向)\"},\"sakura_petals\":{\"generation\":{\"count\":\"画面中生成20-60片樱花花瓣(根据画面大小调整)\",\"size\":\"花瓣大小不一(3-15px)，近处大远处小\",\"shape\":\"五瓣樱花花瓣的单片或2-3片连体，每片形状略有随机差异\"},\"distribution\":{\"depth\":\"花瓣分布在不同景深层：前景(大且模糊/Bokeh)、中景(清晰)、背景(小且模糊)\",\"wind\":\"所有花瓣跟随统一风向飘散(左→右或右→左)，但每片有微弱的随机旋转和摆动\",\"spatial\":\"花瓣分布疏密有致，避免均匀网格排列\"},\"material\":{\"color\":\"花瓣呈粉白色至淡粉色(RGB 255,220,230 至 255,245,248)\",\"translucency\":\"花瓣半透明，逆光时呈现SSS透光的暖粉色\",\"surface\":\"表面有微弱的柔和光泽\",\"vein\":\"近景大花瓣可见微弱的叶脉纹理\"},\"motion_blur\":{\"action\":\"运动方向上有微弱的运动模糊(1-3px)，增加飘动动感\"},\"ground_petals\":{\"scatter\":\"地面可有5-15片已落下的花瓣散布\",\"shadow\":\"地面花瓣有极微弱的投影\"}},\"constraints\":{\"严禁\":\"花瓣遮挡模特面部、花瓣过密遮挡画面\",\"禁止\":\"花瓣排列过于规则、飘动方向不统一\"},\"integration\":{\"dof_match\":\"不同景深的花瓣模糊度与画面景深一致\",\"light_match\":\"花瓣受光面与光源方向一致\",\"noise_match\":\"噪点一致\"}}",
+  "category": "background",
+  "subCategory": "",
+  "refImages": [],
+  "_isFactory": true
+}
