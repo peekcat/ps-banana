@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>轮椅遥控器</title>
+<style>
+  /* === 严格复用主插件 base.css 的 token === */
+  :root {
+    /* 背景 */
+    --bg: #1e1e2e;
+    --bg-opacity: 0.88;
+
+    /* 磁贴/卡片 */
+    --tile-bg: rgba(255,255,255,0.05);
+    --tile-border: rgba(255,255,255,0.06);
+    --tile-radius: 2px;
+    --tile-color-opacity: 0.1;
+    --tile-blur: 16px;
+
+    /* 主题色 */
+    --accent: #0078d4;
+    --accent-hover: #1a8aff;
+    --accent-dark: #005a9e;
+    --accent-glow: rgba(0,120,212,0.35);
+
+    /* 文字 */
+    --text: #f0f0f0;
+    --text-sub: rgba(255,255,255,0.4);
+    --text-main: #eeeeee;
+
+    /* 输入框 */
+    --input-bg: #262626;
+    --border-color: #4a4a4a;
+
+    /* 背景图 (主插件同步过来时设) */
+    --bg-image: none;
+    --bg-pos-x: 50%;
+    --bg-pos-y: 50%;
+    --bg-zoom: 100%;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: 'Segoe UI', -apple-system, "Microsoft YaHei", sans-serif;
+    color: var(--text);
+    font-size: 12px;
+    user-select: none; -webkit-user-select: none;
+  }
+  body { display: flex; flex-direction: column; }
+
+  /* === 背景层 (严格复刻主插件 base.css L46-56 写法) === */
+  .bg-layer {
+    position: fixed; top: -20px; left: -20px; right: -20px; bottom: -20px;
+    background-color: var(--bg);
+    background-size: cover;
+    background-position: center;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .bg-tint {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(30,30,46,var(--bg-opacity));
+    pointer-events: none;
+    z-index: 1;
+  }
+  /* 实际内容层 z-index: 2+ 才能避免被遮 (列出全部内容元素, 不靠选择器猜) */
+  .top-actions, #app, main, .drawer, .thumb-section, .footer, .toast {
+    position: relative; z-index: 2;
+  }
+
+  /* === 滚动条 (复刻主插件) === */
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+
+  ::selection { background: var(--accent); color: #fff; }
+
+  input, textarea { user-select: text; -webkit-user-select: text; }
+
+  /* === 顶部按钮区 (.w10-btn 风格, 复刻主插件 expand-panels.css L152) === */
+  .top-actions {
+    display: flex; gap: 6px;
+    padding: 8px;
+    border-bottom: 1px solid var(--tile-border);
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.02);
+  }
+  .w10-btn {
+    padding: 5px 14px; font-size: 10px; border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
+    color: var(--text);
+    transition: all 0.15s; font-weight: 500;
+    font-family: inherit;
+  }
+  .w10-btn:hover { background: rgba(255,255,255,0.1); }
+  .w10-btn:active { transform: scale(0.97); }
+  .w10-btn.locked { opacity: 0.4; pointer-events: none; }
+  .w10-btn-accent {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #111; font-weight: 600;
+  }
+  .w10-btn-accent:hover { filter: brightness(1.1); }
+  .top-actions .w10-btn { flex: 1; }
+  .top-actions .w10-btn.param-toggle { flex: 0 0 auto; padding: 5px 10px; }
+  .top-actions .w10-btn.param-toggle.is-open { background: var(--accent); border-color: var(--accent); color: #111; }
+
+  /* === 参数面板 (按钮控制) === */
+  .drawer {
+    flex-shrink: 0;
+    background: rgba(0,0,0,0.35);
+    border-bottom: 1px solid var(--tile-border);
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.22s cubic-bezier(.4,.0,.2,1);
+  }
+  .drawer.is-open { max-height: 320px; }
+  .drawer-content {
+    padding: 10px 12px;
+    display: flex; flex-direction: column;
+    gap: 10px;
+  }
+
+  .param-row { display: flex; align-items: center; gap: 8px; }
+  .param-row > label {
+    font-size: 10px; color: var(--text-sub);
+    width: 38px; flex-shrink: 0;
+  }
+  .param-row-inline {
+    align-items: stretch;
+    gap: 8px;
+  }
+  .param-row-inline .param-col {
+    flex: 1; display: flex; flex-direction: column; gap: 2px;
+  }
+  .param-row-inline .param-col label {
+    font-size: 10px; color: var(--text-sub); width: auto;
+  }
+  .param-pill-row {
+    display: flex; gap: 4px; flex: 1;
+    overflow-x: auto; scrollbar-width: thin;
+  }
+  .param-pill {
+    padding: 3px 8px;
+    font-size: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.04);
+    color: var(--text);
+    border-radius: var(--tile-radius);
+    cursor: pointer;
+    transition: all 0.12s;
+    font-family: inherit;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .param-pill:hover { background: rgba(255,255,255,0.1); }
+  .param-pill.is-on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #111;
+    font-weight: 600;
+  }
+  /* === C1 紧凑模式: 窗口太小时隐藏任务区/缩略图区/底栏, 但保留参数面板 (核心需求) === */
+  /* 抽屉自动展开占满空间, 用户主要靠它调参数 */
+  body.compact-mode .task-area,
+  body.compact-mode .thumb-section,
+  body.compact-mode .footer { display: none; }
+  body.compact-mode .top-actions { padding: 4px; gap: 4px; }
+  body.compact-mode .top-actions .w10-btn { padding: 4px 8px; font-size: 9px; }
+  /* 抽屉在紧凑模式自动展开, 用户调参数时不需要再点 ⚙ */
+  body.compact-mode .drawer { max-height: none; height: auto; flex: 1; }
+  body.compact-mode .drawer-content { padding: 6px 8px; gap: 6px; }
+  .top-actions, .drawer, .thumb-section, .footer {
+    backdrop-filter: blur(var(--tile-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--tile-blur, 16px));
+  }
+  .task-item {
+    backdrop-filter: blur(var(--tile-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--tile-blur, 16px));
+  }
+  .thumb-cell {
+    backdrop-filter: blur(var(--tile-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--tile-blur, 16px));
+  }
+
+  /* === 自定义下拉 (复刻主插件 .uik-sel-* 视觉) === */
+  .uik-sel-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+  }
+  .uik-sel-trigger {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 6px;
+    padding: 4px 8px;
+    min-height: 22px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--tile-radius);
+    font-size: 11px;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .uik-sel-trigger:hover {
+    background: rgba(255,255,255,0.08);
+    border-color: rgba(255,255,255,0.2);
+  }
+  .uik-sel-trigger.uik-sel-open {
+    border-color: var(--accent);
+    background: rgba(255,255,255,0.08);
+  }
+  .uik-sel-label {
+    flex: 1; min-width: 0;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .uik-sel-arrow {
+    font-size: 10px; color: var(--text-sub);
+    flex-shrink: 0;
+  }
+  .uik-sel-pop {
+    position: absolute;
+    top: 100%; left: 0;
+    /* 让弹层至少跟 trigger 一样宽, 内容更长时 trigger 不动, 弹层向右溢出 */
+    min-width: 100%;
+    width: max-content;
+    max-width: calc(100vw - 24px);    /* 不超出窗口右边界 */
+    margin-top: 2px;
+    background: rgba(30,30,30,0.95);
+    backdrop-filter: blur(var(--tile-blur, 16px));
+    -webkit-backdrop-filter: blur(var(--tile-blur, 16px));
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--tile-radius);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+  }
+  /* 弹层贴右侧时翻转方向, 防止被窗口右边切掉 */
+  .uik-sel-wrap.flip-right .uik-sel-pop { left: auto; right: 0; }
+  .uik-sel-opt {
+    padding: 6px 12px;
+    font-size: 11px; color: var(--text);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.08s;
+  }
+  .uik-sel-opt:hover { background: rgba(255,255,255,0.08); }
+  .uik-sel-opt.selected {
+    color: var(--accent);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .param-input {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--text);
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    outline: none;
+    flex: 1;
+    font-family: inherit;
+    min-width: 0;
+  }
+  .param-input:focus { border-color: var(--accent); }
+
+  /* === 任务卡片区 === */
+  .task-area {
+    overflow-y: auto;
+    padding: 6px;
+    flex: 1;
+    min-height: 50px;
+  }
+  .task-empty {
+    text-align: center;
+    color: var(--text-sub);
+    padding: 16px 12px;
+    font-size: 10px;
+  }
+
+  /* 任务条 (复刻主插件 task-item) */
+  .task-item {
+    background: var(--tile-bg);
+    border: 1px solid var(--tile-border);
+    border-radius: var(--tile-radius);
+    padding: 6px 8px;
+    margin-bottom: 5px;
+    display: flex; align-items: center; gap: 8px;
+    position: relative;
+  }
+  .task-engine-badge {
+    width: 18px; height: 18px;
+    border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .task-engine-banana { background: rgba(255,193,7,0.15); color: #ffc107; }
+  .task-engine-forge { background: rgba(176,71,255,0.15); color: #b047ff; }
+  .task-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .task-title {
+    font-size: 11px; font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .task-sub {
+    font-size: 9px; color: var(--text-sub);
+    display: flex; gap: 6px; align-items: center;
+    font-variant-numeric: tabular-nums;
+  }
+  .task-cd { font-family: 'Consolas', monospace; font-weight: 700; }
+  .task-progress-bar {
+    height: 2px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 1px;
+    overflow: hidden;
+    margin-top: 3px;
+  }
+  .task-progress-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+  .task-btns { display: flex; gap: 3px; flex-shrink: 0; }
+  .task-btns .w10-btn { padding: 3px 6px; font-size: 9px; min-width: 0; }
+
+  /* === 缩略图区 (内嵌在 task-area, 跟任务卡共用滚动) === */
+  .thumb-section {
+    background: rgba(0,0,0,0.18);
+    flex-shrink: 0;
+    margin-top: 4px;
+    border-radius: var(--tile-radius);
+  }
+  .thumb-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 10px;
+    font-size: 10px;
+    color: var(--text-sub);
+  }
+  .thumb-count { color: var(--text); font-variant-numeric: tabular-nums; }
+  .link-btn {
+    background: transparent; border: 0;
+    color: var(--accent); font-family: inherit;
+    font-size: 10px; cursor: pointer; padding: 2px 6px;
+  }
+  .link-btn:hover { color: var(--accent-hover); }
+  .thumb-strip {
+    display: flex; flex-direction: column;
+    gap: 6px;
+    padding: 4px 8px 8px;
+    /* 不再 max-height + overflow, 让 task-area 整体滚动 */
+  }
+  /* 一个 thumb-group = 一次任务的产出 (横向一行多张图) */
+  .thumb-group {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+    border-radius: var(--tile-radius);
+    border: 1px solid rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.02);
+    overflow-x: auto;
+    position: relative;
+  }
+  .thumb-group-close {
+    flex-shrink: 0;
+    width: 18px; height: 50px;
+    border: 0;
+    background: rgba(255,255,255,0.04);
+    color: var(--text-sub);
+    cursor: pointer;
+    border-radius: var(--tile-radius);
+    font-size: 14px;
+    font-family: inherit;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.12s;
+    padding: 0;
+    margin-right: 2px;
+  }
+  .thumb-group-close:hover {
+    background: rgba(216,59,1,0.3);
+    color: #fff;
+  }
+  /* 白方块: 跳转到 PS 蒙版 + 设选区 (放在组的最右侧, 跟 × 对称) */
+  .thumb-group-mask {
+    flex-shrink: 0;
+    width: 18px; height: 50px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: rgba(255,255,255,0.85);
+    cursor: pointer;
+    border-radius: var(--tile-radius);
+    font-family: inherit;
+    padding: 0;
+    margin-left: 2px;
+    transition: all 0.12s;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.15) inset;
+  }
+  .thumb-group-mask:hover {
+    background: rgba(255,255,255,1);
+    box-shadow: 0 0 8px rgba(255,255,255,0.6), 0 0 0 1px rgba(0,0,0,0.15) inset;
+    transform: scale(1.05);
+  }
+  .thumb-group-mask.is-pending {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 12px var(--accent-glow);
+  }
+  .thumb-group-mask:active { transform: scale(0.95); }
+  .thumb-group::-webkit-scrollbar { height: 2px; }
+  .thumb-cell {
+    width: 50px; height: 50px;
+    flex-shrink: 0;
+    border-radius: var(--tile-radius);
+    overflow: hidden;
+    cursor: pointer;
+    background: var(--tile-bg);
+    border: 1px solid var(--tile-border);
+    transition: border-color 0.12s, transform 0.08s, opacity 0.12s, filter 0.12s;
+    position: relative;
+  }
+  .thumb-cell.is-solo {
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+  .thumb-cell.is-pending {
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.4) inset;
+  }
+  .thumb-cell.is-dimmed {
+    opacity: 0.35;
+    filter: grayscale(0.6);
+  }
+  .thumb-cell:active { transform: scale(0.95); }
+  .thumb-cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .thumb-cell-loading {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-sub); font-size: 12px;
+  }
+  .thumb-cell-label {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+    color: white;
+    font-size: 8px;
+    padding: 6px 2px 1px;
+    text-align: center;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* === 底栏 === */
+  .footer {
+    padding: 4px 8px;
+    background: rgba(0,0,0,0.25);
+    color: var(--text-sub);
+    font-size: 9px;
+    border-top: 1px solid var(--tile-border);
+    display: flex; justify-content: space-between;
+    height: 20px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .footer-status { display: flex; align-items: center; gap: 4px; }
+  .footer-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--text-sub);
+    transition: background 0.2s;
+  }
+  .footer-dot.is-on { background: #4caf50; }
+  .footer-dot.is-fail { background: #ff5252; }
+
+  /* === C3 任务完成闪烁 === */
+  body.flash-success .footer { animation: footerFlashGreen 0.5s ease 4; }
+  body.flash-fail .footer { animation: footerFlashRed 0.5s ease 4; }
+  @keyframes footerFlashGreen {
+    0%, 100% { background: rgba(0,0,0,0.25); }
+    50% { background: rgba(76,175,80,0.5); }
+  }
+  @keyframes footerFlashRed {
+    0%, 100% { background: rgba(0,0,0,0.25); }
+    50% { background: rgba(216,59,1,0.55); }
+  }
+  .toast {
+    position: fixed;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0,0,0,0.9);
+    color: white; padding: 6px 14px;
+    border-radius: var(--tile-radius);
+    font-size: 11px;
+    z-index: 200;
+    pointer-events: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- 背景层 (复刻主插件 base.css 行为: 一个 div 含色+图, 一个 div 半透明遮罩) -->
+<div class="bg-layer"></div>
+<div class="bg-tint"></div>
+
+<!-- 顶部按钮区 -->
+<header class="top-actions" id="topActions">
+  <button class="w10-btn w10-btn-accent" id="btnRun" title="开始生成">▶ 开始</button>
+  <button class="w10-btn" id="btnBatch" title="加入批次">＋ 批次</button>
+  <button class="w10-btn" id="btnRef" title="加入参考图">📎 参考</button>
+  <button class="w10-btn param-toggle" id="btnParamToggle" title="展开/收起生成参数">⚙</button>
+</header>
+
+<!-- 参数面板 -->
+<section class="drawer" id="drawer">
+  <div class="drawer-content" id="drawerContent">
+    <div class="param-row">
+      <label>引擎</label>
+      <div class="param-pill-row" id="paramProvider"></div>
+    </div>
+    <div class="param-row">
+      <label>模型</label>
+      <div class="uik-sel-wrap" id="paramModel" data-key="model"></div>
+    </div>
+    <div class="param-row param-row-inline">
+      <div class="param-col">
+        <label>尺寸</label>
+        <div class="uik-sel-wrap" id="paramSize" data-key="size"></div>
+      </div>
+      <div class="param-col">
+        <label>比例</label>
+        <div class="uik-sel-wrap" id="paramAspect" data-key="aspectRatio"></div>
+      </div>
+    </div>
+    <div class="param-row param-row-inline">
+      <div class="param-col">
+        <label>批次</label>
+        <input class="param-input" id="paramBatch" type="number" min="1" max="20" value="1">
+      </div>
+      <div class="param-col">
+        <label>超时(s)</label>
+        <input class="param-input" id="paramTimeout" type="number" min="30" max="3600" step="10" value="3600">
+      </div>
+    </div>
+    <div class="param-row">
+      <label>抗截断</label>
+      <div class="param-pill-row" id="paramAntiMode"></div>
+    </div>
+  </div>
+</section>
+
+<!-- 任务列表 + 缩略图统一区 (新事件在底部, 任务跑完后原位变缩略图组) -->
+<main class="task-area" id="taskArea">
+  <div class="task-empty" id="taskEmpty">等待主插件状态…</div>
+  <!-- 缩略图区现在内嵌在 task-area, 紧跟在任务卡下方 -->
+  <div class="thumb-section" id="thumbSection" hidden>
+    <div class="thumb-header">
+      <span>已传回 <span class="thumb-count" id="thumbCount">0</span></span>
+      <button class="link-btn" id="btnClearThumbs" title="清空所有缩略图">清空</button>
+    </div>
+    <div class="thumb-strip" id="thumbStrip"></div>
+  </div>
+</main>
+
+<!-- 底栏 -->
+<div class="footer">
+  <span class="footer-status">
+    <span class="footer-dot" id="footerDot"></span>
+    <span id="footerText">连接中…</span>
+  </span>
+  <span id="footerVersion">轮椅遥控器 v2.0</span>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script>
+(function() {
+'use strict';
+
+var LOCK_MS = 1500;
+var _knownTasks = {};
+var _knownThumbs = {};
+// 4: 每组独立 solo 状态 — { msgId: thumbName }
+var _soloByGroup = {};
+var _connected = false;
+
+// --- 桥接 ---
+function sendToHost(action, data) {
+    var msg = { source: 'panel', action: action, data: data || {} };
+    if (window.uxpHost && typeof window.uxpHost.postMessage === 'function') {
+        window.uxpHost.postMessage(msg);
+    } else if (window.parent !== window) {
+        window.parent.postMessage(msg, '*');
+    } else {
+        window.postMessage(msg, '*');
+    }
+}
+function sendCommand(action, data) {
+    sendToHost('sendCommand', { action: action, data: data });
+}
+
+// === A1 节流 — 防止用户连击导致命令爆发覆盖 ===
+// 不同动作不同最小间隔: triggerRun 较慢 (要走选区抓图), setParam 快, stop 立即
+var _cmdLastTs = {};
+var CMD_INTERVAL = {
+    triggerRun: 1500,
+    triggerAddToBatch: 800,
+    triggerAddRefImage: 800,
+    setParam: 250,
+    soloLayer: 200,
+    extendTimeout: 500,
+    earlyStopTask: 100,
+    clearThumbs: 500,
+    clearGroup: 300,
+    gotoLayerMask: 500
+};
+function sendCommandThrottled(action, data) {
+    var now = Date.now();
+    var minInterval = CMD_INTERVAL[action] || 200;
+    var last = _cmdLastTs[action] || 0;
+    if (now - last < minInterval) {
+        // 太快, 静默丢弃 (用户视觉反馈仍然有, 但底层不发)
+        return false;
+    }
+    _cmdLastTs[action] = now;
+    sendCommand(action, data);
+    return true;
+}
+function lockBtn(btn, ms) {
+    if (!btn) return;
+    btn.classList.add('locked');
+    setTimeout(function() { btn.classList.remove('locked'); }, ms || LOCK_MS);
+}
+
+// --- 顶部按钮 ---
+document.getElementById('btnRun').onclick = function() {
+    lockBtn(this, 1200);
+    sendCommandThrottled('triggerRun', {});
+};
+document.getElementById('btnBatch').onclick = function() {
+    lockBtn(this);
+    sendCommandThrottled('triggerAddToBatch', {});
+};
+document.getElementById('btnRef').onclick = function() {
+    lockBtn(this);
+    sendCommandThrottled('triggerAddRefImage', {});
+};
+
+// 参数面板按钮 toggle
+document.getElementById('btnParamToggle').onclick = function() {
+    var d = document.getElementById('drawer');
+    var open = !d.classList.contains('is-open');
+    d.classList.toggle('is-open', open);
+    this.classList.toggle('is-open', open);
+};
+
+// --- 状态显示 ---
+// --- 状态显示 ---
+function setConnection(ok, text) {
+    _connected = ok;
+    var dot = document.getElementById('footerDot');
+    var ft = document.getElementById('footerText');
+    if (dot) dot.className = 'footer-dot ' + (ok ? 'is-on' : 'is-fail');
+    if (ft) ft.textContent = text || (ok ? '已连接' : '断开');
+}
+
+// === C3 任务完成通知 ===
+// 三层降级: 浏览器 Notification API → 卫星 footer 闪烁 → 内部 toast
+var _notifPermission = null;   // null=未请求, 'granted', 'denied', 'unsupported'
+function ensureNotifPermission() {
+    if (_notifPermission != null) return _notifPermission;
+    try {
+        if (!('Notification' in window)) {
+            _notifPermission = 'unsupported';
+            return _notifPermission;
+        }
+        if (Notification.permission === 'granted') {
+            _notifPermission = 'granted';
+        } else if (Notification.permission === 'denied') {
+            _notifPermission = 'denied';
+        } else {
+            // 还没请求过, 异步请求 (用户首次任务完成时弹一次系统询问)
+            Notification.requestPermission().then(function(p) {
+                _notifPermission = p;
+            }).catch(function() { _notifPermission = 'denied'; });
+            _notifPermission = 'pending';
+        }
+    } catch (e) { _notifPermission = 'unsupported'; }
+    return _notifPermission;
+}
+
+function notifyTaskComplete(label, suc, fail) {
+    var msg = '✓ 任务完成: ' + label + ' (' + suc + ' 成功' + (fail ? ' / ' + fail + ' 失败' : '') + ')';
+
+    // 1. 系统通知 (如有权限)
+    var p = ensureNotifPermission();
+    if (p === 'granted') {
+        try {
+            var n = new Notification('轮椅遥控器', {
+                body: msg,
+                tag: 'wheelchair-task',     // 同 tag 自动替换, 不堆积
+                silent: true                // 主插件已经放音效, 这里静音
+            });
+            setTimeout(function() { try { n.close(); } catch(_){} }, 4000);
+        } catch (e) {}
+    }
+
+    // 2. 卫星 footer 闪烁 (无论有没有系统通知, 都做)
+    flashFooter(suc > 0 ? 'success' : 'fail');
+}
+
+function flashFooter(kind) {
+    var ft = document.getElementById('footerText');
+    var dot = document.getElementById('footerDot');
+    if (!ft) return;
+    var orig = ft.textContent;
+    var origCls = dot ? dot.className : '';
+    ft.textContent = (kind === 'success') ? '✓ 任务完成' : '✗ 任务失败';
+    if (dot) dot.className = 'footer-dot ' + (kind === 'success' ? 'is-on' : 'is-fail');
+    document.body.classList.add('flash-' + kind);
+    setTimeout(function() {
+        document.body.classList.remove('flash-' + kind);
+        ft.textContent = orig;
+        if (dot) dot.className = origCls;
+    }, 2500);
+}
+
+// === A2 主插件断连检测 ===
+// 每次收到 stateUpdate 都更新心跳, 如果 5 秒没动就标记断连
+var _lastHeartbeat = 0;
+var _heartbeatTimer = null;
+function startHeartbeatWatcher() {
+    if (_heartbeatTimer) return;
+    _heartbeatTimer = setInterval(function() {
+        if (!_lastHeartbeat) return;
+        var elapsed = Date.now() - _lastHeartbeat;
+        if (elapsed > 5000 && _connected) {
+            setConnection(false, '主插件无响应');
+        } else if (elapsed <= 3000 && !_connected && _lastHeartbeat > 0) {
+            setConnection(true, '已连接');
+        }
+    }, 1000);
+}
+
+// --- 任务卡片渲染 (复刻主插件 task-item) ---
+function fmtCountdown(sec) {
+    if (sec == null || sec <= 0) return '⏱';
+    var m = Math.floor(sec / 60), s = sec % 60;
+    return m + ':' + (s < 10 ? '0' : '') + s;
+}
+function cdColor(sec) {
+    if (sec <= 0) return '#ff5252';
+    if (sec <= 10) return '#ff9800';
+    if (sec <= 30) return '#ffc107';
+    return '#90caf9';
+}
+// 进度条 — 严格复刻主插件 _taskProgressGradient (tile-tasks.js L49)
+// 已完成绿 / 失败橙 / 未完成红, 整条 100% 宽度, 纯比例切片
+var COL_SUCCESS = '#4caf50';
+var COL_FAIL = '#ff9800';
+var COL_PENDING = '#d32f2f';
+function progressGradient(t) {
+    var bs = t.batchSize || 1;
+    var suc = t.success || 0;
+    var fail = t.fail || 0;
+    if (bs <= 0) {
+        // 无批次信息, 用单任务百分比 (Forge / 单图)
+        var pct = (t.percent != null) ? t.percent : 0;
+        return 'linear-gradient(90deg,' + COL_SUCCESS + ' 0%,' + COL_SUCCESS + ' ' + pct + '%,' + COL_PENDING + ' ' + pct + '%,' + COL_PENDING + ' 100%)';
+    }
+    var sP = (suc / bs) * 100;
+    var fP = (fail / bs) * 100;
+    var stops = [];
+    var pos = 0;
+    if (sP > 0) { stops.push(COL_SUCCESS + ' ' + pos + '%'); pos += sP; stops.push(COL_SUCCESS + ' ' + pos + '%'); }
+    if (fP > 0) { stops.push(COL_FAIL + ' ' + pos + '%'); pos += fP; stops.push(COL_FAIL + ' ' + pos + '%'); }
+    if (pos < 100) { stops.push(COL_PENDING + ' ' + pos + '%'); stops.push(COL_PENDING + ' 100%'); }
+    return 'linear-gradient(90deg,' + stops.join(',') + ')';
+}
+
+function renderTaskCard(tid, t) {
+    var card = _knownTasks[tid];
+    var isNew = !card;
+    var prevDone = card ? +(card.dataset.done || 0) : 0;
+    if (isNew) {
+        card = document.createElement('div');
+        card.className = 'task-item';
+        card.dataset.tid = tid;
+        document.getElementById('taskArea').appendChild(card);
+        _knownTasks[tid] = card;
+    }
+    var label = (t.label || t.presetTitle || t.promptSnippet || '生成').slice(0, 18);
+    var bs = t.batchSize || 1;
+    var done = (t.success || 0) + (t.fail || 0);
+    // C3: 任务完成 (done 从 < bs 变到 >= bs) 触发桌面通知
+    if (prevDone < bs && done >= bs) {
+        notifyTaskComplete(label, t.success || 0, t.fail || 0);
+    }
+    card.dataset.done = done;
+    var pctText = (t.percent != null) ? (t.percent + '%') : (done + '/' + bs);
+    var cdSec = t.countdown || 0;
+    var cdc = cdColor(cdSec);
+    var isForge = t.engine === 'forge';
+    var badge = isForge
+      ? '<span class="task-engine-badge task-engine-forge" title="Forge">F</span>'
+      : '<span class="task-engine-badge task-engine-banana" title="Banana">B</span>';
+    var pctWidth = (t.percent != null) ? t.percent : Math.round((done / bs) * 100);
+
+    card.innerHTML =
+        badge +
+        '<div class="task-main">' +
+            '<div class="task-title">' + escapeHtml(label) + '</div>' +
+            '<div class="task-sub">' +
+                '<span>' + pctText + '</span>' +
+                '<span class="task-cd" style="color:' + cdc + '">' + fmtCountdown(cdSec) + '</span>' +
+                (t.model ? '<span style="opacity:0.6">' + escapeHtml(t.model) + '</span>' : '') +
+            '</div>' +
+            '<div class="task-progress-bar">' +
+                '<div class="task-progress-fill" style="width:100%; background:' + progressGradient(t) + ';"></div>' +
+            '</div>' +
+        '</div>' +
+        '<div class="task-btns">' +
+            '<button class="w10-btn" data-act="extend" title="加时 +10s">+10</button>' +
+            '<button class="w10-btn" data-act="stop" title="中断" style="color:#ff8a8a">■</button>' +
+        '</div>';
+
+    card.querySelector('[data-act="extend"]').onclick = function() {
+        sendCommandThrottled('extendTimeout', { seconds: 10, taskId: tid });
+    };
+    card.querySelector('[data-act="stop"]').onclick = function() {
+        this.disabled = true; this.textContent = '⏳';
+        sendCommand('earlyStopTask', { taskId: tid });
+    };
+}
+
+function removeTaskCard(tid) {
+    var card = _knownTasks[tid];
+    if (card) {
+        card.remove();
+        delete _knownTasks[tid];
+    }
+}
+
+function refreshEmptyHint() {
+    var hasAny = Object.keys(_knownTasks).length > 0;
+    var hint = document.getElementById('taskEmpty');
+    if (hint) hint.style.display = hasAny ? 'none' : '';
+}
+
+// === 缩略图渲染 (按 msgId/任务 分组) ===
+// 一个 msgId = 一次任务的产出 (1-N 张图)
+// 用户在卫星点缩略图 → 只 solo 同一任务内的, 不影响别的任务的图层
+function renderThumbs(thumbs) {
+    var section = document.getElementById('thumbSection');
+    var strip = document.getElementById('thumbStrip');
+    var countEl = document.getElementById('thumbCount');
+    if (!thumbs || !thumbs.length) {
+        if (section) section.hidden = true;
+        if (strip) strip.innerHTML = '';
+        _knownThumbs = {};
+        _knownGroups = {};
+        _soloByGroup = {};
+        return;
+    }
+    section.hidden = false;
+    countEl.textContent = thumbs.length;
+
+    // 按 msgId 分组, 保留组内 thumb 的顺序
+    var groupMap = {};       // msgId → { docId, layerIDs, thumbs }
+    var groupOrder = [];     // 出现顺序 (新→旧, _collectThumbs 已倒序)
+    thumbs.forEach(function(t) {
+        var gid = t.msgId || ('_' + t.taskId);
+        if (!groupMap[gid]) {
+            groupMap[gid] = { msgId: gid, docId: t.docId, layerIDs: [], thumbs: [] };
+            groupOrder.push(gid);
+        }
+        groupMap[gid].layerIDs.push(t.layerID);
+        groupMap[gid].thumbs.push(t);
+    });
+    _knownGroups = groupMap;
+
+    // 收掉已不存在的 thumb cell
+    var newSet = {};
+    thumbs.forEach(function(t) { newSet[t.thumbName] = t; });
+    Object.keys(_knownThumbs).forEach(function(tn) {
+        if (!newSet[tn]) {
+            var en = _knownThumbs[tn];
+            if (en && en.cellEl) en.cellEl.remove();
+            delete _knownThumbs[tn];
+            // 该 thumb 是某组的 solo 焦点 → 清掉
+            Object.keys(_soloByGroup).forEach(function(gid) {
+                if (_soloByGroup[gid] === tn) delete _soloByGroup[gid];
+            });
+        }
+    });
+
+    // 重新挂载: 按组 一行一组, 行内 N 张缩略图
+    strip.innerHTML = '';
+    groupOrder.forEach(function(gid) {
+        var grp = groupMap[gid];
+        var row = document.createElement('div');
+        row.className = 'thumb-group';
+        row.dataset.groupId = gid;
+        // C2: 组级 × 删除按钮 (左侧)
+        var closeBtn = document.createElement('button');
+        closeBtn.className = 'thumb-group-close';
+        closeBtn.textContent = '×';
+        closeBtn.title = '删除这组缩略图 (不影响 PS 图层)';
+        closeBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            sendCommandThrottled('clearGroup', { msgId: grp.msgId });
+        });
+        row.appendChild(closeBtn);
+        grp.thumbs.forEach(function(t) {
+            var ent = _knownThumbs[t.thumbName];
+            if (!ent) {
+                ent = {
+                    layerID: t.layerID, layerName: t.layerName,
+                    docId: t.docId, msgId: t.msgId, idx: t.idx, taskId: t.taskId
+                };
+                var cell = document.createElement('div');
+                cell.className = 'thumb-cell';
+                cell.title = t.layerName || ('图层 ' + t.layerID);
+                cell.innerHTML = '<div class="thumb-cell-loading">…</div>';
+                cell.addEventListener('click', function() { onThumbClick(t.thumbName); });
+                ent.cellEl = cell;
+                _knownThumbs[t.thumbName] = ent;
+                requestThumbFetch(t.thumbName);
+            } else {
+                ent.layerName = t.layerName;
+                ent.docId = t.docId;
+            }
+            // 高亮 (是否 solo) 由 applySoloVisualState 统一处理
+            row.appendChild(ent.cellEl);
+        });
+        // 白方块: 跳转到 PS 该组父图层的蒙版 + 设选区
+        var maskBtn = document.createElement('button');
+        maskBtn.className = 'thumb-group-mask';
+        maskBtn.title = '跳转到 PS 蒙版 (选区 = layer 边界扩 2px)';
+        maskBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            // 任选第一张图的 layerID — 同组共享父组蒙版
+            var firstThumb = grp.thumbs[0];
+            if (!firstThumb || firstThumb.layerID == null) return;
+            // 视觉反馈: 闪一下
+            maskBtn.classList.add('is-pending');
+            setTimeout(function() { maskBtn.classList.remove('is-pending'); }, 300);
+            sendCommandThrottled('gotoLayerMask', {
+                layerID: firstThumb.layerID,
+                docId: firstThumb.docId,
+                expandPx: 2
+            });
+        });
+        row.appendChild(maskBtn);
+        strip.appendChild(row);
+    });
+    // 同步 solo 状态 (新版无参数, 内部读 _soloByGroup)
+    applySoloVisualState();
+}
+
+var _knownGroups = {};   // 跟踪当前所有组, 给 solo 路由用
+
+var _thumbReqIdSeq = 0;
+var _thumbFetchInflight = {};
+function requestThumbFetch(thumbName) {
+    if (_thumbFetchInflight[thumbName]) return;
+    _thumbFetchInflight[thumbName] = true;
+    var reqId = '_t_' + (++_thumbReqIdSeq);
+    sendToHost('fetchThumb', { reqId: reqId, thumbName: thumbName });
+}
+
+function onThumbClick(thumbName) {
+    var ent = _knownThumbs[thumbName];
+    if (!ent || ent.layerID == null) return;
+    if (window.__thumbClickPending) return;
+    window.__thumbClickPending = true;
+    if (ent.cellEl) ent.cellEl.classList.add('is-pending');
+    setTimeout(function() {
+        window.__thumbClickPending = false;
+        if (ent.cellEl) ent.cellEl.classList.remove('is-pending');
+    }, 200);
+
+    // 找到本组 (同 msgId) 的 layerIDs - solo 只在本组内生效, 不影响其他任务的图层
+    var grp = _knownGroups[ent.msgId];
+    var groupOwned = grp ? grp.layerIDs.slice() : [ent.layerID];
+    var curSolo = _soloByGroup[ent.msgId];
+
+    if (curSolo === thumbName) {
+        // 再点 = 取消本组 solo, 恢复本组所有图层显示
+        delete _soloByGroup[ent.msgId];
+        applySoloVisualState();
+        sendCommandThrottled('soloLayer', { mode: 'restore', docId: ent.docId, ownedLayerIDs: groupOwned });
+    } else {
+        // 切换本组 solo (其他组的 solo 不变)
+        _soloByGroup[ent.msgId] = thumbName;
+        applySoloVisualState();
+        sendCommandThrottled('soloLayer', { mode: 'solo', docId: ent.docId, ownedLayerIDs: groupOwned, soloLayerID: ent.layerID });
+    }
+}
+
+function applySoloVisualState() {
+    Object.keys(_knownThumbs).forEach(function(tn) {
+        var en = _knownThumbs[tn];
+        if (!en || !en.cellEl) return;
+        var groupSolo = _soloByGroup[en.msgId];
+        if (!groupSolo) {
+            // 该组没 solo, 全亮
+            en.cellEl.classList.remove('is-solo');
+            en.cellEl.classList.remove('is-dimmed');
+        } else if (tn === groupSolo) {
+            // 本身就是 solo 的
+            en.cellEl.classList.add('is-solo');
+            en.cellEl.classList.remove('is-dimmed');
+        } else {
+            // 本组其他: dimmed
+            en.cellEl.classList.remove('is-solo');
+            en.cellEl.classList.add('is-dimmed');
+        }
+    });
+}
+
+document.getElementById('btnClearThumbs').onclick = function() {
+    if (!confirm('清空所有已传回缩略图?\n(只清卫星显示, 不影响 PS 图层)')) return;
+    sendCommand('clearThumbs', {});
+};
+
+// === 同步主插件主题 ===
+// state.theme = { bg, bgOpacity, accent, accentHover, accentDark, bgImage, bgPosX, bgPosY, bgZoom, ... }
+function applyTheme(theme) {
+    if (!theme) return;
+    var root = document.documentElement;
+    if (theme.bg) root.style.setProperty('--bg', theme.bg);
+    if (theme.bgOpacity != null) root.style.setProperty('--bg-opacity', theme.bgOpacity);
+    if (theme.accent) {
+        root.style.setProperty('--accent', theme.accent);
+        root.style.setProperty('--accent-glow', _hexToRgba(theme.accent, 0.35));
+    }
+    if (theme.accentHover) root.style.setProperty('--accent-hover', theme.accentHover);
+    if (theme.accentDark) root.style.setProperty('--accent-dark', theme.accentDark);
+    if (theme.tileColorOpacity != null) root.style.setProperty('--tile-color-opacity', theme.tileColorOpacity);
+    if (theme.blur != null) {
+        // 主插件实际只把 blur 用在 --tile-blur 上, 不给 .bg-tint 加 backdrop-filter
+        root.style.setProperty('--tile-blur', theme.blur + 'px');
+    }
+    // 背景图: 主插件存的是完整 dataURL, 直接用
+    var bgLayer = document.querySelector('.bg-layer');
+    if (bgLayer) {
+        if (theme.bgImage) {
+            bgLayer.style.backgroundImage = 'url(' + theme.bgImage + ')';
+        } else {
+            bgLayer.style.backgroundImage = '';
+        }
+        if (theme.bgPosX != null && theme.bgPosY != null) {
+            bgLayer.style.backgroundPosition = (theme.bgPosX || 50) + '% ' + (theme.bgPosY || 50) + '%';
+        }
+        if (theme.bgZoom != null) {
+            bgLayer.style.backgroundSize = (theme.bgZoom || 100) + '%';
+        }
+    }
+}
+function _hexToRgba(hex, alpha) {
+    if (!hex || hex[0] !== '#') return 'rgba(0,120,212,' + alpha + ')';
+    var h = hex.replace('#', '');
+    if (h.length === 3) h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+    var r = parseInt(h.substr(0,2),16), g = parseInt(h.substr(2,2),16), b = parseInt(h.substr(4,2),16);
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')';
+}
+
+// === 参数面板渲染 ===
+// 跟踪当前 params 状态, 每次 stateUpdate 来时调用 applyParams
+// 用户输入时只发 setParam 命令, 不本地改 (等主插件回推, 单一真相)
+var _paramsLastSig = '';
+var _paramsCurrent = null;
+
+function applyParams(p) {
+    if (!p) return;
+    // 用 sig 防止每帧重渲, 仅当字段变化才重画 (输入框打字时若被覆盖体验差)
+    var sig = JSON.stringify({
+        provider: p.provider, model: p.model, size: p.size, aspectRatio: p.aspectRatio,
+        batch: p.batch, timeout: p.timeout, antiMode: p.antiMode,
+        // options 也参与 sig: provider 切了会换模型列表
+        modelCount: (p.options && p.options.models || []).length,
+        sizeCount: (p.options && p.options.sizes || []).length
+    });
+    if (sig === _paramsLastSig) return;
+    _paramsLastSig = sig;
+    _paramsCurrent = p;
+
+    var opts = p.options || {};
+
+    // engine pills
+    var providerHost = document.getElementById('paramProvider');
+    if (providerHost) {
+        providerHost.innerHTML = (opts.providers || []).map(function(x) {
+            var on = (x.id === p.provider);
+            return '<button class="param-pill ' + (on ? 'is-on' : '') + '" data-set="provider" data-val="' + x.id + '">' + escapeHtml(x.label) + '</button>';
+        }).join('');
+    }
+
+    // model dropdown
+    renderUikSel('paramModel', p.model, (opts.models || []).map(function(m) {
+        return { id: m.id, label: m.label };
+    }));
+
+    // size dropdown
+    renderUikSel('paramSize', p.size, (opts.sizes || ['1K','2K','4K']).map(function(s) {
+        return { id: s, label: s };
+    }));
+
+    // aspect dropdown
+    renderUikSel('paramAspect', p.aspectRatio, (opts.aspects || []).map(function(a) {
+        return { id: a, label: a };
+    }));
+
+    // batch / timeout 输入框 (只在没在编辑时同步)
+    var batchInp = document.getElementById('paramBatch');
+    if (batchInp && document.activeElement !== batchInp) batchInp.value = p.batch || 1;
+    var timeoutInp = document.getElementById('paramTimeout');
+    if (timeoutInp && document.activeElement !== timeoutInp) timeoutInp.value = p.timeout || 3600;
+
+    // antiMode pills
+    var amHost = document.getElementById('paramAntiMode');
+    if (amHost) {
+        amHost.innerHTML = (opts.antiModes || []).map(function(x) {
+            var on = (+x.id === +p.antiMode);
+            return '<button class="param-pill ' + (on ? 'is-on' : '') + '" data-set="antiMode" data-val="' + x.id + '">' + escapeHtml(x.label) + '</button>';
+        }).join('');
+    }
+}
+
+// === 自定义下拉 (复刻主插件 .uik-sel-* 视觉, 简化版无 portal/搜索) ===
+function renderUikSel(wrapId, currentValue, options) {
+    var wrap = document.getElementById(wrapId);
+    if (!wrap) return;
+    // 找当前选中 label
+    var currentLabel = '—';
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].id === currentValue) { currentLabel = options[i].label; break; }
+    }
+    // 仅当 trigger 内容变了才重渲, 避免点开后被覆盖
+    var existing = wrap.querySelector('.uik-sel-trigger');
+    if (existing && wrap.dataset.curVal === String(currentValue)) {
+        // 已渲染且值未变, 不动
+        return;
+    }
+    wrap.dataset.curVal = String(currentValue);
+    var optsHtml = options.map(function(o) {
+        var sel = (o.id === currentValue) ? ' selected' : '';
+        return '<div class="uik-sel-opt' + sel + '" data-val="' + escapeAttr(o.id) + '">' + escapeHtml(o.label) + '</div>';
+    }).join('');
+    wrap.innerHTML =
+        '<div class="uik-sel-trigger">' +
+            '<span class="uik-sel-label">' + escapeHtml(currentLabel) + '</span>' +
+            '<span class="uik-sel-arrow">▼</span>' +
+        '</div>' +
+        '<div class="uik-sel-pop" hidden>' + optsHtml + '</div>';
+}
+
+function escapeAttr(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+// 全局点击委托: 触发器开关弹层 + 选项点击 + 外部点击关弹层
+document.addEventListener('click', function(e) {
+    var trigger = e.target.closest('.uik-sel-trigger');
+    if (trigger) {
+        var wrap = trigger.parentElement;
+        var pop = wrap.querySelector('.uik-sel-pop');
+        var wasOpen = !pop.hidden;
+        // 先关掉所有别的弹层
+        document.querySelectorAll('.uik-sel-pop').forEach(function(p) { p.hidden = true; });
+        document.querySelectorAll('.uik-sel-trigger').forEach(function(t) { t.classList.remove('uik-sel-open'); });
+        document.querySelectorAll('.uik-sel-wrap').forEach(function(w) { w.classList.remove('flip-right'); });
+        // 切自己
+        if (!wasOpen) {
+            pop.hidden = false;
+            trigger.classList.add('uik-sel-open');
+            // 打开后检测是否会超出窗口右边界, 是则 flip 到右对齐
+            requestAnimationFrame(function() {
+                var rect = pop.getBoundingClientRect();
+                if (rect.right > window.innerWidth - 4) {
+                    wrap.classList.add('flip-right');
+                }
+            });
+        }
+        return;
+    }
+    var opt = e.target.closest('.uik-sel-opt');
+    if (opt) {
+        var w = opt.closest('.uik-sel-wrap');
+        if (w) {
+            var key = w.dataset.key;
+            var val = opt.dataset.val;
+            // 数字字段自动转换
+            if (key === 'batch' || key === 'timeout') val = +val;
+            // size/aspect/model 都是字符串
+            sendCommandThrottled('setParam', { key: key, value: val });
+            // 立即关闭弹层
+            w.querySelector('.uik-sel-pop').hidden = true;
+            w.querySelector('.uik-sel-trigger').classList.remove('uik-sel-open');
+            // 立即更新 trigger label (乐观更新)
+            var found;
+            for (var oi = 0; oi < w.children.length; oi++) {}
+            var lbl = w.querySelector('.uik-sel-label');
+            if (lbl) lbl.textContent = opt.textContent;
+            // 把所有 selected 状态切到这一项
+            w.querySelectorAll('.uik-sel-opt').forEach(function(o) { o.classList.remove('selected'); });
+            opt.classList.add('selected');
+            w.dataset.curVal = val;
+        }
+        return;
+    }
+    // 点别处, 关掉所有打开的弹层
+    document.querySelectorAll('.uik-sel-pop').forEach(function(p) { p.hidden = true; });
+    document.querySelectorAll('.uik-sel-trigger').forEach(function(t) { t.classList.remove('uik-sel-open'); });
+});
+
+// 参数面板事件 — 用事件委托一次绑定, 不需要每次 applyParams 重新绑
+document.getElementById('drawerContent').addEventListener('click', function(e) {
+    var pill = e.target.closest('.param-pill');
+    if (pill && pill.dataset.set) {
+        var key = pill.dataset.set;
+        var val = pill.dataset.val;
+        // 数字字段转 number
+        if (key === 'antiMode') val = +val;
+        sendCommandThrottled('setParam', { key: key, value: val });
+    }
+});
+// select 改变 — 已迁移到自定义 .uik-sel-opt click handler (上面)
+// number input 改变 (用 change 不是 input, 减少命令频率)
+['paramBatch', 'paramTimeout'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('change', function() {
+        var keyMap = { paramBatch: 'batch', paramTimeout: 'timeout' };
+        var v = parseInt(this.value, 10) || 1;
+        sendCommandThrottled('setParam', { key: keyMap[id], value: v });
+    });
+});
+
+// === 接收 host 消息 ===
+window.addEventListener('message', function(event) {
+    var msg = event.data;
+    if (!msg || msg.source !== 'host') return;
+
+    if (msg.action === 'log') return;
+    if (msg.action === 'initInfo') {
+        setConnection(true, '已连接');
+        return;
+    }
+    if (msg.action === 'stateUpdate') {
+        _lastHeartbeat = Date.now();   // A2 心跳更新
+        var s = msg.data;
+        if (!s) return;
+        // 任务卡片
+        if (s.tasks) {
+            Object.keys(s.tasks).forEach(function(tid) { renderTaskCard(tid, s.tasks[tid]); });
+            Object.keys(_knownTasks).forEach(function(tid) {
+                if (!s.tasks[tid]) removeTaskCard(tid);
+            });
+            refreshEmptyHint();
+        }
+        // 缩略图
+        if (s.thumbs) renderThumbs(s.thumbs);
+        // 生成参数 (双向同步: 主插件 → 卫星 UI)
+        if (s.params) applyParams(s.params);
+        return;
+    }
+    if (msg.action === 'themeUpdate') {
+        // 单独的主题事件 (按需推, 不每帧)
+        applyTheme(msg.data || {});
+        return;
+    }
+    if (msg.action === 'thumbResult') {
+        var d = msg.data;
+        if (!d || !d.thumbName) return;
+        delete _thumbFetchInflight[d.thumbName];
+        var t = _knownThumbs[d.thumbName];
+        if (!t || !t.cellEl) return;
+        if (d.success && d.base64) {
+            // 大图压成 200 长边 jpeg q70 防 webview 卡死
+            compressForThumb(d.base64).then(function(smallDataUrl) {
+                t.base64 = d.base64;
+                var img = document.createElement('img');
+                img.src = smallDataUrl;
+                t.cellEl.innerHTML = '';
+                t.cellEl.appendChild(img);
+                if (t.layerName) {
+                    var lbl = document.createElement('span');
+                    lbl.className = 'thumb-cell-label';
+                    lbl.textContent = t.layerName.slice(0, 8);
+                    t.cellEl.appendChild(lbl);
+                }
+            }).catch(function(err) {
+                t.cellEl.innerHTML = '<div class="thumb-cell-loading">×</div>';
+            });
+        }
+        return;
+    }
+});
+
+function compressForThumb(base64) {
+    return new Promise(function(resolve, reject) {
+        var img = new Image();
+        img.onload = function() {
+            try {
+                var maxSide = 200;
+                var scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+                var w = Math.max(1, Math.round(img.width * scale));
+                var h = Math.max(1, Math.round(img.height * scale));
+                var c = document.createElement('canvas');
+                c.width = w; c.height = h;
+                var ctx = c.getContext('2d');
+                ctx.fillStyle = '#222'; ctx.fillRect(0, 0, w, h);
+                ctx.drawImage(img, 0, 0, w, h);
+                resolve(c.toDataURL('image/jpeg', 0.7));
+            } catch (e) { reject(e); }
+        };
+        img.onerror = function() { reject(new Error('image load fail')); };
+        img.src = 'data:image/png;base64,' + base64;
+    });
+}
+
+function escapeHtml(s) {
+    return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// === 启动 ===
+sendToHost('ready', {});
+setConnection(false, '初始化中…');
+startHeartbeatWatcher();
+
+// C1: 监听 resize 切换紧凑模式
+function _checkCompactMode() {
+    var compact = (window.innerWidth < 280) || (window.innerHeight < 200);
+    document.body.classList.toggle('compact-mode', compact);
+}
+_checkCompactMode();
+window.addEventListener('resize', _checkCompactMode);
+
+})();
+</script>
+
+</body>
+</html>

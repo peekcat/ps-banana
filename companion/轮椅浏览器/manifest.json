@@ -1,0 +1,33 @@
+{
+  "id": "com.xiasanqi.ps.wheelchair.browser",
+  "name": "轮椅浏览器",
+  "version": "1.0.1",
+  "main": "index.html",
+  "manifestVersion": 5,
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "browserPanel",
+      "label": { "default": "轮椅浏览器" },
+      "minimumSize": { "width": 300, "height": 200 },
+      "maximumSize": { "width": 4000, "height": 4000 },
+      "preferredDockedSize": { "width": 500, "height": 600 },
+      "preferredFloatingSize": { "width": 800, "height": 600 }
+    }
+  ],
+  "host": {
+    "app": "PS",
+    "minVersion": "24.0.0"
+  },
+  "requiredPermissions": {
+    "localFileSystem": "fullAccess",
+    "allowCodeGenerationFromStrings": true,
+    "network": { "domains": "all" },
+    "webview": {
+      "allow": "yes",
+      "allowLocalRendering": "yes",
+      "domains": "all",
+      "enableMessageBridge": "localAndRemote"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "com.xiasanqi.ps.wheelchair.v6.satellite",
+  "name": "轮椅遥控器 v2",
+  "version": "2.0.0",
+  "main": "index.html",
+  "manifestVersion": 5,
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "satellitePanel",
+      "label": { "default": "轮椅遥控器" },
+      "minimumSize": { "width": 200, "height": 80 },
+      "maximumSize": { "width": 2000, "height": 2000 },
+      "preferredDockedSize": { "width": 320, "height": 200 },
+      "preferredFloatingSize": { "width": 360, "height": 240 }
+    }
+  ],
+  "host": { "app": "PS", "minVersion": "26.0.0" },
+  "requiredPermissions": {
+    "localFileSystem": "fullAccess",
+    "allowCodeGenerationFromStrings": true,
+    "network": { "domains": "all" },
+    "webview": {
+      "allow": "yes",
+      "allowLocalRendering": "yes",
+      "domains": "all",
+      "enableMessageBridge": "localAndRemote"
+    }
+  }
+}
