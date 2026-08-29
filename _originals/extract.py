@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 """
-把 Xiasanqi-Wheelchair.zip 还原成 plugin/ 目录。
+把上游分发包还原成工作目录。
 
-这个包有两个坑，所以不能直接用 unzip：
-  1. 文件名是 GBK 字节，且没有设 UTF-8 标志位。macOS 的 unzip 假定 UTF-8,
-     遇到 163 个中文名会直接报 Illegal byte sequence 解不出来。
+  Xiasanqi-Wheelchair.zip  →  plugin/     主插件, 621 个文件
+  Plug-ins.zip             →  companion/  两个配套插件 (轮椅浏览器 / 轮椅遥控器)
+
+这些包有两个坑, 所以不能直接用 unzip:
+  1. 文件名是 GBK 字节, 且没有设 UTF-8 标志位。macOS 的 unzip 假定 UTF-8,
+     遇到中文名会直接报 Illegal byte sequence 解不出来。
   2. 姊妹包 "6.6.3 for mac.zip" 的路径分隔符全是反斜杠、且没有目录条目,
      在 macOS 上解出来是一堆带反斜杠的平铺文件, 目录结构立不起来。
-     所以基线取 Xiasanqi-Wheelchair.zip —— 它路径正常, 而且保留了原始 mtime。
+     所以主插件基线取 Xiasanqi-Wheelchair.zip —— 它路径正常, 且保留了原始 mtime。
 
-两个包的 621 个文件内容逐一 CRC32 相同, 取哪个都不影响内容, 只影响可用性。
+两个主插件包的 621 个文件内容逐一 CRC32 相同, 取哪个都不影响内容, 只影响可用性。
 
 用法: python3 _originals/extract.py
 """
@@ -21,9 +24,14 @@ import zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
-SRC = os.path.join(HERE, "Xiasanqi-Wheelchair.zip")
-DST = os.path.join(ROOT, "plugin")
-PREFIX = "Xiasanqi-Wheelchair/"
+
+# (源包, 目标目录, 是否剥掉顶层目录)
+#   主插件包所有条目都在 Xiasanqi-Wheelchair/ 下, 要剥掉。
+#   配套包顶层就是两个插件文件夹, 各自即为一个插件, 保留。
+JOBS = [
+    ("Xiasanqi-Wheelchair.zip", "plugin", True),
+    ("Plug-ins.zip", "companion", False),
+]
 
 
 def real_name(info):
@@ -37,32 +45,40 @@ def real_name(info):
     return info.orig_filename.encode("cp437").decode("gbk")
 
 
-def main():
-    if not os.path.exists(SRC):
-        sys.exit(f"找不到源包: {SRC}")
+def extract(zip_name, dest_name, strip_top):
+    src = os.path.join(HERE, zip_name)
+    dst = os.path.join(ROOT, dest_name)
+    if not os.path.exists(src):
+        sys.exit(f"找不到源包: {src}")
 
-    zf = zipfile.ZipFile(SRC)
+    zf = zipfile.ZipFile(src)
     infos = zf.infolist()
 
-    files = 0
-    dirs = 0
-    chinese = 0
+    prefix = ""
+    if strip_top:
+        tops = {real_name(i).split("/", 1)[0] for i in infos}
+        if len(tops) != 1:
+            sys.exit(f"{zip_name}: 期待单一顶层目录, 实际有 {sorted(tops)}")
+        prefix = tops.pop() + "/"
+
+    files = dirs = chinese = 0
     bad_crc = []
-    outside = []
+    skipped = []
 
     for info in infos:
         name = real_name(info)
-        if not name.startswith(PREFIX):
-            outside.append(name)
-            continue
-        rel = name[len(PREFIX):]
-        if not rel:
+        if prefix:
+            if not name.startswith(prefix):
+                skipped.append(name)
+                continue
+            name = name[len(prefix):]
+        if not name:
             continue
 
-        # 防路径穿越: 解出来的路径必须老实待在 plugin/ 里面
-        target = os.path.normpath(os.path.join(DST, rel))
-        if not (target == DST or target.startswith(DST + os.sep)):
-            outside.append(name)
+        # 防路径穿越: 解出来的路径必须老实待在目标目录里面
+        target = os.path.normpath(os.path.join(dst, name))
+        if not (target == dst or target.startswith(dst + os.sep)):
+            skipped.append(name)
             continue
 
         if info.is_dir():
@@ -75,32 +91,42 @@ def main():
 
         actual = zipfile.crc32(data) & 0xFFFFFFFF
         if actual != info.CRC:
-            bad_crc.append((rel, hex(info.CRC), hex(actual)))
+            bad_crc.append((name, hex(info.CRC), hex(actual)))
 
         with open(target, "wb") as fh:
             fh.write(data)
 
-        # 回写 mtime, 保住上游的时间信息 (2022-08-11 ~ 2026-08-29)
+        # 回写 mtime, 保住上游的时间信息
         mtime = time.mktime(info.date_time + (0, 0, -1))
         os.utime(target, (mtime, mtime))
 
         files += 1
-        if any(b > 127 for b in rel.encode("utf-8")):
+        if any(b > 127 for b in name.encode("utf-8")):
             chinese += 1
 
-    print(f"解出文件 {files} 个, 目录 {dirs} 个, 其中中文名 {chinese} 个")
+    print(f"{zip_name} → {dest_name}/")
+    print(f"  解出文件 {files} 个, 目录 {dirs} 个, 其中中文名 {chinese} 个")
 
-    if outside:
-        print(f"跳过 {len(outside)} 条前缀异常/越界条目:")
-        for n in outside[:10]:
-            print("  ", n)
+    if skipped:
+        print(f"  跳过 {len(skipped)} 条前缀异常/越界条目:")
+        for n in skipped[:10]:
+            print("    ", n)
     if bad_crc:
-        print(f"CRC 不匹配 {len(bad_crc)} 个:")
+        print(f"  CRC 不匹配 {len(bad_crc)} 个:")
         for row in bad_crc[:10]:
-            print("  ", row)
-        sys.exit(1)
+            print("    ", row)
+        return False
 
-    print("全部文件 CRC32 校验通过")
+    print("  全部文件 CRC32 校验通过")
+    return True
+
+
+def main():
+    ok = True
+    for job in JOBS:
+        ok = extract(*job) and ok
+    if not ok:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
