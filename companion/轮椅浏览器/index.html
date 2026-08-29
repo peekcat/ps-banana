@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; overflow: hidden; background: #1e1e1e; font-family: -apple-system, 'Segoe UI', sans-serif; }
+body { display: flex; flex-direction: column; }
+
+/* ── 导航栏 ── */
+#navbar {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    padding: 4px;
+    background: #2a2a2a;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    flex-shrink: 0;
+}
+.nav-btn {
+    width: 26px; height: 26px;
+    border: none; border-radius: 4px;
+    background: rgba(255,255,255,0.06);
+    color: #aaa;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+.nav-btn:hover { background: rgba(255,255,255,0.12); color: #e0e0e0; }
+.nav-btn:active { transform: scale(0.92); }
+.nav-btn:disabled { opacity: 0.3; cursor: default; transform: none; }
+
+#urlInput {
+    flex: 1;
+    height: 26px;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 4px;
+    background: rgba(0,0,0,0.3);
+    color: #e0e0e0;
+    font-size: 11px;
+    padding: 0 8px;
+    outline: none;
+    min-width: 0;
+}
+#urlInput:focus { border-color: rgba(195,253,254,0.4); }
+#urlInput::placeholder { color: rgba(255,255,255,0.25); }
+
+/* ── 书签栏 ── */
+#bookmarks {
+    display: flex;
+    gap: 2px;
+    padding: 2px 4px;
+    background: #252525;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    flex-shrink: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+#bookmarks::-webkit-scrollbar { height: 0; }
+.bm-btn {
+    border: none; border-radius: 3px;
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.5);
+    font-size: 9px;
+    padding: 3px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+.bm-btn:hover { background: rgba(255,255,255,0.1); color: #e0e0e0; }
+.bm-btn.bm-history { color: #ffcc80; border: 1px solid rgba(255,204,128,0.15); }
+.bm-btn.bm-history:hover { background: rgba(255,204,128,0.1); }
+.bm-btn.bm-grab { color: #69f0ae; border: 1px solid rgba(105,240,174,0.15); }
+.bm-btn.bm-grab:hover { background: rgba(105,240,174,0.1); }
+
+/* ── 抓图面板 ── */
+#grabPanel {
+    display: none;
+    position: absolute;
+    top: 60px; right: 4px;
+    width: 260px;
+    background: #2a2a2a;
+    border: 1px solid rgba(105,240,174,0.2);
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    z-index: 101;
+    padding: 8px;
+}
+#grabPanel.show { display: block; }
+.grab-header { font-size: 11px; font-weight: 600; color: #69f0ae; margin-bottom: 4px; }
+.grab-hint { font-size: 9px; color: rgba(255,255,255,0.35); margin-bottom: 6px; line-height: 1.4; }
+#grabUrlInput {
+    width: 100%; height: 26px;
+    border: 1px solid rgba(255,255,255,0.1); border-radius: 4px;
+    background: rgba(0,0,0,0.3); color: #e0e0e0;
+    font-size: 10px; padding: 0 8px; outline: none; margin-bottom: 6px;
+}
+#grabUrlInput:focus { border-color: rgba(105,240,174,0.4); }
+.grab-actions { display: flex; gap: 4px; margin-bottom: 6px; }
+.grab-btn {
+    flex: 1; padding: 5px; border: none; border-radius: 4px;
+    font-size: 10px; font-weight: 600; cursor: pointer; text-align: center;
+    transition: all 0.15s;
+}
+.grab-btn:active { transform: scale(0.96); }
+.grab-btn-paste { background: rgba(255,255,255,0.08); color: #cfd8dc; }
+.grab-btn-paste:hover { background: rgba(255,255,255,0.12); }
+.grab-btn-go { background: linear-gradient(135deg, #69f0ae, #00c853); color: #111; }
+.grab-btn-go:hover { box-shadow: 0 2px 8px rgba(105,240,174,0.3); }
+.grab-btn-go:disabled { opacity: 0.4; cursor: default; transform: none; }
+#grabPreview { text-align: center; margin-bottom: 4px; }
+#grabPreview img { max-width: 100%; max-height: 120px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); }
+#grabStatus { font-size: 9px; color: rgba(255,255,255,0.4); text-align: center; }
+
+/* ── 历史面板 ── */
+#historyPanel {
+    display: none;
+    position: absolute;
+    top: 60px; right: 4px;
+    width: 240px;
+    max-height: 300px;
+    background: #2a2a2a;
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+    z-index: 100;
+    overflow-y: auto;
+    padding: 4px;
+}
+#historyPanel.show { display: block; }
+#historyPanel::-webkit-scrollbar { width: 3px; }
+#historyPanel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+.hist-item {
+    padding: 5px 8px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.6);
+    border-radius: 3px;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: background 0.1s;
+}
+.hist-item:hover { background: rgba(255,255,255,0.08); color: #e0e0e0; }
+.hist-empty { padding: 12px; text-align: center; color: rgba(255,255,255,0.25); font-size: 10px; }
+.hist-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 4px 8px 6px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 2px;
+}
+.hist-title { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 600; }
+.hist-clear { font-size: 9px; color: #ff8a80; cursor: pointer; }
+.hist-clear:hover { color: #ff5252; }
+
+/* ── 加载状态 ── */
+#loadingBar {
+    height: 2px;
+    background: linear-gradient(90deg, #c3fdfe, #64b5f6, #c3fdfe);
+    background-size: 200% 100%;
+    animation: loadSlide 1.2s ease-in-out infinite;
+    flex-shrink: 0;
+    display: none;
+}
+#loadingBar.active { display: block; }
+@keyframes loadSlide { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ── Webview ── */
+#browserView { flex: 1; border: none; min-height: 0; background: #fff; }
+
+/* ── 欢迎页 ── */
+#welcomePage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255,255,255,0.3);
+    font-size: 11px;
+    min-height: 0;
+}
+#welcomePage .wp-icon { font-size: 32px; margin-bottom: 8px; }
+#welcomePage .wp-title { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5); margin-bottom: 4px; }
+#welcomePage .wp-hint { font-size: 9px; }
+</style>
+</head>
+<body>
+
+<!-- 导航栏 -->
+<div id="navbar">
+    <button class="nav-btn" id="btnBack" title="后退" disabled>←</button>
+    <button class="nav-btn" id="btnForward" title="前进" disabled>→</button>
+    <button class="nav-btn" id="btnRefresh" title="刷新">⟳</button>
+    <input type="text" id="urlInput" placeholder="输入网址或搜索..." value="" />
+    <button class="nav-btn" id="btnGo" title="访问">▶</button>
+    <span id="zoomDisplay" style="color:rgba(255,255,255,0.35);font-size:9px;min-width:30px;text-align:center;flex-shrink:0;cursor:pointer;" title="点击重置缩放 / Ctrl+滚轮缩放">100%</span>
+    <button class="nav-btn" id="btnHome" title="主页">🏠</button>
+</div>
+
+<!-- 书签栏 (书签按钮由 index.js 动态插在「历史」按钮前, 默认内置 7 个) -->
+<div id="bookmarks">
+    <button class="bm-btn bm-history" id="btnHistory">🕐 历史</button>
+    <button class="bm-btn bm-grab" id="btnGrabImage">📥 图片→PS</button>
+</div>
+
+<!-- 抓图面板 -->
+<div id="grabPanel">
+    <div class="grab-header">📥 图片导入PS</div>
+    <div class="grab-hint">在网页上右键图片 → 复制图片地址 → 粘贴到下方</div>
+    <input type="text" id="grabUrlInput" placeholder="粘贴图片URL..." />
+    <div class="grab-actions">
+        <button class="grab-btn grab-btn-paste" id="btnGrabPaste">📋 粘贴</button>
+        <button class="grab-btn grab-btn-go" id="btnGrabGo">📥 导入PS</button>
+    </div>
+    <div id="grabPreview"></div>
+    <div id="grabStatus"></div>
+</div>
+
+<!-- 历史面板 -->
+<div id="historyPanel">
+    <div class="hist-header">
+        <span class="hist-title">浏览历史</span>
+        <span class="hist-clear" id="btnClearHistory">清空</span>
+    </div>
+    <div id="historyList"><div class="hist-empty">暂无历史记录</div></div>
+</div>
+
+<!-- 加载条 -->
+<div id="loadingBar"></div>
+
+<!-- 欢迎页 -->
+<div id="welcomePage">
+    <div class="wp-icon">🌐</div>
+    <div class="wp-title">轮椅浏览器</div>
+    <div class="wp-hint">在上方输入网址或点击书签开始浏览</div>
+</div>
+
+<!-- 浏览器 -->
+<webview id="browserView" src="" style="display:none;"></webview>
+
+<script src="index.js"></script>
+</body>
+</html>
