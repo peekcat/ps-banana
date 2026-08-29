@@ -89,9 +89,9 @@ cpolar 是内网穿透的临时域名，随时可能变更或失效。要换地�
 
 ## 配套插件
 
-主插件带一键安装两个配套插件的功能，会从自己的插件目录读 `browser-pkg.zip` / `satellite-pkg.zip`。这两个文件上游的 zip 分发包里没有，只有 exe 安装包里有，而该 exe 拆不开（Inno Setup 6.7，innoextract 只支持到 6.3.3）。
+主插件带一键安装两个配套插件的功能，会从自己的插件目录读 `browser-pkg.zip` / `satellite-pkg.zip`。但 exe 安装程序是把三个插件各装成独立文件夹的，装出来的插件目录里并没有这两个文件（已实机核对），那套一键安装流程在 exe 场景下闲置。
 
-已通过在 Windows 上实机安装绕过：配套插件源码在 `companion/`，`plugin/` 下的两个 pkg zip 由 `_originals/build-pkgs.py` 重建——
+配套插件源码在 `companion/`（从安装结果取回），`plugin/` 下的两个 pkg zip 由 `_originals/build-pkgs.py` 重建，补上这个缺口——
 
 ```
 python3 _originals/build-pkgs.py
