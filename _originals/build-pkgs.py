@@ -23,6 +23,10 @@
 注意: 这是重建产物, 不是上游原始字节。上游那两个 zip 的确切内容(压缩参数、
 条目顺序、有无额外文件)无从得知, 这里只保证解压后的文件与安装出来的一致。
 
+条目时间戳一律写成固定值 FIXED_DATE_TIME 而不取文件系统 mtime —— git 不保存
+mtime, checkout 会把它刷成检出时刻, 若照抄 mtime 则换台机器 clone 出来重建的
+zip 字节就不一样了。Expand-Archive 不关心这个时间戳, 固定它换来可重复构建。
+
 用法: python3 _originals/build-pkgs.py
 """
 
@@ -32,6 +36,9 @@ import zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
+
+# zip 格式能表示的最早时间, 可重复构建的惯用取值
+FIXED_DATE_TIME = (1980, 1, 1, 0, 0, 0)
 
 # (配套插件目录名, 生成的包名)
 PKGS = [
@@ -58,10 +65,7 @@ def build(src_name, pkg_name):
 
     with zipfile.ZipFile(out, "w", zipfile.ZIP_DEFLATED) as zf:
         for path, rel in entries:
-            # 用源文件自己的 mtime, 保证重复构建产物一致
-            st = os.stat(path)
-            import time
-            info = zipfile.ZipInfo(rel, date_time=time.localtime(st.st_mtime)[:6])
+            info = zipfile.ZipInfo(rel, date_time=FIXED_DATE_TIME)
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o644 << 16
             with open(path, "rb") as fh:
