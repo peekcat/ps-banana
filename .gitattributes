@@ -1,0 +1,20 @@
+# 本仓库是逐字节归档, 任何平台上 checkout 都必须拿到与上游完全一致的字节。
+#
+# Windows 版 git 默认 core.autocrlf=true, checkout 时会把 LF 换成 CRLF。
+# 对普通项目无所谓, 对这里是致命的:
+#   - plugin/ 下 621 个上游文件的 CRC32 校验结论(见 PROVENANCE.md)会全部失效
+#   - build-pkgs.py 重建的 pkg zip 字节会变, 可重复构建的保证没了
+#   - git status 会凭空冒出几百个"改动"
+# 上游这批文件本身就是纯 LF(全库 345 个文本文件无一含 CRLF), 保持原样即可。
+#
+# 所以对所有文件关闭行尾转换, 不依赖各人的 core.autocrlf 设置。
+* -text
+
+# 归档件与二进制资源: 顺带关掉 diff/merge, 免得 git 试图按文本渲染
+*.zip binary
+*.exe binary
+*.mp3 binary
+*.MP3 binary
+*.png binary
+*.jpg binary
+*.bak binary
