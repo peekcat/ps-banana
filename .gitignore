@@ -1,0 +1,6 @@
+.DS_Store
+._*
+*.swp
+
+# 解包产物中转目录 / 拆包尝试的临时输出
+_originals/exe-payload/
