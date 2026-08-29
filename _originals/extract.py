@@ -5,14 +5,12 @@
   Xiasanqi-Wheelchair.zip  →  plugin/     主插件, 621 个文件
   Plug-ins.zip             →  companion/  两个配套插件 (轮椅浏览器 / 轮椅遥控器)
 
-这些包有两个坑, 所以不能直接用 unzip:
-  1. 文件名是 GBK 字节, 且没有设 UTF-8 标志位。macOS 的 unzip 假定 UTF-8,
-     遇到中文名会直接报 Illegal byte sequence 解不出来。
-  2. 姊妹包 "6.6.3 for mac.zip" 的路径分隔符全是反斜杠、且没有目录条目,
-     在 macOS 上解出来是一堆带反斜杠的平铺文件, 目录结构立不起来。
-     所以主插件基线取 Xiasanqi-Wheelchair.zip —— 它路径正常, 且保留了原始 mtime。
+不能直接用 unzip: 文件名是 GBK 字节, 且没有设 UTF-8 标志位。macOS 的 unzip
+假定 UTF-8, 遇到中文名会直接报 Illegal byte sequence 解不出来。
 
-两个主插件包的 621 个文件内容逐一 CRC32 相同, 取哪个都不影响内容, 只影响可用性。
+两个包都不是上游发布的形态 —— 它们是在 Windows 上跑完 轮椅6.6.3_安装程序.exe
+之后, 从安装结果打包出来的。唯一的上游原始分发物是那个 exe, 但它拆不开
+(Inno Setup 6.7, innoextract 只支持到 6.3.3), 详见 PROVENANCE.md。
 
 用法: python3 _originals/extract.py
 """

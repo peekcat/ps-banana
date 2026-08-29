@@ -23,7 +23,7 @@ GPL v3。见 `LICENSE`。
 ```
 plugin/       主插件源码，621 个文件，原样解包自上游 zip
 companion/    两个配套插件源码：轮椅浏览器 1.0.1、轮椅遥控器 2.0.0
-_originals/   原始分发包 + 解包脚本 extract.py + 配套包重建脚本 build-pkgs.py
+_originals/   上游安装包 + 由其安装结果打包的两个 zip + 解包/重建脚本
 LICENSE       GPL-3.0 全文（上游分发缺这个文件，此处补上）
 PROVENANCE.md 来源、SHA256、校验结果、重建说明
 ```
