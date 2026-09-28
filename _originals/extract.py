@@ -2,20 +2,26 @@
 """
 把上游分发包还原成工作目录。
 
-  Xiasanqi-Wheelchair.zip  →  plugin/     主插件, 621 个文件
-  Plug-ins.zip             →  companion/  两个配套插件 (轮椅浏览器 / 轮椅遥控器)
+  6.6.4.zip      →  plugin/     主插件, 639 个文件 (含真实的两个 pkg zip)
+  Plug-ins.zip   →  companion/  两个配套插件 (轮椅浏览器 / 轮椅遥控器)
 
-不能直接用 unzip: 文件名是 GBK 字节, 且没有设 UTF-8 标志位。macOS 的 unzip
-假定 UTF-8, 遇到中文名会直接报 Illegal byte sequence 解不出来。
+文件名编码, 两个包情况不同:
+  - 6.6.4.zip 打得很规范: 163 个中文名条目全部带 UTF-8 标志位, 无需猜编码,
+    macOS 自带 unzip 也能正常解。
+  - Plug-ins.zip 是 GBK 字节且没设标志位, macOS 的 unzip 假定 UTF-8, 会直接报
+    Illegal byte sequence 解不出来, 必须靠 real_name() 还原。
 
-两个包都不是上游发布的形态 —— 它们是在 Windows 上跑完 轮椅6.6.3_安装程序.exe
-之后, 从安装结果打包出来的。唯一的上游原始分发物是那个 exe, 但它拆不开
-(Inno Setup 6.7, innoextract 只支持到 6.3.3), 详见 PROVENANCE.md。
+6.6.4.zip 是作者直接发布的 zip; Plug-ins.zip 则是在 Windows 上跑完
+轮椅6.6.3_安装程序.exe 之后从安装结果打包的 —— 因为 6.6.3 的 exe 装出来
+不含配套插件包。详见 PROVENANCE.md。
 
-用法: python3 _originals/extract.py
+用法:
+  python3 _originals/extract.py            # 解包, 并报告目标目录里的多余文件
+  python3 _originals/extract.py --clean    # 先清空目标目录再解 (复现校验用)
 """
 
 import os
+import shutil
 import sys
 import time
 import zipfile
@@ -24,10 +30,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 
 # (源包, 目标目录, 是否剥掉顶层目录)
-#   主插件包所有条目都在 Xiasanqi-Wheelchair/ 下, 要剥掉。
-#   配套包顶层就是两个插件文件夹, 各自即为一个插件, 保留。
+#   6.6.4.zip 没有包裹目录, 文件直接在 zip 根, 不剥。
+#   配套包顶层就是两个插件文件夹, 各自即为一个插件, 也不剥。
 JOBS = [
-    ("Xiasanqi-Wheelchair.zip", "plugin", True),
+    ("6.6.4.zip", "plugin", False),
     ("Plug-ins.zip", "companion", False),
 ]
 
@@ -35,19 +41,25 @@ JOBS = [
 def real_name(info):
     """还原真实文件名。
 
-    zipfile 在没有 UTF-8 标志位时会按 cp437 解码原始字节, 这是无损的往返映射,
-    所以先 encode('cp437') 拿回原始字节, 再按 GBK 解码即得中文名。
+    带 UTF-8 标志位的直接用 filename。否则 zipfile 会按 cp437 解码原始字节,
+    那是无损的往返映射, 所以先 encode('cp437') 拿回原始字节, 再按 GBK 解码。
     """
     if info.flag_bits & 0x800:
         return info.filename
     return info.orig_filename.encode("cp437").decode("gbk")
 
 
-def extract(zip_name, dest_name, strip_top):
+def extract(zip_name, dest_name, strip_top, clean=False):
     src = os.path.join(HERE, zip_name)
     dst = os.path.join(ROOT, dest_name)
     if not os.path.exists(src):
         sys.exit(f"找不到源包: {src}")
+
+    if clean and os.path.isdir(dst):
+        # 只允许清理 ROOT 下一层的已知目标目录, 免得参数写错时误删别处
+        if os.path.dirname(dst) != ROOT or dest_name not in {j[1] for j in JOBS}:
+            sys.exit(f"拒绝清理非预期目录: {dst}")
+        shutil.rmtree(dst)
 
     zf = zipfile.ZipFile(src)
     infos = zf.infolist()
@@ -62,6 +74,7 @@ def extract(zip_name, dest_name, strip_top):
     files = dirs = chinese = 0
     bad_crc = []
     skipped = []
+    written = set()
 
     for info in infos:
         name = real_name(info)
@@ -99,6 +112,7 @@ def extract(zip_name, dest_name, strip_top):
         os.utime(target, (mtime, mtime))
 
         files += 1
+        written.add(os.path.normpath(target))
         if any(b > 127 for b in name.encode("utf-8")):
             chinese += 1
 
@@ -116,13 +130,33 @@ def extract(zip_name, dest_name, strip_top):
         return False
 
     print("  全部文件 CRC32 校验通过")
+
+    # 目标目录里有、zip 里没有的文件。版本升级后的陈旧残留会在这里现形,
+    # 否则它们会一直躺在 plugin/ 里冒充上游内容。不自动删, 只报告。
+    extra = []
+    for root, _, fs in os.walk(dst):
+        for f in fs:
+            p = os.path.normpath(os.path.join(root, f))
+            if p not in written:
+                extra.append(os.path.relpath(p, dst))
+    if extra:
+        print(f"  ⚠ 目标目录有 {len(extra)} 个文件不属于本包 (陈旧残留或本地新增):")
+        for n in sorted(extra)[:20]:
+            print("    ", n)
+        print("    用 --clean 可清空后重解")
+
     return True
 
 
 def main():
+    clean = "--clean" in sys.argv[1:]
+    for arg in sys.argv[1:]:
+        if arg != "--clean":
+            sys.exit(f"未知参数: {arg}\n用法: extract.py [--clean]")
+
     ok = True
-    for job in JOBS:
-        ok = extract(*job) and ok
+    for zip_name, dest_name, strip_top in JOBS:
+        ok = extract(zip_name, dest_name, strip_top, clean=clean) and ok
     if not ok:
         sys.exit(1)
 
