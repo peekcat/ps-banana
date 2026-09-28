@@ -2,7 +2,7 @@
 """
 把上游分发包还原成工作目录。
 
-  6.6.4.zip      →  plugin/     主插件, 639 个文件 (含真实的两个 pkg zip)
+  6.6.4.zip      →  plugin/     主插件, 635 个文件 (上游 639 减去 4 个开发残留)
   Plug-ins.zip   →  companion/  两个配套插件 (轮椅浏览器 / 轮椅遥控器)
 
 文件名编码, 两个包情况不同:
@@ -15,9 +15,13 @@
 轮椅6.6.3_安装程序.exe 之后从安装结果打包的 —— 因为 6.6.3 的 exe 装出来
 不含配套插件包。详见 PROVENANCE.md。
 
+默认跳过作者误打包的开发残留(见 EXCLUDE)。upstream 分支和两个 tag 仍原样保留
+它们, 要复现与 tag 逐字节一致的树请加 --keep-all。
+
 用法:
-  python3 _originals/extract.py            # 解包, 并报告目标目录里的多余文件
-  python3 _originals/extract.py --clean    # 先清空目标目录再解 (复现校验用)
+  python3 _originals/extract.py             # 解包, 并报告目标目录里的多余文件
+  python3 _originals/extract.py --clean     # 先清空目标目录再解 (复现校验用)
+  python3 _originals/extract.py --keep-all  # 连开发残留一起解 (复现 upstream 快照)
 """
 
 import os
@@ -37,6 +41,24 @@ JOBS = [
     ("Plug-ins.zip", "companion", False),
 ]
 
+# 作者误打包进 6.6.4 的开发残留, 默认不解出来。
+#
+# 这四个都是惰性的: 全库没有任何代码按这些文件名读它们, factory_layouts 的加载
+# 条件是 `!name.toLowerCase().endsWith('.json')` 就跳过(tile-layout.host.js:37),
+# 所以 .json.bak 本来就不会被当成布局加载。删掉不影响任何功能。
+#
+# upstream 分支与 v6.6.3 / v6.6.4 两个 tag 仍**原样保留**它们 —— 那条分支的契约
+# 是「作者发出来的原样」。要复现与 tag 逐字节一致的树, 用 --keep-all。
+#
+# 故意写成精确路径而不是 *.bak 通配: 新版本若又带残留, 应当经人过目再决定,
+# 不该被一条通配规则静默吞掉。
+EXCLUDE = {
+    "tiles/tile-dlss.host.js.bak-20260907-134010",
+    "tiles/tile-dlss.host.js.bak2-20260907-183206",
+    "tiles/tile-dlss.js.bak-20260907-183206",
+    "factory_layouts/Banana标准模式.json.bak",
+}
+
 
 def real_name(info):
     """还原真实文件名。
@@ -49,7 +71,7 @@ def real_name(info):
     return info.orig_filename.encode("cp437").decode("gbk")
 
 
-def extract(zip_name, dest_name, strip_top, clean=False):
+def extract(zip_name, dest_name, strip_top, clean=False, keep_all=False):
     src = os.path.join(HERE, zip_name)
     dst = os.path.join(ROOT, dest_name)
     if not os.path.exists(src):
@@ -74,6 +96,7 @@ def extract(zip_name, dest_name, strip_top, clean=False):
     files = dirs = chinese = 0
     bad_crc = []
     skipped = []
+    dropped = []
     written = set()
 
     for info in infos:
@@ -84,6 +107,10 @@ def extract(zip_name, dest_name, strip_top, clean=False):
                 continue
             name = name[len(prefix):]
         if not name:
+            continue
+
+        if not keep_all and name in EXCLUDE:
+            dropped.append(name)
             continue
 
         # 防路径穿越: 解出来的路径必须老实待在目标目录里面
@@ -119,6 +146,11 @@ def extract(zip_name, dest_name, strip_top, clean=False):
     print(f"{zip_name} → {dest_name}/")
     print(f"  解出文件 {files} 个, 目录 {dirs} 个, 其中中文名 {chinese} 个")
 
+    if dropped:
+        print(f"  跳过 {len(dropped)} 个上游开发残留 (--keep-all 可保留):")
+        for n in sorted(dropped):
+            print("    ", n)
+
     if skipped:
         print(f"  跳过 {len(skipped)} 条前缀异常/越界条目:")
         for n in skipped[:10]:
@@ -149,14 +181,17 @@ def extract(zip_name, dest_name, strip_top, clean=False):
 
 
 def main():
-    clean = "--clean" in sys.argv[1:]
+    known = {"--clean", "--keep-all"}
     for arg in sys.argv[1:]:
-        if arg != "--clean":
-            sys.exit(f"未知参数: {arg}\n用法: extract.py [--clean]")
+        if arg not in known:
+            sys.exit(f"未知参数: {arg}\n用法: extract.py [--clean] [--keep-all]")
+    clean = "--clean" in sys.argv[1:]
+    keep_all = "--keep-all" in sys.argv[1:]
 
     ok = True
     for zip_name, dest_name, strip_top in JOBS:
-        ok = extract(zip_name, dest_name, strip_top, clean=clean) and ok
+        ok = extract(zip_name, dest_name, strip_top,
+                     clean=clean, keep_all=keep_all) and ok
     if not ok:
         sys.exit(1)
 

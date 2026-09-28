@@ -16,11 +16,24 @@
 
 依 GPL v3 第 5(a) 条，此处载明本仓库相对上游 6.6.4 的全部改动。**最后更新 2026-09-28。**
 
-**`plugin/` 目录一个字节都不是我们的。** 639 个文件与作者发布的 `6.6.4.zip` 逐一 CRC32 相同（校验记录见 `PROVENANCE.md`）。`git diff v6.6.4 main -- plugin` 为空可自证。
+**我们没有改写任何一个上游文件。** `plugin/` 下 635 个文件与作者发布的 `6.6.4.zip` 逐一 CRC32 相同（校验记录见 `PROVENANCE.md`）。
+
+对 `plugin/` 唯一的改动是**删除了 4 个作者误打包的开发残留**：
+
+```
+tiles/tile-dlss.host.js.bak-20260907-134010
+tiles/tile-dlss.host.js.bak2-20260907-183206
+tiles/tile-dlss.js.bak-20260907-183206
+factory_layouts/Banana标准模式.json.bak
+```
+
+它们是惰性的，删除不影响任何功能——全库没有任何代码按这些文件名读取它们，且 `factory_layouts` 的加载条件是 `!name.toLowerCase().endsWith('.json')` 就跳过（`tiles/tile-layout.host.js:37`），`.json.bak` 本来就不会被当成布局加载。
+
+`upstream` 分支与 `v6.6.3` / `v6.6.4` 两个 tag **原样保留**这 4 个文件，那条分支的契约是「作者发出来的原样」。要复现与 tag 逐字节一致的树：`python3 _originals/extract.py --keep-all`。
 
 6.6.3 时代我们曾往 `plugin/` 里补过两个重建的 `*-pkg.zip`，因为当时的 exe 安装结果里缺这两个文件。6.6.4 的 zip 自带了真实版本，缺口由上游闭合，那两个重建产物已被上游原始字节替换。
 
-新增的内容全部在 `plugin/` 之外：
+其余新增内容全部在 `plugin/` 之外：
 
 | 路径 | 说明 |
 |---|---|
@@ -32,7 +45,7 @@
 | `_originals/` | 上游分发包、解包脚本 `extract.py`、校验脚本 `build-pkgs.py` |
 | `companion/` | 两个配套插件源码的解包形态，内容未改 |
 
-要拿到纯净的上游快照：`git checkout v6.6.4`（或 `v6.6.3`）。
+要拿到完全未经取舍的上游快照：`git checkout v6.6.4`（或 `v6.6.3`）。
 
 ## 6.6.4 带来了什么
 
@@ -49,7 +62,7 @@
 
 另附 `plugin/GPTdev.md`（1764 行）——作者为 AI 辅助开发生成的代码地图：全文件清单、各目录职责、启动路径、验证手段。对自行维护来说这是最有价值的新增内容，等于补上了原本缺失的开发者文档。注意它引用的 `_dev/` 目录（`_dev/UI_SPEC.md` 等）**未随包发布**。
 
-包里还有三个作者误打包的开发残留（`tiles/tile-dlss.host.js.bak-20260907-134010` 等）。归档原样保留，理由见 `PROVENANCE.md`。
+包里还有三个作者误打包的开发残留（`tiles/tile-dlss.host.js.bak-20260907-134010` 等，均为 2026-09-07 开发 DLSS 时的中间版本）。`main` 上已删除，`upstream` 与两个 tag 原样保留，详见上文「相对上游的修改」。
 
 ## 授权
 
@@ -66,7 +79,7 @@ GPL v3。见 `LICENSE`。
 ## 目录
 
 ```
-plugin/       主插件源码，639 个文件，原样解包自作者发布的 6.6.4.zip
+plugin/       主插件源码，635 个文件，解包自作者发布的 6.6.4.zip（去掉 4 个开发残留）
 companion/    两个配套插件源码：轮椅浏览器 1.0.1、轮椅遥控器 2.0.0
 _originals/   上游分发包 + 解包脚本 extract.py + 校验脚本 build-pkgs.py
 LICENSE       GPL-3.0 全文（上游分发缺这个文件，此处补上）
@@ -76,8 +89,9 @@ PROVENANCE.md 来源、SHA256、校验结果、版本间差异
 重建 `plugin/` 与 `companion/`：
 
 ```
-python3 _originals/extract.py            # 解包，并报告目标目录里的多余文件
-python3 _originals/extract.py --clean    # 先清空目标目录再解（复现校验用）
+python3 _originals/extract.py             # 解包，并报告目标目录里的多余文件
+python3 _originals/extract.py --clean     # 先清空目标目录再解（复现校验用）
+python3 _originals/extract.py --keep-all  # 连开发残留一起解（复现 upstream 快照）
 ```
 
 ## 分支
