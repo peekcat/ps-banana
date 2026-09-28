@@ -1,0 +1,938 @@
+// ============================================================
+//  tile-dlss.host.js — DLSS 画质增强磁贴 · 后端处理器
+//  通过 HostAPI.registerAction 注册到路由表 (启动时被 tile-host-loader 自动 require)
+//
+//  职责 (磁贴 GUI 在 tile-dlss.js, 这里只做「连引擎 + 抓选区 + 渲染 + 贴回」):
+//    dlssStatus        — 拉取引擎 /api/dlss/status (就绪/GPU/运行时/耗时)
+//    dlssStart         — 用 uxp.shell.openPath 拉起「启动DLSS静默.bat」(静默启动引擎)
+//    dlssCapture       — 抓当前 PS 选区 → base64 (复用 ctx.getSelectionAndImage)
+//    dlssRender        — 把选区 base64 推给引擎 /api/dlss/render, 拿到增强图 base64
+//    dlssPlaceBack     — 把增强结果贴回 PS 新图层 (带原选区)
+//
+//  引擎通信: host 层直接 fetch http://127.0.0.1:7879 (UXP host 支持原生 fetch)
+//  引擎是 Python 进程 (dlss_server.py, pythonw 静默跑), 不弹任何窗口。
+// ============================================================
+
+var HostAPI = require('../host/host-api.js');
+var serverConfig = require('../core/server-config.js');
+var photoshop = require('photoshop');
+var app = photoshop.app;
+var core = photoshop.core;
+var imaging = photoshop.imaging;
+var uxpModule = require('uxp');
+var storage = uxpModule.storage;
+var fs = storage.localFileSystem;
+
+// 像素 → PNG base64 编码 (与 ps-io 同款)
+var psPixels = require('../host/ps-pixels.js');
+var encodePNGFromRGB = psPixels.encodePNGFromRGB;
+var arrayBufferToBase64 = psPixels.arrayBufferToBase64;
+
+// 精准校色(嵌入校色图层): 复用 colormatch 的校色算法 + 贴回机制。
+// 校色算法本体在 tile-colormatch.js(用户端 webview), 这里只调 host 侧封装。
+// 用途: DLSS 回图后, 把增强图颜色校准回原图, 作为剪贴蒙版图层叠在 DLSS 图层上,
+// 避免 DLSS 过多修改 HSL。**校色全程在用户端跑, 不做在 5090 服务器上**。
+var colorMatchHost = require('./tile-colormatch.host.js');
+
+// 云端调用: 走 preset-server 的 /api/dlss/enhance(鉴权 + 扣 1 积分 + 转发 5090 引擎)。
+// 统一走在线(作者和用户同一条路), 不做本机直连特例。
+var cloudService = null;
+try { cloudService = require('../login-service.js'); } catch (e) { cloudService = null; }
+
+// host 内存: 最近一次渲染的原图(inputB64, 供用户端校色) 和 校色开关
+var _lastRenderInput = null;   // { inputB64, inputPath, w, h } 渲染前原图(与增强图同尺寸)
+// 最近一次渲染结果: { base64, filePath, w, h }
+// 大图时 base64 为空、filePath 指向引擎写的磁盘文件(绕开 base64 的 JS 字符串上限),
+// 贴回时 host 直接读该文件走 placeEvent 置入。
+var _lastRenderOut = null;
+
+// 分区抓取块大小: 每块最长边不超过此值。UXP 单次 getPixels + 编码在安全范围,
+// 大图切成多块, 由引擎侧(Python)拼接后再增强。
+var CAPTURE_BLOCK = 2048;
+
+// host 内存: 最近一次分区抓取的分块数据 (供 dlssRender 发给引擎)
+var _lastCapture = null;
+
+// ---- 引擎端点 (可被前端覆盖, 默认本机 7879) ----
+var ENGINE_BASE = 'http://127.0.0.1:7879';
+var ENGINE_TIMEOUT_MS = 30000;   // 渲染超时(30s, 首次含 DLL 初始化)
+var STATUS_TIMEOUT_MS = 3000;    // 状态探测超时(3s, 快速失败)
+
+// ---- 启动器路径 ----
+// 磁贴点「启动引擎」时用 uxp.shell.openPath 拉起这个 .bat (静默跑 dlss_server.py)
+var DEFAULT_LAUNCHER = 'C:\\Users\\User\\Desktop\\KAOBoom DLSS\\KAOboomDLSS引擎_v0.5.9\\启动DLSS静默.bat';
+
+
+// ============================================================
+//  引擎 HTTP 访问 (复用 serverConfig.fetchWithTimeout, 已验证可访问本机)
+// ============================================================
+function _engBase(opts) {
+    // 前端可在 data.engineBase 传自定义地址 (存到 hostStorage 后可持续覆盖)
+    return (opts && opts.engineBase) || ENGINE_BASE;
+}
+
+function _fetchJson(path, opts, timeoutMs) {
+    opts = opts || {};
+    var target = _engBase(opts) + path;
+    return serverConfig.fetchWithTimeout(target, {
+        method: opts.method || 'GET',
+        headers: { 'Content-Type': 'application/json' },
+        body: opts.body ? JSON.stringify(opts.body) : undefined
+    }, timeoutMs || STATUS_TIMEOUT_MS).then(function(resp) {
+        return resp.json();
+    });
+}
+
+function _engStatus(opts) {
+    // 引擎离线时返回一个「未就绪」结构, 不抛错(磁贴显示离线状态)
+    return _fetchJson('/api/dlss/status', opts, STATUS_TIMEOUT_MS).then(function(s) {
+        return { reachable: true, data: s };
+    }).catch(function(e) {
+        return {
+            reachable: false,
+            error: (e && e.message) || String(e),
+            data: { engineReady: false }
+        };
+    });
+}
+
+
+// ============================================================
+//  dlssStatus — 拉取引擎状态
+// ============================================================
+HostAPI.registerAction('dlssStatus', async function(data, ctx) {
+    var st = await _engStatus(data || {});
+    ctx.sendToPanel('dlssStatusResult', st);
+}, { tileId: 'dlss' });
+
+
+// ============================================================
+//  dlssStart — 静默启动引擎 (拉起 .bat, uxp.shell.openPath)
+// ============================================================
+HostAPI.registerAction('dlssStart', async function(data, ctx) {
+    var batPath = (data && data.launcher) || DEFAULT_LAUNCHER;
+    try {
+        var shell = uxpModule.shell;
+        if (shell && shell.openPath) {
+            await shell.openPath(batPath, '即将启动 DLSS 引擎(静默)。点击允许后, 引擎将在后台启动。');
+            ctx.sendToPanel('dlssStartResult', { ok: true, batPath: batPath });
+            ctx.logToPanel('[DLSS] 启动器已拉起: ' + batPath, 'info');
+        } else if (shell && shell.openExternal) {
+            await shell.openExternal('file:///' + batPath.replace(/\\/g, '/'));
+            ctx.sendToPanel('dlssStartResult', { ok: true, batPath: batPath });
+        } else {
+            throw new Error('UXP 无可用 shell 启动器');
+        }
+    } catch (e) {
+        ctx.sendToPanel('dlssStartResult', { ok: false, error: e.message || String(e), batPath: batPath });
+        ctx.logToPanel('[DLSS] 启动失败: ' + ((e && e.message) || e), 'error');
+    }
+}, { tileId: 'dlss' });
+
+
+// ============================================================
+//  抓选区 (复用 ctx.getSelectionAndImage)
+// ============================================================
+function _withDocLock(ctx, taskId, docId, fn) {
+    if (docId == null) {
+        var e = new Error('PS 里没有打开的文档');
+        e.code = 'PS_DOCUMENT_UNAVAILABLE';
+        return Promise.reject(e);
+    }
+    if (!ctx || typeof ctx.acquirePSLock !== 'function') {
+        return fn();
+    }
+    return ctx.acquirePSLock(async function() {
+        var doc = null;
+        for (var i = 0; i < app.documents.length; i++) {
+            if (String(app.documents[i].id) === String(docId)) { doc = app.documents[i]; break; }
+        }
+        if (!doc) {
+            var closed = new Error('请求发起时的 PS 文档已关闭');
+            closed.code = 'PS_DOCUMENT_CLOSED';
+            throw closed;
+        }
+        if (!app.activeDocument || String(app.activeDocument.id) !== String(docId)) {
+            await core.executeAsModal(async function() {
+                await app.batchPlay([{ _obj: 'select', _target: [{ _ref: 'document', _id: doc.id }] }], {});
+            }, { commandName: '切换到 DLSS 目标文档' });
+        }
+        return await fn(doc);
+    }, taskId);
+}
+
+// ============================================================
+//  _captureRegionTiled — 分区分块抓取当前选区原始像素
+//  解决 getSelectionAndImage 单次抓 8K 大图会 RangeError 的问题:
+//  把选区切成 ≤CAPTURE_BLOCK 的小块, 逐块 imaging.getPixels 抓子区域,
+//  每块编码 PNG base64, 连同坐标发给引擎侧拼接。
+//
+//  返回 (Promise): { tiles: [{x,y,base64}], width, height, selection, docId, docName, docPath }
+//  块与块按整像素坐标划分, 无重叠, 引擎侧按坐标精确摆放即无缝。
+// ============================================================
+async function _captureRegionTiled(ctx, docId, taskId) {
+    var doc = null;
+    for (var i = 0; i < app.documents.length; i++) {
+        if (String(app.documents[i].id) === String(docId)) { doc = app.documents[i]; break; }
+    }
+    if (!doc) throw new Error('目标文档已关闭');
+
+    var selBounds = null;
+    // 用 DOM API doc.selection.bounds 检测选区
+    try {
+        var b = doc.selection.bounds;
+        if (b && typeof b.left === 'number' && typeof b.right === 'number' && (b.right - b.left) > 0) {
+            selBounds = {
+                left: Math.round(b.left), top: Math.round(b.top),
+                right: Math.round(b.right), bottom: Math.round(b.bottom),
+                width: Math.round(b.right - b.left), height: Math.round(b.bottom - b.top)
+            };
+        }
+    } catch (e1) {
+        // 方法1失败, 尝试 batchPlay 读选区
+        try {
+            var bp = await app.batchPlay([{
+                _obj: "get",
+                _target: [{ _property: "selection" }, { _ref: "document", _enum: "ordinal", _value: "targetEnum" }]
+            }], {});
+            if (bp && bp[0] && bp[0].selection && bp[0].selection.left !== undefined) {
+                var s = bp[0].selection;
+                selBounds = {
+                    left: Math.round(s.left._value !== undefined ? s.left._value : s.left),
+                    top: Math.round(s.top._value !== undefined ? s.top._value : s.top),
+                    right: Math.round(s.right._value !== undefined ? s.right._value : s.right),
+                    bottom: Math.round(s.bottom._value !== undefined ? s.bottom._value : s.bottom),
+                };
+                selBounds.width = selBounds.right - selBounds.left;
+                selBounds.height = selBounds.bottom - selBounds.top;
+            }
+        } catch (e2) { throw new Error('未检测到选区: ' + ((e2 && e2.message) || e2)); }
+    }
+
+    if (!selBounds || selBounds.width <= 0 || selBounds.height <= 0) {
+        throw new Error('未检测到选区 — 请先用选框工具框住一个区域');
+    }
+
+    // 选区可能超出画布(如自动扩充), 抓图时 clamp 到画布内
+    var docW = Math.round(Number(doc.width) || 0);
+    var docH = Math.round(Number(doc.height) || 0);
+    var x0 = Math.max(0, Math.min(selBounds.left, docW));
+    var y0 = Math.max(0, Math.min(selBounds.top, docH));
+    var x1 = Math.min(docW, selBounds.right);
+    var y1 = Math.min(docH, selBounds.bottom);
+    if (x1 <= x0 || y1 <= y0) throw new Error('选区超出画布范围, 无法抓取');
+    var W = x1 - x0, H = y1 - y0;
+
+    var BLK = CAPTURE_BLOCK;
+    var tiles = [];
+    var total = Math.ceil(W / BLK) * Math.ceil(H / BLK);
+    var ti = 0;
+    var thumbBlocks = [];   // {x, y, tw, th, data(像素)} 缩略小块, 供拼整图预览
+
+    for (var by = y0; by < y1; by += BLK) {
+        for (var bx = x0; bx < x1; bx += BLK) {
+            ti++;
+            var rw = Math.min(BLK, x1 - bx);
+            var rh = Math.min(BLK, y1 - by);
+            var g = await _grabBlock(doc.id, bx, by, rw, rh);
+            tiles.push({ x: bx - x0, y: by - y0, base64: g.base64 });
+            if (g.thumb && g.thumb.data) {
+                // tw/th = 块在完整图里的尺寸(rw/rh); 缩略像素实际尺寸在 g.thumb.w/h
+                thumbBlocks.push({ x: bx - x0, y: by - y0, tw: rw, th: rh,
+                    dw: g.thumb.w, dh: g.thumb.h, data: g.thumb.data });
+            }
+        }
+    }
+
+    // 拼整图缩略预览: 按块坐标放缩略小块
+    var previewB64 = _composeThumbPreview(thumbBlocks, W, H, 3);
+
+    return {
+        tiles: tiles,
+        width: W,
+        height: H,
+        selection: selBounds,
+        docId: docId,
+        capturedW: W,
+        capturedH: H,
+        tileCount: tiles.length,
+        previewB64: previewB64
+    };
+}
+
+// 把各块的缩略小块按坐标拼成整图缩略 PNG base64 (验证抓取是否偏色)
+// blocks[]: {x, y, tw, th, dw, dh, data}
+//   x,y    = 块左上角在完整选区里的坐标
+//   tw,th  = 块在完整图里的尺寸(决定缩略后的目标大小/位置)
+//   dw,dh  = 缩略像素数组的实际尺寸(采样用)
+// 整图缩略最长边 ~640。缺块处填深灰背景。
+function _composeThumbPreview(blocks, W, H, comp) {
+    try {
+        if (!blocks || !blocks.length) return '';
+        // 整体缩略缩放比例: 让整图最长边 ≈ 640
+        var scale = 640 / Math.max(W, H);
+        var tw = Math.max(1, Math.floor(W * scale));
+        var th = Math.max(1, Math.floor(H * scale));
+        var canvas = new Uint8Array(tw * th * 3);
+        // 默认底色(深灰), 缺块处可见
+        for (var i0 = 0; i0 < canvas.length; i0 += 3) { canvas[i0] = 40; canvas[i0 + 1] = 40; canvas[i0 + 2] = 48; }
+        for (var b = 0; b < blocks.length; b++) {
+            var blk = blocks[b];
+            // 块在缩略图上的目标位置(按完整块坐标 + 完整块尺寸 * scale)
+            var px = Math.floor(blk.x * scale), py = Math.floor(blk.y * scale);
+            var bw = Math.max(1, Math.floor(blk.tw * scale)), bh = Math.max(1, Math.floor(blk.th * scale));
+            // 源缩略数据的实际尺寸
+            var dw = Math.max(1, blk.dw || blk.tw), dh = Math.max(1, blk.dh || blk.th);
+            for (var yy = 0; yy < bh; yy++) {
+                var srcRow = Math.min(dh - 1, Math.floor(yy * dh / bh));
+                var dstRow = py + yy;
+                if (dstRow >= th) break;
+                for (var xx = 0; xx < bw; xx++) {
+                    var sx = Math.min(dw - 1, Math.floor(xx * dw / bw));
+                    var di = (dstRow * tw + px + xx) * 3;
+                    var si = (srcRow * dw + sx) * comp;
+                    if (di + 2 < canvas.length && si + 2 < blk.data.length) {
+                        canvas[di] = blk.data[si]; canvas[di + 1] = blk.data[si + 1]; canvas[di + 2] = blk.data[si + 2];
+                    }
+                }
+            }
+        }
+        var png = encodePNGFromRGB(tw, th, canvas, 3);
+        return arrayBufferToBase64(png.buffer);
+    } catch (e) { return ''; }
+}
+
+// 抓单个子区域块 → PNG base64 (1:1, componentSize 8, RGB)
+// 注意: PS 某些版本/16-bit 文档会忽略 componentSize:8, getPixels 可能返回
+// 16bit(Uint16Array) 或 16bit字节数据。若当成8bit直接读, 通道错乱 → 洋红。
+// 所以这里照搬 ps-io 的规范转换: 统一转成 8-bit RGB(Uint8Array, 每像素 comp 字节)。
+async function _grabBlock(documentID, left, top, w, h) {
+    var pixels = null, comp = 3, pwOut = 0, phOut = 0;
+    await core.executeAsModal(async function() {
+        var opts = {
+            documentID: documentID,
+            sourceBounds: { left: left, top: top, right: left + w, bottom: top + h },
+            // 不移除: 只给 sourceBounds, 让 getPixels 按源区域 1:1 返回,
+            // 避免 targetSize 与 sourceBounds 尺寸不一致导致的缩放/像素错位(竖向条纹)。
+            componentSize: 8,
+            colorSpace: "RGB",
+            applyAlpha: false
+        };
+        var pd = await imaging.getPixels(opts);
+        var imgObj = pd.imageData || pd;
+        comp = imgObj.components || 3;
+        var pw = imgObj.width || w, ph = imgObj.height || h;
+        pwOut = pw; phOut = ph;
+        var raw;
+        if (typeof imgObj.getData === 'function') raw = await imgObj.getData({});
+        else raw = imgObj.data;
+
+        var rawIsU16 = (raw instanceof Uint16Array);
+        var rawIsF32 = (raw instanceof Float32Array);
+
+        // 诊断: 打印 targetSize/实际返回尺寸/comp/长度, 定位条纹/偏色
+        try {
+            console.log('[DLSS块] target=' + w + 'x' + h + ' 返回=' + pw + 'x' + ph + ' comp=' + comp + ' 类型=' + ((raw && raw.constructor && raw.constructor.name) || '?') + ' len=' + (raw ? raw.length : 0));
+        } catch (_d) {}
+
+        // 先用实际字节长度反推真正的通道数(比盲信 imgObj.components 可靠)。
+        // 关键: 若 components 报 4 但数据是 3 通道(或反过来), 直接按 components 编码会
+        // 像素错位 → 洋红。这里 raw 长度对不上 3/4 通道时, 以实际字节数定 comp。
+        if (rawIsU16) {
+            // 16-bit: 每个采样 2 字节, 通道数 = len / (pw*ph)
+            var u16perPx = pw > 0 && ph > 0 ? (raw.length / (pw * ph)) : 0;
+            comp = (u16perPx >= 4) ? 4 : 3;
+        } else if (rawIsF32) {
+            var f32perPx = pw > 0 && ph > 0 ? (raw.length / (pw * ph)) : 0;
+            comp = (f32perPx >= 4) ? 4 : 3;
+        } else {
+            var rawLen = (raw && raw.length != null) ? raw.length : (raw && raw.buffer ? raw.buffer.byteLength : 0);
+            var perPx = pw > 0 && ph > 0 ? (rawLen / (pw * ph)) : 0;
+            if (perPx >= 4) comp = 4;      // 4 字节/像素 → RGBA
+            else if (perPx >= 3) comp = 3; // 3 字节/像素 → RGB
+            else comp = imgObj.components || 3;
+            if (comp !== 3 && comp !== 4) comp = 3;
+        }
+
+        // 用(可能修正过的) comp 计算期望长度
+        var expected = pw * ph * comp;
+
+        if (rawIsU16) {
+            // 16-bit (值域 PS 0-32768 或标准 0-65535)
+            var px8 = new Uint8Array(expected);
+            var maxV = 0, lim = Math.min(raw.length, 5000);
+            for (var i0 = 0; i0 < lim; i0++) if (raw[i0] > maxV) maxV = raw[i0];
+            var psRange = (maxV > 0 && maxV <= 32769);
+            for (var i1 = 0; i1 < expected && i1 < raw.length; i1++) {
+                px8[i1] = psRange ? Math.min(255, Math.round(raw[i1] * 255 / 32768)) : Math.min(255, (raw[i1] + 128) >> 8);
+            }
+            pixels = px8;
+        } else if (rawIsF32) {
+            // 32-bit 浮点 (0.0-1.0)
+            var px8f = new Uint8Array(expected);
+            for (var i2 = 0; i2 < expected && i2 < raw.length; i2++) {
+                var lv = raw[i2]; if (lv < 0) lv = 0; if (lv > 1) lv = 1;
+                px8f[i2] = Math.round(lv * 255);
+            }
+            pixels = px8f;
+        } else if (raw instanceof Uint8Array) {
+            // 二次检测: 若长度是16bit的两倍(某些PS忽略componentSize:8), 转8bit
+            var expected16 = pw * ph * comp * 2;
+            var u8 = raw;
+            if (u8.length === expected16 && u8.length !== expected) {
+                var px8c = new Uint8Array(expected);
+                // 字节序检测(采样判断大端/小端) + 值域(PS 0-32768 或标准)
+                var su = 0, so = 0, sc = Math.min(100, expected);
+                for (var s1 = 0; s1 < sc; s1++) { su += u8[s1 * 2]; so += u8[s1 * 2 + 1]; }
+                var be = (su >= so), hib = be ? 0 : 1;
+                var mv = 0, chk = Math.min(5000, expected);
+                for (var c1 = 0; c1 < chk; c1++) {
+                    var vv = (u8[c1 * 2 + hib] << 8) | u8[c1 * 2 + (be ? 1 : 0)];
+                    if (vv > mv) mv = vv;
+                }
+                var psR2 = (mv > 0 && mv <= 32769);
+                for (var b1 = 0; b1 < expected; b1++) {
+                    var hv = (u8[b1 * 2 + hib] << 8) | u8[b1 * 2 + (be ? 1 : 0)];
+                    px8c[b1] = psR2 ? Math.min(255, Math.round(hv * 255 / 32768)) : Math.min(255, (hv + 128) >> 8);
+                }
+                pixels = px8c;
+            } else {
+                pixels = u8;
+            }
+        } else if (raw && raw.buffer) {
+            pixels = new Uint8Array(raw.buffer, raw.byteOffset || 0, raw.byteLength || raw.buffer.byteLength);
+        } else {
+            pixels = new Uint8Array(raw);
+        }
+
+        // 长度兜底: 不够/超了都校正到 expected
+        if (pixels && pixels.length !== expected) {
+            if (pixels.length > expected) pixels = pixels.subarray(0, expected);
+            else {
+                var pad = new Uint8Array(expected); pad.set(pixels); pixels = pad;
+            }
+        }
+
+        try { if (imgObj.dispose) imgObj.dispose(); } catch (_) {}
+    }, { commandName: 'DLSS 分块抓取选区' });
+
+    if (!pixels) throw new Error('读取分块像素失败');
+    // 用 getPixels 实际返回的 pw/ph 编码(pixels 按 pw×ph 排列)。若误用 targetSize 的 w/h,
+    // 实际尺寸与像素排列不符 → 竖向彩色条纹/错位。
+    var realW = (pwOut && pwOut > 0) ? pwOut : w;
+    var realH = (phOut && phOut > 0) ? phOut : h;
+    var png = encodePNGFromRGB(realW, realH, pixels, comp);
+    var thmb = _shrinkPixels(pixels, realW, realH, comp, 128);
+    return {
+        base64: arrayBufferToBase64(png.buffer),
+        // 该块的缩略像素(率采样小图), 用于 host 拼整图缩略预览(验证偏色用)
+        thumb: thmb,
+        tw: thmb ? thmb.w : Math.min(realW, 128),
+        th: thmb ? thmb.h : Math.min(realH, 128),
+        realW: realW, realH: realH
+    };
+}
+
+// 率采样缩小一块像素到 ≤maxSide 的缩略像素。**统一输出 3 通道 RGB**(丢弃 alpha)。
+// 无论原始 comp 是 3/4, 都取每像素前 3 字节(R,G,B)。否则 comp=4(RGBA) 时缩略数据是
+// 4 字节/像素, 而 _composeThumbPreview 按 3 通道读 → 步进错位 → 花屏条纹。
+function _shrinkPixels(pixels, w, h, comp, maxSide) {
+    try {
+        var m = Math.max(w, h);
+        if (m <= maxSide) {
+            // 已是小图: 若 comp=4 也要转成 3 通道 RGB
+            if (comp === 3) return { data: pixels, w: w, h: h };
+            var rgb = new Uint8Array(w * h * 3);
+            for (var i = 0; i < w * h; i++) {
+                var s = i * comp, d = i * 3;
+                rgb[d] = pixels[s]; rgb[d + 1] = pixels[s + 1]; rgb[d + 2] = pixels[s + 2];
+            }
+            return { data: rgb, w: w, h: h };
+        }
+        var step = Math.max(1, Math.round(m / maxSide));
+        var nw = Math.max(1, Math.floor(w / step));
+        var nh = Math.max(1, Math.floor(h / step));
+        var out = new Uint8Array(nw * nh * 3);
+        for (var y = 0; y < nh; y++) {
+            for (var x = 0; x < nw; x++) {
+                var si = (y * step * w + x * step) * comp;
+                var di = (y * nw + x) * 3;
+                out[di] = pixels[si]; out[di + 1] = pixels[si + 1]; out[di + 2] = pixels[si + 2];
+            }
+        }
+        return { data: out, w: nw, h: nh };
+    } catch (e) { return null; }
+}
+
+
+
+// ============================================================
+//  dlssCapture — 分区分块抓取当前选区原始像素
+//  DLSS 是画质增强, 必须抓原始分辨率。但 getSelectionAndImage 单次抓 8K
+//  大图会 RangeError(Invalid array length), 所以这里用小块抓取: 把选区
+//  切成 ≤CAPTURE_BLOCK 的小块逐块抓, 存到 host 内存, 由 dlssRender 发给引擎拼接。
+//  不再改 maxResolution(避免全局副作用), 前端拿到尺寸信息显示即可。
+// ============================================================
+HostAPI.registerAction('dlssCapture', async function(data, ctx) {
+    try {
+        var doc = app.activeDocument;
+        if (!doc) { ctx.sendToPanel('dlssCaptureResult', { success: false, error: '没有打开的文档' }); return; }
+        var docId = doc.id;
+        var docName = doc.name;
+        var docPath = '';
+        try { docPath = doc.path ? String(doc.path) : ''; } catch (_p) {}
+
+        ctx.logToPanel('[DLSS] 正在分区抓取选区 (每块≤' + CAPTURE_BLOCK + ')...', 'info');
+        var capture = await _withDocLock(ctx, (data && data.taskId) || 'dlss-capture', docId, async function() {
+            var savedAntiMode = null;
+            try { savedAntiMode = ctx.g_antiTruncationModeRef.value; ctx.g_antiTruncationModeRef.value = 0; } catch (e) {}
+            try {
+                var res = await _captureRegionTiled(ctx, docId, (data && data.taskId) || 'dlss-capture');
+                return res;
+            } finally {
+                try { if (savedAntiMode !== null) ctx.g_antiTruncationModeRef.value = savedAntiMode; } catch (e) {}
+            }
+        });
+
+        if (!capture || !capture.tiles || !capture.tiles.length) {
+            ctx.sendToPanel('dlssCaptureResult', { success: false, error: '未检测到选区 — 请先用选框工具框住一个区域' }); return;
+        }
+
+        // 暂存分块, 供 dlssRender 发给引擎拼接渲染
+        _lastCapture = {
+            tiles: capture.tiles,
+            width: capture.width,
+            height: capture.height,
+            docId: docId,
+            docName: docName,
+            docPath: docPath,
+            selection: capture.selection
+        };
+
+        ctx.sendToPanel('dlssCaptureResult', {
+            success: true,
+            capturedW: capture.capturedW,
+            capturedH: capture.capturedH,
+            tileCount: capture.tileCount,
+            docId: docId,
+            docName: docName,
+            docPath: docPath,
+            selection: capture.selection,
+            previewB64: capture.previewB64
+        });
+        ctx.logToPanel('[DLSS] 已抓取 ' + capture.capturedW + 'x' + capture.capturedH + ' (' + capture.tileCount + ' 块)', 'success');
+    } catch (e) {
+        ctx.sendToPanel('dlssCaptureResult', { success: false, error: e.message || String(e) });
+        ctx.logToPanel('[DLSS] 抓取失败: ' + ((e && e.message) || e), 'error');
+    }
+}, { tileId: 'dlss' });
+
+
+// ============================================================
+//  dlssRender — 把最近一次抓取的分块发给引擎拼接渲染, 拿增强图
+//  走 /api/dlss/render_tiled: 引擎侧(Python)把分块拼成完整大图再增强。
+//  8K 大图分块渲染耗时长, 超时放宽到 120s。
+// ============================================================
+// 云端请求: 走 preset-server 的分阶段接口 —— 上传(逐块) → 计算(扣分) → 下载(分块)。
+// 分阶段是为了能报真实进度: 一次性大请求只能干等, 用户不知道卡在哪。
+// 不用 login-service 的 authRequest —— 它超时只有 20s, 大图上传+渲染要几分钟。
+var DLSS_DOWNLOAD_CHUNK = 2 * 1024 * 1024;   // 每次下 2MB(服务器上限 8MB)
+// 每次上传的 base64 文本长度。一块 2048×2048 转 base64 有 5~8MB, 整包怼过去
+// 会被 cpolar 隧道打回 502, 所以跟下载一样切成小份传。必须是 4 的倍数,
+// 否则切开的片段不是合法 base64, 服务器拼回来会错位。
+var DLSS_UPLOAD_CHUNK = 1536 * 1024;
+var DLSS_STEP_TIMEOUT_MS = 180000;           // 单块上传/下载的超时, 3 分钟足够
+
+function _dlssToken() {
+    var token = '';
+    try { token = (cloudService && cloudService.getAuthToken && cloudService.getAuthToken()) || ''; } catch (e) {}
+    if (!token) {
+        var err = new Error('未登录 —— 请先在顶栏账号区登录后再用 DLSS 增强');
+        err.code = 'NO_AUTH';
+        throw err;
+    }
+    return token;
+}
+
+// 统一的请求 + JSON 解析(GET 传 body=null)
+async function _dlssReq(urlPath, body, timeoutMs, token) {
+    var opts = {
+        method: body ? 'POST' : 'GET',
+        headers: { 'Accept': 'application/json', 'Authorization': 'Bearer ' + token }
+    };
+    if (body) {
+        opts.headers['Content-Type'] = 'application/json';
+        opts.body = JSON.stringify(body);
+    }
+    // 走 DLSS 专用的快线(cn_vip)。那条线断了或返回 5xx 时, fetchApi 会自动
+    // 回退到主域名(慢但能用), 不至于让用户直接吃一个失败。
+    // 请求体都是 JSON 字符串, 重发安全, 所以允许回退。
+    var resp = await serverConfig.fetchApi(urlPath, opts, {
+        primary: serverConfig.DLSS_BASE,
+        fallback: serverConfig.OFFICIAL_BASE,
+        timeoutMs: timeoutMs
+    });
+    // 回退是好事(不至于直接失败), 但它会让"变慢"这件事悄无声息 ——
+    // 记一笔, 传完后由 _cloudEnhance 提醒用户走的是慢线。
+    try {
+        if (resp && resp.url && String(resp.url).indexOf(serverConfig.DLSS_BASE) !== 0) _dlssOnSlowLine = true;
+    } catch (_e3) {}
+    var text = await resp.text();
+    try { return JSON.parse(text); }
+    catch (e2) { throw new Error('服务器返回异常(HTTP ' + resp.status + ')'); }
+}
+
+// 进度上报: 前端据此画进度条。speed 是瞬时平均速度(字节/秒)。
+function _dlssProgress(ctx, taskId, phase, done, total, t0) {
+    var sec = Math.max(0.001, (Date.now() - t0) / 1000);
+    ctx.sendToPanel('dlssProgress', {
+        taskId: taskId,
+        phase: phase,                                   // upload / process / download
+        done: done, total: total,
+        ratio: total > 0 ? Math.min(1, done / total) : 0,
+        speed: Math.round(done / sec),                  // 字节/秒
+        elapsed: Math.round(sec)
+    });
+}
+
+// base64 字符串对应的原始字节数(进度按真实传输量算才准)
+function _b64Bytes(s) { return Math.floor((s || '').length * 3 / 4); }
+
+// 本次任务有没有被迫走过慢线(VIP 线路不通时 fetchApi 会自动回退)
+var _dlssOnSlowLine = false;
+
+async function _cloudEnhance(payload, timeoutMs, ctx, taskId) {
+    var token = _dlssToken();
+    var tiles = payload.tiles || [];
+    if (!tiles.length) throw new Error('没有分块数据');
+
+    // ---- ① 逐块上传 ----
+    var upTotal = 0, i;
+    for (i = 0; i < tiles.length; i++) upTotal += _b64Bytes(tiles[i].base64);
+    var upDone = 0, upT0 = Date.now(), jobId = '';
+    _dlssOnSlowLine = false;                       // 每个任务重新判定
+    _dlssProgress(ctx, taskId, 'upload', 0, upTotal, upT0);
+    for (i = 0; i < tiles.length; i++) {
+        var t = tiles[i];
+        var b64 = t.base64 || '';
+        // 一块再切成若干片传, 每片 ≤DLSS_UPLOAD_CHUNK。服务器收到最后一片才拼装校验。
+        var nParts = Math.max(1, Math.ceil(b64.length / DLSS_UPLOAD_CHUNK));
+        for (var p = 0; p < nParts; p++) {
+            var slice = b64.substr(p * DLSS_UPLOAD_CHUNK, DLSS_UPLOAD_CHUNK);
+            var ur = await _dlssReq('/api/dlss/upload', {
+                jobId: jobId, index: i, total: tiles.length,
+                x: t.x, y: t.y, base64: slice,
+                part: p, parts: nParts
+            }, DLSS_STEP_TIMEOUT_MS, token);
+            if (!ur || ur.errno !== 0) return ur || { errno: 5, info: '上传失败' };
+            if (ur.jobId) jobId = ur.jobId;            // 第一片由服务器生成 jobId
+            upDone += _b64Bytes(slice);
+            _dlssProgress(ctx, taskId, 'upload', upDone, upTotal, upT0);
+        }
+    }
+    if (_dlssOnSlowLine) {
+        try { ctx.logToPanel('[DLSS] 快线不通, 已自动改走备用线路 —— 会明显变慢, 建议检查 VIP 隧道', 'warn'); } catch (_e4) {}
+    }
+
+    // ---- ② 触发计算(扣积分, 服务器转发引擎) ----
+    var prT0 = Date.now();
+    _dlssProgress(ctx, taskId, 'process', 0, 1, prT0);
+    var pr = await _dlssReq('/api/dlss/process', {
+        jobId: jobId, width: payload.width, height: payload.height,
+        settings: payload.settings, needInput: payload.needInput
+    }, timeoutMs, token);
+    if (!pr || pr.errno !== 0) return pr || { errno: 5, info: '计算失败' };
+    _dlssProgress(ctx, taskId, 'process', 1, 1, prT0);
+
+    // ---- ③ 分块下载结果 ----
+    // 结果文件本身就是 base64 文本, 服务器按字节切片原样返回, 这里拼回去。
+    // 用数组 join, 不用 += 累加 —— 几百 MB 的字符串反复拼接会把内存打爆。
+    async function _pull(kind, expectBytes) {
+        var parts = [], got = 0, dlT0 = Date.now(), total = expectBytes || 0;
+        _dlssProgress(ctx, taskId, 'download', 0, total, dlT0);
+        for (;;) {
+            var q = '/api/dlss/download/' + jobId + '?start=' + got + '&len=' + DLSS_DOWNLOAD_CHUNK +
+                    (kind === 'input' ? '&kind=input' : '');
+            var dr = await _dlssReq(q, null, DLSS_STEP_TIMEOUT_MS, token);
+            if (!dr || dr.errno !== 0) throw new Error((dr && dr.info) || '下载结果失败');
+            parts.push(dr.data || '');
+            got += (dr.len || 0);
+            total = dr.total || total;
+            _dlssProgress(ctx, taskId, 'download', got, total, dlT0);
+            if (!dr.len || got >= total) break;         // 收满或服务器没数据了
+        }
+        return parts.join('');
+    }
+
+    // ---- ③b 结果直接边下边写进临时文件, 全程不拼大字符串 ----
+    // 为什么必须这样: JS 字符串是 UTF-16, 一个字符占 2 字节。走 base64 字符串的话
+    //   拼出的 base64(100MB 字符) → 200MB
+    //   atob 解出的 binary(75MB 字符) → 150MB
+    //   再加 Uint8Array 75MB … 峰值 400MB+, 直接把 PS 干崩。
+    // 这里改成: 每片单独解码(一片才 2MB), 填进一块预分配好的二进制缓冲, 写盘。
+    // 峰值 = 图片本身大小, 没有任何字符串放大。贴回走 placeImageFileToSpecificDoc
+    // (ps-io 里现成的大图通道, 从文件置入, 不碰 base64)。
+    async function _pullToFile(expectBytes) {
+        var total = expectBytes || 0, dlT0 = Date.now();
+        _dlssProgress(ctx, taskId, 'download', 0, total, dlT0);
+
+        // 先探一下末尾 4 个字符, 由 '=' 的个数算出解码后的确切字节数 —— 这样能一次
+        // 开好刚好大小的缓冲区, 免得最后还要 slice 一次(那又是一份完整拷贝)。
+        var head = await _dlssReq('/api/dlss/download/' + jobId + '?start=0&len=4',
+                                  null, DLSS_STEP_TIMEOUT_MS, token);
+        if (!head || head.errno !== 0) throw new Error((head && head.info) || '下载结果失败');
+        total = head.total || total;
+        if (!(total > 0)) throw new Error('结果为空');
+        var tail = await _dlssReq('/api/dlss/download/' + jobId + '?start=' + (total - 4) + '&len=4',
+                                  null, DLSS_STEP_TIMEOUT_MS, token);
+        var padCount = 0;
+        var tailStr = (tail && tail.data) || '';
+        if (tailStr.charAt(3) === '=') padCount++;
+        if (tailStr.charAt(2) === '=') padCount++;
+        var exactBytes = (total / 4) * 3 - padCount;
+
+        var out = new Uint8Array(exactBytes);
+        var got = 0, outLen = 0;
+        for (;;) {
+            var dr = await _dlssReq('/api/dlss/download/' + jobId + '?start=' + got + '&len=' + DLSS_DOWNLOAD_CHUNK,
+                                    null, DLSS_STEP_TIMEOUT_MS, token);
+            if (!dr || dr.errno !== 0) throw new Error((dr && dr.info) || '下载结果失败');
+            if (dr.data) {
+                // 每片都是 4 的倍数(2MB), 能独立解码; 解出来直接填进大缓冲, 用完即弃
+                var seg = new Uint8Array(psPixels.base64ToArrayBuffer(dr.data));
+                if (outLen + seg.length > exactBytes) throw new Error('结果长度对不上, 请重试');
+                out.set(seg, outLen);
+                outLen += seg.length;
+            }
+            got += (dr.len || 0);
+            total = dr.total || total;
+            _dlssProgress(ctx, taskId, 'download', got, total, dlT0);
+            if (!dr.len || got >= total) break;         // 收满或服务器没数据了
+        }
+        if (outLen !== exactBytes) throw new Error('结果不完整(' + outLen + '/' + exactBytes + '), 请重试');
+
+        var tempFolder = await fs.getTemporaryFolder();
+        var outFile = await tempFolder.createFile(
+            'dlss_out_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6) + '.png',
+            { overwrite: true });
+        await outFile.write(out.buffer, { format: storage.formats.binary });
+        return { file: outFile, bytes: out, size: exactBytes };
+    }
+
+    var res = await _pullToFile(pr.resultBytes);
+    // 校色要的原图仍走字符串(校色算法本身就要 base64 喂给面板), 只在开了校色时才拉
+    var inputImage = pr.hasInput ? await _pull('input', pr.inputBytes) : '';
+
+    return {
+        errno: 0,
+        imageFile: res.file,          // 大图走这个: 从文件置入, 不碰 base64
+        imageBytes: res.bytes,        // 小图预览时才转 base64 用
+        imageSize: res.size,
+        inputImage: inputImage,
+        w: pr.w, h: pr.h, ms: pr.ms,
+        balance: pr.balance, consumed: pr.consumed
+    };
+}
+
+HostAPI.registerAction('dlssRender', async function(data, ctx) {
+    try {
+        if (!_lastCapture || !_lastCapture.tiles || !_lastCapture.tiles.length) {
+            ctx.sendToPanel('dlssRenderResult', { success: false, error: '请先抓取选区', taskId: data && data.taskId }); return;
+        }
+        var _settings = (data && data.settings) || {};
+        var payload = {
+            tiles: _lastCapture.tiles,
+            width: _lastCapture.width,
+            height: _lastCapture.height,
+            settings: _settings,
+            // 只有开了「精准校色」才要回传原图(校色 input), 否则响应体积翻倍。
+            needInput: !!_settings.colorMatch
+        };
+        ctx.logToPanel('[DLSS] 上传并增强 ' + _lastCapture.width + 'x' + _lastCapture.height +
+                       ' (' + _lastCapture.tiles.length + ' 块, 消耗 1 积分)...', 'info');
+        // 超时按图像大小动态给: 上传(几十MB)+渲染+回传, 大图要几分钟。上限 20 分钟。
+        var _px = (_lastCapture.width || 0) * (_lastCapture.height || 0);
+        var _renderTimeout = Math.max(300000, Math.min(1200000, Math.round(_px / 1000000) * 30000));
+        var _t0 = Date.now();
+        var cloud = await _cloudEnhance(payload, _renderTimeout, ctx, data && data.taskId);
+        ctx.logToPanel('[DLSS] 服务器已返回 (耗时 ' + Math.round((Date.now() - _t0) / 1000) + 's)', 'info');
+        // 云端 errno 映射成本地结果结构
+        if (!cloud || cloud.errno !== 0) {
+            var emsg = (cloud && cloud.info) || '增强失败';
+            if (cloud && cloud.errno === 4) {
+                emsg = '积分不足(需 ' + (cloud.need || 1) + ', 余额 ' + (cloud.balance || 0) + ')';
+            }
+            ctx.sendToPanel('dlssRenderResult', { success: false, error: emsg, taskId: data && data.taskId });
+            return;
+        }
+        if (typeof cloud.balance === 'number') {
+            ctx.logToPanel('[DLSS] 已扣 ' + (cloud.consumed || 1) + ' 积分, 余额 ' + cloud.balance, 'info');
+        }
+        var result = {
+            ok: true,
+            w: cloud.w, h: cloud.h, ms: cloud.ms,
+            balance: cloud.balance, consumed: cloud.consumed
+        };
+        if (result && result.ok) {
+            // 校色的 input 走 cloud.inputImage(开了校色时服务器才回传)。
+            _lastRenderInput = cloud.inputImage
+                ? { inputB64: cloud.inputImage, inputPath: '', w: result.w, h: result.h }
+                : null;
+            // 大图(>1200万像素): 只留磁盘文件, 贴回走 placeImageFileToSpecificDoc,
+            // 全程不生成 base64 字符串 —— 这是之前崩 PS 的地方。
+            var _big = (result.w || 0) * (result.h || 0) > 12000000;
+            // 小图才转 base64(给前端画预览); 转完把二进制丢掉, 不长期占内存。
+            var _smallB64 = '';
+            if (!_big) {
+                try { _smallB64 = arrayBufferToBase64(cloud.imageBytes.buffer); } catch (_eB) { _smallB64 = ''; }
+            }
+            _lastRenderOut = {
+                base64: _smallB64,                 // 小图才有; 大图为空
+                fileEntry: cloud.imageFile || null, // 贴回主用这个
+                filePath: '', w: result.w, h: result.h
+            };
+            cloud.imageBytes = null;               // 及时松手, 让 GC 回收那几十 MB
+            ctx.sendToPanel('dlssRenderResult', {
+                success: true,
+                base64: _smallB64,
+                isFile: _big,                      // 前端据此显示「已完成, 待贴回」而不是预览图
+                w: result.w,
+                h: result.h,
+                ms: result.ms,
+                balance: result.balance,           // 余额(前端显示)
+                consumed: result.consumed,
+                taskId: data && data.taskId
+            });
+        } else {
+            ctx.sendToPanel('dlssRenderResult', {
+                success: false,
+                error: (result && result.error) || '渲染失败',
+                taskId: data && data.taskId
+            });
+        }
+    } catch (e) {
+        ctx.sendToPanel('dlssRenderResult', {
+            success: false,
+            error: e.message || String(e),
+            taskId: data && data.taskId
+        });
+        ctx.logToPanel('[DLSS] 渲染失败: ' + ((e && e.message) || e), 'error');
+    }
+}, { tileId: 'dlss' });
+
+
+// ============================================================
+// 把磁盘路径转成 UXP File 对象(供 placeEvent 从文件置入用)。
+// 引擎(同机)把大图写到 out/ 目录, 这里按路径拿到文件, 全程不碰 base64。
+async function _getFileByPath(nativePath) {
+    var url = 'file:' + String(nativePath || '').replace(/\\/g, '/');
+    return await fs.getEntryWithUrl(url);
+}
+
+// ============================================================
+//  dlssPlaceBack — 把增强结果贴回 PS 新图层
+//  data: { base64, docId, selection, antiMode, layerType, taskId, colorMatch }
+//  colorMatch=true: 贴完 DLSS 图层后, 额外做「精准校色」, 把增强图颜色校准回
+//  原图(用户端跑), 作为剪贴蒙版图层叠在 DLSS 图层上方 —— 避免 DLSS 过多修改 HSL。
+//  校色算法在用户端 tile-colormatch.js 跑, 不做在 5090 服务器上。
+// ============================================================
+HostAPI.registerAction('dlssPlaceBack', async function(data, ctx) {
+    var docId = data && data.docId;
+    var taskId = (data && data.taskId) || 'dlss-place';
+    var colorMatch = !!(data && data.colorMatch);
+    try {
+        if (!docId) { ctx.sendToPanel('dlssPlaceBackResult', { success: false, error: '缺少目标文档', taskId: taskId }); return; }
+        // 贴回数据源, 按优先级:
+        //   ① 磁盘文件(_lastRenderOut.fileEntry) —— 大图走这条, 从文件置入, 不碰 base64
+        //   ② base64 —— 只有小图才会有
+        // 以前不管多大都走 ②, 一张 4K 图光 atob 就要 150MB 字符串, PS 直接闪退。
+        var _file = _lastRenderOut && _lastRenderOut.fileEntry;
+        var _b64 = (_lastRenderOut && _lastRenderOut.base64) || data.base64 || '';
+        var placed = null;
+
+        if (_file) {
+            placed = await _withDocLock(ctx, taskId, docId, async function() {
+                return await ctx.placeImageFileToSpecificDoc(
+                    _file, docId,
+                    data.selection || null,
+                    (data.antiMode != null ? data.antiMode : 0),
+                    data.layerType || 'smartObject'
+                );
+            });
+        } else if (_b64) {
+            var _placeB64 = _b64;
+            placed = await _withDocLock(ctx, taskId, docId, async function() {
+                return await ctx.placeImageToSpecificDoc(
+                    _placeB64, docId,
+                    data.selection || null,
+                    (data.antiMode != null ? data.antiMode : 0),
+                    data.layerType || 'smartObject'
+                );
+            });
+        } else {
+            ctx.sendToPanel('dlssPlaceBackResult', { success: false, error: '没有可贴回的结果(先增强)', taskId: taskId });
+            return;
+        }
+
+        if (!placed) {
+            ctx.sendToPanel('dlssPlaceBackResult', { success: false, error: '贴回失败(未返回图层id)', taskId: taskId });
+            return;
+        }
+        ctx.sendToPanel('dlssPlaceBackResult', { success: true, layerId: placed, taskId: taskId });
+        ctx.logToPanel('[DLSS] 已贴回图层 (id ' + placed + ')', 'success');
+        // 贴回完清掉内存里的 base64, 临时文件也删掉(不删会在 temp 里越堆越多)
+        try { if (_lastRenderOut) _lastRenderOut.base64 = ''; } catch (_) {}
+        try {
+            if (_file) { await _file.delete(); if (_lastRenderOut) _lastRenderOut.fileEntry = null; }
+        } catch (_eDel) {}
+
+        // ---- 精准校色: 嵌入校色图层 ----
+        if (colorMatch) {
+            try {
+                await _embedColorMatchLayer(ctx, docId, placed, data, taskId);
+            } catch (cmErr) {
+                ctx.logToPanel('[DLSS] 嵌入校色图层失败(不影响 DLSS 图层): ' + ((cmErr && cmErr.message) || cmErr), 'warn');
+            }
+        }
+    } catch (e) {
+        ctx.sendToPanel('dlssPlaceBackResult', { success: false, error: e.message || String(e), taskId: taskId });
+        ctx.logToPanel('[DLSS] 贴回失败: ' + ((e && e.message) || e), 'error');
+    }
+}, { tileId: 'dlss' });
+
+// 精准校色: 用原图(inputB64) + 增强图(base64) → 用户端校色 → 贴成校色图层(剪贴蒙版嵌入 DLSS 图层上方)
+async function _embedColorMatchLayer(ctx, docId, dlssLayerId, data, taskId) {
+    if (!colorMatchHost || !colorMatchHost._computeInPanel || !colorMatchHost.placeColormatchItems) {
+        throw new Error('colormatch 组件不可用');
+    }
+    var inputB64 = _lastRenderInput && _lastRenderInput.inputB64;
+    if (!inputB64) {
+        throw new Error('没有可用的原图(需先渲染增强)');
+    }
+    ctx.logToPanel('[DLSS] 精准校色: 正在把增强图颜色校准回原图(用户端计算)...', 'info');
+    // 用户端跑校色算法 (wavelet 精准校色)
+    var correctedB64 = await colorMatchHost._computeInPanel(ctx, 'wavelet', inputB64, data.base64, data.selection || null, null);
+    if (!correctedB64) throw new Error('校色未返回结果');
+    // 贴成校色图层: 目标 = DLSS 图层, 贴其上方 + 剪贴蒙版向下嵌入
+    var items = [{
+        b64: correctedB64,
+        targetLayerId: dlssLayerId,
+        targetName: 'DLSS增强',
+        selection: data.selection || null,
+        antiMode: data.antiMode != null ? data.antiMode : 0,
+        layerType: data.layerType || 'smartObject',
+        featherKey: '',
+        outputIdx: 1,
+        runFolderName: ''
+    }];
+    var res = await colorMatchHost.placeColormatchItems(ctx, docId, '精准校色', items);
+    if (res.placed > 0) {
+        ctx.sendToPanel('dlssColorMatchDone', { ok: true, layerId: res.placedIds && res.placedIds[0] && res.placedIds[0].layerId, taskId: taskId });
+        ctx.logToPanel('[DLSS] 已嵌入校色图层(精准校色, 剪贴蒙版)', 'success');
+    } else {
+        throw new Error('校色图层贴回失败');
+    }
+}
+
+
+module.exports = {};

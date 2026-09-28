@@ -1,0 +1,88 @@
+/* ============================================================
+   tile-layercm.css —— 🎯 双选区互相调色
+   ============================================================ */
+
+.lcm-root { }
+
+.lcm-hint {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-sub, #9aa4b2);
+  background: rgba(127, 127, 127, 0.08);
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+.lcm-hint b { color: var(--text-main, #e8e8e8); }
+
+/* ---- 选区槽 ---- */
+.lcm-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  border: 1px solid rgba(127, 127, 127, 0.22);
+  border-radius: 6px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.12);
+}
+.lcm-slot-imgwrap {
+  position: relative;
+  width: 100%;
+  min-height: 72px;
+  max-height: 150px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: repeating-conic-gradient(rgba(127,127,127,0.12) 0% 25%, transparent 0% 50%) 50% / 14px 14px;
+}
+.lcm-slot-img {
+  width: 100%;
+  max-height: 150px;
+  object-fit: contain;
+  display: block;
+}
+.lcm-slot-tag {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 3px;
+  padding: 1px 6px;
+  pointer-events: none;
+}
+.lcm-slot-ph {
+  width: 100%;
+  min-height: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text-sub, #9aa4b2);
+}
+.lcm-slot-ph-empty { border: 1px dashed rgba(127, 127, 127, 0.3); border-radius: 4px; }
+.lcm-slot-empty-icon { font-size: 26px; opacity: 0.45; }
+.lcm-slot-empty-text { font-size: 12px; }
+.lcm-slot-dims {
+  font-size: 11px;
+  color: var(--text-sub, #9aa4b2);
+}
+.lcm-slot-actions {
+  display: flex;
+  gap: 6px;
+  justify-content: flex-end;
+}
+.lcm-slot-btn { padding: 2px 8px; font-size: 11px; }
+.lcm-slot-btn-danger { color: #ff6b6b; }
+.lcm-slot-capture { padding: 4px 10px; font-size: 12px; }
+
+/* ---- 底部 ---- */
+.lcm-ar-hint {
+  font-size: 11px;
+  color: var(--text-sub, #9aa4b2);
+  align-self: center;
+  margin-right: auto;
+}

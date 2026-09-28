@@ -9,6 +9,12 @@
   'use strict';
   var OFFICIAL_BASE = 'https://xiasanqi.cpolar.top';
   var FALLBACK_BASE = OFFICIAL_BASE;   // 备用站已停用; fetchApi 内 primary===fallback 时自动不回退
+
+  // DLSS 专用入口。指向同一台 preset-server(3737), 只是换了一条 cpolar VIP 线路。
+  // 实测(2026-09-07): 主域名走 cn_top 只有 ~2Mbps, 这条 cn_vip 有 ~22Mbps, 差 10 倍。
+  // DLSS 要传几十 MB 的图, 只有它值得单开一条; 其余接口流量很小, 继续走主域名。
+  // 这条线断了会自动回退到 OFFICIAL_BASE(慢但能用), 见 _dlssReq。
+  var DLSS_BASE = 'https://xiasanqiforge.vip.cpolar.cn';
   var FALLBACK_STATUS = { 404: true, 500: true, 502: true, 503: true, 504: true };
   var DEFAULT_TIMEOUT_MS = 8000;
 
@@ -152,6 +158,7 @@
   return {
     OFFICIAL_BASE: OFFICIAL_BASE,
     FALLBACK_BASE: FALLBACK_BASE,
+    DLSS_BASE: DLSS_BASE,
     DEFAULT_TIMEOUT_MS: DEFAULT_TIMEOUT_MS,
     url: url,
     fetchWithTimeout: fetchWithTimeout,

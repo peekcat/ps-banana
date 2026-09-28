@@ -40,10 +40,15 @@ function _getHangOn() { return !!TileAPI.storage.get('hemisynth.hangOn'); }
 // 半合成 tab 的半身像兼容模式开关（开启 = 用 semiBust 词：不做地面，四类悬浮/前景元素）
 function _getBustMode() { return !!TileAPI.storage.get('hemisynth.bustMode'); }
 
+// 体块/标注控制模式开关 (混入半合成/手办地台等布景任务)
+function _getBodyblockOn() { return !!TileAPI.storage.get('hemisynth.bodyblockOn'); }
+
 // tab + 开关 → 提示词模板 key
 function _templateKey() {
   var tab = _getTab();
   if (tab === 'semi') {
+    // 体块/标注控制模式优先：开启后直接用体块融合版半合成(忽略半身/垂悬开关)
+    if (_getBodyblockOn()) return 'semiBodyblock';
     // 半身模式优先：开启后直接走 semiBust，忽略垂悬开关
     if (_getBustMode()) return 'semiBust';
     return _getHangOn() ? 'semiHang' : 'semiPlain';
@@ -124,11 +129,24 @@ function _buildPrompt() {
   var tpl = _prompts()[tplKey];
   if (!tpl || !tpl.text) return '';
   var values = _getValues(tplKey);
-  return tpl.text.replace(/【填空:([^=】]+?)(?:=([^】]*))?】/g, function(_m, name, def) {
+
+  // 体块/标注控制模式: 把「体块编辑框」+「角色补充信息」一起填进「体块描述」,
+  // 让 AI 结合两者理解并编辑成精准的体块替换指令
+  if (_getBodyblockOn() && tplKey === 'semiBodyblock') {
+    var bbNote = TileAPI.storage.get('hemisynth.bodyblockNote') || '';
+    var bbHint = _getCharHint();
+    var combined = [];
+    if (bbNote.trim()) combined.push('用户要替换的体块: ' + bbNote.trim());
+    if (bbHint.trim()) combined.push('角色/场景补充(替换方向以此为准): ' + bbHint.trim());
+    if (combined.length) values['体块描述'] = combined.join('。');
+  }
+
+  var prompt = tpl.text.replace(/【填空:([^=】]+?)(?:=([^】]*))?】/g, function(_m, name, def) {
     var v = (values[name] != null) ? values[name] : (def || '');
     v = String(v).replace(/[【】]/g, '');   // 防止破坏标记外壳 (同 tile-prompt._updateFieldInPrompt)
     return '【填空:' + name + '=' + v + '】';
   });
+  return prompt;
 }
 
 // ========== 渠道 / 模型 / 尺寸 (读全局视图, 同 tile-kao) ==========
@@ -234,7 +252,7 @@ function _renderLayout(container) {
     return;
   }
 
-  // —— 半合成 tab: 两个开关 ——
+  // —— 半合成 tab: 两个开关 (体块控制 tab 不显示这些) ——
   if (tab === 'semi') {
     var bustMode = _getBustMode();
     var hangOn = _getHangOn();
@@ -260,6 +278,28 @@ function _renderLayout(container) {
       '</div>' +
       '<div class="w10-row-right"><div class="w10-toggle' + (hangOn ? ' on' : '') + (bustMode ? ' disabled' : '') + '" id="hsHangTog"></div></div>' +
     '</div>';
+  }
+
+  // —— 体块/标注控制模式开关 (半合成标签显示; 手办地台/垂悬环绕物不显示) ——
+  if (tab === 'semi') {
+    var bodyblockOn = _getBodyblockOn();
+    html += '<div class="w10-row">' +
+      '<div class="w10-row-left">' +
+        '<div class="w10-row-label">体块/标注控制模式</div>' +
+        '<div class="w10-row-desc">' + (bodyblockOn ? '开启: 用体块融合版半合成(先替换画面中的体块, 再做布景)' : '关闭: 只做布景, 不动画面里的体块') + '</div>' +
+      '</div>' +
+      '<div class="w10-row-right"><div class="w10-toggle' + (bodyblockOn ? ' on' : '') + '" id="hsBodyblockTog"></div></div>' +
+    '</div>';
+
+    // 开启时: 显示单个体块编辑框 (用户描述要替换的体块, AI 负责编辑成精准替换指令)
+    if (bodyblockOn) {
+      var bbNote = TileAPI.storage.get('hemisynth.bodyblockNote') || '';
+      html += '<div class="w10-row" style="flex-direction:column;align-items:stretch;gap:4px;padding:6px 0;">' +
+        '<div class="w10-row-label" style="font-size:11px;">体块编辑 (要替换哪些体块, 告诉 AI)</div>' +
+        '<textarea class="w10-input" id="hsBbNote" rows="2" placeholder="如: 把画面左下角的白色方块替换成花束, 右上角写着灯笼的方块替换成灯笼">' + _esc(bbNote) + '</textarea>' +
+        '<div class="w10-row-desc" style="font-size:10px;">描述要替换的体块在哪/长什么样/替换成什么; 可在体块上写字, 描述里注明, AI 按字定位。生成时会连同「角色补充信息」一起交给 AI 编辑成精准替换指令。</div>' +
+      '</div>';
+    }
   }
 
   // —— 输入框 (从模板解析, 顺序与提示词一致) ——
@@ -364,6 +404,26 @@ function _bindEvents(container) {
     TileAPI.storage.set('hemisynth.hangOn', !_getHangOn());
     _rerender(container);
   });
+
+  // 体块/标注控制模式开关
+  var bodyblockTog = container.querySelector('#hsBodyblockTog');
+  if (bodyblockTog) bodyblockTog.addEventListener('click', function() {
+    _harvestFields(container);
+    TileAPI.storage.set('hemisynth.bodyblockOn', !_getBodyblockOn());
+    _rerender(container);
+  });
+
+  // 体块编辑框 → 写回存储
+  var bbNoteEl = container.querySelector('#hsBbNote');
+  if (bbNoteEl) {
+    bbNoteEl.addEventListener('input', function() {
+      TileAPI.storage.set('hemisynth.bodyblockNote', this.value);
+      if (this.scrollHeight > this.clientHeight + 2) {
+        this.style.height = Math.min(this.scrollHeight + 2, 300) + 'px';
+      }
+    });
+    try { if (bbNoteEl.scrollHeight > bbNoteEl.clientHeight + 2) bbNoteEl.style.height = Math.min(bbNoteEl.scrollHeight + 2, 300) + 'px'; } catch (e) {}
+  }
 
   // 填空输入框 → 写回存储
   var tplKey = _templateKey();

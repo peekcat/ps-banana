@@ -43,6 +43,10 @@
     "tile-info.js",
     "tile-billing.js",
     "tile-dev-ruler.js",
-    "tile-perftest.js"
+    "tile-perftest.js",
+    "tile-light-splitter.prompts.js",
+    "tile-light-splitter.js",
+    "tile-dlss.js",
+    "tile-qwen21.js"
   ]
 }

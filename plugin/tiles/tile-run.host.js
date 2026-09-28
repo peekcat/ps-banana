@@ -1050,7 +1050,7 @@ HostAPI.registerAction('runSingle', async function(params, ctx) {
                 if (params.autoColormatch && captureBase64 && allPayloads.length > 0) {
                     try {
                         var _cmMod = require('./tile-colormatch.host.js');
-                        var _cmAuto = await _cmMod.autoColormatchAll(ctx, { inputB64: captureBase64, payloads: allPayloads, genTaskId: taskId });
+                        var _cmAuto = await _cmMod.autoColormatchAll(ctx, { inputB64: captureBase64, payloads: allPayloads, genTaskId: taskId, selection: savedSelection });
                         allPayloads = _cmAuto.payloads;
                         ctx.logToPanel('[自动校色] 完成: ' + _cmAuto.correctedCount + '/' + allPayloads.length + ' 张已校色'
                             + (_cmAuto.failCount ? (', ' + _cmAuto.failCount + ' 张失败传原图') : ''), _cmAuto.failCount ? 'warn' : 'info');

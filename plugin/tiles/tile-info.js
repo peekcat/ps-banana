@@ -8,7 +8,7 @@
 (function() {
 'use strict';
 
-var VERSION = '6.6.3';
+var VERSION = '6.6.4';
 
 function _esc(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

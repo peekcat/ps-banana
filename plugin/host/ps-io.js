@@ -1749,6 +1749,17 @@ function _formatNow() {
         deselectAll: deselectAll,
         getSelectionAndImage: getSelectionAndImage,
         placeImageToSpecificDoc: placeImageToSpecificDoc,
+        // 从**磁盘文件**置入(不走 base64) — 超大图专用。
+        // base64 走 JS 字符串在 2 亿像素级会 "Invalid array length"(约 300MB 字符串),
+        // 而 placeEvent 本来就是从文件置入的, 所以让引擎直接写盘、这里按路径置入, 无体积上限。
+        // fileEntry: UXP File 对象; 其余参数与 placeImageToSpecificDoc 一致。
+        placeImageFileToSpecificDoc: async function(fileEntry, targetDocId, targetSelection, antiMode, layerType) {
+            var createdLayerId = null;
+            await core.executeAsModal(async function() {
+                createdLayerId = await _placeCoreInModal(fileEntry, targetDocId, targetSelection, antiMode, layerType);
+            }, { commandName: "贴回图片(大图/文件)" });
+            return createdLayerId;
+        },
         placeImagesBatch: placeImagesBatch,
         createGroupAndMask: createGroupAndMask,
         applyMagentaFixCurveToGroup: applyMagentaFixCurveToGroup,

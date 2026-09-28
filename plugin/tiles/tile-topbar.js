@@ -623,7 +623,39 @@ function _sectionAccount() {
         '<div class="topbar-points-value" id="topbarPointsDisplay">' + points + '</div>' +
       '</div>' +
     '</div>' +
+    _sectionQwen21() +
     '</div>';
+}
+
+// ============================================================
+//  🧪 云Qwen研究 —— 账户区入口
+//  这是研究项目的入口，不是产品功能。所以文案按"参加研究"写，
+//  不写"免费试用"。
+//
+//  ⚠️ 这里**故意不按积分隐藏入口**。原因：
+//     积分是异步查的（cloud.points 拉回来才有），账户区在积分到位前
+//     就渲染过一次，那时 points=0 → 按钮会不显示、然后再冒出来；
+//     如果积分查询失败或用户没登录，按钮更是永远不出现。
+//     而真正的门槛由服务端网关把关（不够分会返回明确的提示语），
+//     所以这里只负责"让人看得见、点得动、点了能看到为什么不行"。
+// ============================================================
+function _sectionQwen21() {
+  var joined = TileAPI.storage.get('qwen21.policy') === '2026-09-22';
+
+  return '' +
+    '<div class="w10-section-title" style="margin-top:10px;">🧪 云Qwen 研究</div>' +
+    '<div class="q21-entry">' +
+      '<div class="q21-entry-main">' +
+        '<span class="q21-entry-title">Qwen2.1 大家一起研究</span>' +
+        '<span class="q21-entry-sub">' +
+          (joined ? '已参加 · 提示词研究进行中' : '提示词研究 · 需要积分 ≥ 1000') +
+        '</span>' +
+      '</div>' +
+      '<button class="w10-btn w10-btn-accent" id="topbarQwen21Entry">' +
+        (joined ? '打开' : '参加') +
+      '</button>' +
+    '</div>' +
+    '<div class="q21-entry-note">生成结果<b>仅限非商业研究用途</b>，不可接单、不可售卖</div>';
 }
 
 function _sectionRecharge() {
@@ -1431,6 +1463,17 @@ function _bindEvents(container) {
   if (logoutBtn) _on(logoutBtn, 'click', function() {
     var user = _getUser();
     TileAPI.sendToHost('cloudLogout', { email: user.email || '' });
+  });
+
+  // 云Qwen研究入口：跳到磁贴并展开。
+  // 协议弹窗由磁贴自己负责（它要在没同意时挡住整个面板），这里只管开门。
+  var qwen21Btn = container.querySelector('#topbarQwen21Entry');
+  if (qwen21Btn) _on(qwen21Btn, 'click', function() {
+    try {
+      TileAPI.expandTile('qwen21');
+    } catch (e) {
+      TileAPI.toast('找不到云Qwen磁贴，去底栏「编辑」里把它调出来', 'warn');
+    }
   });
 
   var forgotBtn = container.querySelector('#topbarForgotPwBtn');
