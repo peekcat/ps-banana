@@ -1,7 +1,7 @@
 (function() {
 'use strict';
 
-var VERSION = '6.6.3';
+var VERSION = '6.6.4';
 var ANNOUNCEMENT_TIMEOUT_MS = 5000;
 
 // 全局接口 —— 由 app.js 启动流程调用

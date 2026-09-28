@@ -464,6 +464,7 @@ var _psIoMod = require("./host/ps-io.js").createPSIOModule({
 var deselectAll = _psIoMod.deselectAll;
 var getSelectionAndImage = _psIoMod.getSelectionAndImage;
 var placeImageToSpecificDoc = _psIoMod.placeImageToSpecificDoc;
+var placeImageFileToSpecificDoc = _psIoMod.placeImageFileToSpecificDoc;   // 大图: 从磁盘文件置入(不走base64)
 var placeImagesBatch = _psIoMod.placeImagesBatch;
 
 // ── 急速回图统一入口(v6.5.8): 所有批量贴回都走这里, 开关二选一 ──
@@ -698,6 +699,7 @@ function buildHostContext() {
         saveImageToRunFolder: saveImageToRunFolder,
         deselectAll: deselectAll,
         placeImageToSpecificDoc: placeImageToSpecificDoc,
+        placeImageFileToSpecificDoc: placeImageFileToSpecificDoc,   // 大图: 从磁盘文件置入
         placeImagesBatch: placeImagesBatch,
         placeImagesAuto: placeImagesAuto,
         applyReturnFeatherMaskToLayer: applyReturnFeatherMaskToLayer,

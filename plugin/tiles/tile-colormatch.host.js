@@ -39,17 +39,70 @@ function _status(ctx, text, level, quiet) {
 
 function _pad3(n) { return ('000' + (Number(n) || 1)).slice(-3); }
 
-async function _readCacheImage(ctx, runFolderName, kind, idx) {
+async function _readCacheImage(ctx, runFolderName, kind, idx, isAlign) {
     var cacheFolder = await ctx.getOrCreateImageCacheFolder();
     // runFolderName 老平铺是一段名, 新结构是 "项目/叶子" 两级路径 — 按段行走两种都认
     var runFolder = await PlacementLedger.getRunFolderByPath(cacheFolder, runFolderName);
-    var file = await runFolder.getEntry(kind + '_' + _pad3(idx) + '.png');
+    // isAlign: 读 output_align_NNN(对齐后图)而非 output_NNN
+    var fileKind = (kind === 'output' && isAlign) ? 'output_align' : kind;
+    var file = await runFolder.getEntry(fileKind + '_' + _pad3(idx) + '.png');
     var buf = await file.read({ format: uxpFormats.binary });
     return PsPixels.arrayBufferToBase64(buf);
 }
 
+// 把"对齐/校色后的图"另存为 output_align_NNN.png(不覆盖原始 output), 返回 runFolderName。
+// 供后续校色把对齐后图当新的 output 基准, 跟原图 input 做颜色校准。
+async function _saveAlignResult(ctx, runFolderName, outputIdx, b64) {
+    try {
+        var cacheFolder = await ctx.getOrCreateImageCacheFolder();
+        var runFolder = await PlacementLedger.getRunFolderByPath(cacheFolder, runFolderName);
+        var num = Number(outputIdx) || 1;
+        if (num < 1) num = 1;
+        var fileName = 'output_align_' + ('000' + num).slice(-3) + '.png';
+        var file = await runFolder.createFile(fileName, { overwrite: true });
+        await file.write(PsPixels.base64ToArrayBuffer(b64), { format: uxpFormats.binary });
+        return runFolderName;
+    } catch (eSave) {
+        console.warn('[校色] 保存对齐后图缓存失败:', eSave && eSave.message);
+        return null;
+    }
+}
+
+// 给"对齐后图"贴回的图层登记台账: 下次在 PS 选中它点校色, findByLayer 能查到 → 读 output_align_NNN。
+// 同时写内存台账(_entries)和 meta.json 持久化, 内存和磁盘保持一致。
+async function _registerAlignLedger(ctx, docId, docName, layerId, item) {
+    if (!item || !item.alignIdx || item.alignIdx <= 0 || !item.runFolderName || layerId == null) return;
+    var entry = {
+        docId: docId,
+        docName: docName || '',
+        layerId: layerId,
+        runFolderName: item.runFolderName,
+        inputIdx: 1,
+        outputIdx: item.alignIdx,          // 指向 output_align_NNN
+        alignOutput: true,                 // 标志: 校色读缓存时读 output_align_ 而非 output_
+        selection: item.selection || null,
+        antiMode: item.antiMode || 0,
+        layerType: item.layerType || 'smartObject',
+        featherKey: item.featherKey || '',
+        engine: 'colormatch',
+        ts: Date.now()
+    };
+    PlacementLedger.record(entry);
+    try {
+        var runFolder = await PlacementLedger.getRunFolderByPath(await ctx.getOrCreateImageCacheFolder(), item.runFolderName);
+        if (runFolder) await PlacementLedger.writeMetaJson(runFolder, [entry]);
+    } catch (eWrite) {
+        console.warn('[校色台账] 对齐后图 meta.json 写入失败:', eWrite && eWrite.message);
+    }
+}
+
 // 发给 webview 计算, 等 colormatchResult 回来
-function _computeInPanel(ctx, method, inputB64, outputB64) {
+// selection: 台账里的贴回选区(可能带 cropRect = 补白前的真内容区)。
+//   · 把 cropRect 换算成"内容区占方图的归一化比例"(0~1), 前端按实际尺寸换算像素矩形。
+//     校色只在内容区做, 白边区(补白)不进统计、不保留 —— 修"扩1:1后校色被白边洗白"的 bug。
+// align: Dock「对齐校色」→ 前端先跑几何对位(特征点+RANSAC)再把回图变形到原图位置, 之后才校色。
+// align: 'align+color'(默认, 先对位再校色) / 'only'(只对位, 不碰色) / falsy(只校色)
+function _computeInPanel(ctx, method, inputB64, outputB64, selection, align) {
     return new Promise(function(resolve, reject) {
         var jobId = 'cmjob_' + (++_jobSeq) + '_' + Date.now();
         _pending[jobId] = {
@@ -62,12 +115,37 @@ function _computeInPanel(ctx, method, inputB64, outputB64) {
                 }
             }, COMPUTE_TIMEOUT_MS)
         };
-        ctx.sendToPanel('colormatchCompute', { jobId: jobId, method: method, inputB64: inputB64, outputB64: outputB64 });
+        // cropRect(文档坐标, 补白前的真内容区) → 占方图(selBounds)的归一化比例
+        // 方图画幅 = selection 的 width/height(padToSquare 时 = 补白后的边长), cropRect 是补白前原选区。
+        var cropIn = null;
+        try {
+            var _sel = selection || null;
+            var _cr = _sel && _sel.cropRect;
+            if (_cr && _sel && _sel.width > 0 && _sel.height > 0) {
+                var _nLeft = (Number(_cr.left) - Number(_sel.left)) / Number(_sel.width);
+                var _nTop  = (Number(_cr.top) - Number(_sel.top)) / Number(_sel.height);
+                var _nW = Number(_cr.width) / Number(_sel.width);
+                var _nH = Number(_cr.height) / Number(_sel.height);
+                if (isFinite(_nLeft) && isFinite(_nTop) && isFinite(_nW) && isFinite(_nH)
+                    && _nW > 0.02 && _nH > 0.02) {
+                    cropIn = { left: _nLeft, top: _nTop, width: _nW, height: _nH };
+                }
+            }
+        } catch (eCrop) { cropIn = null; }
+        ctx.sendToPanel('colormatchCompute', { jobId: jobId, method: method, inputB64: inputB64, outputB64: outputB64, cropRect: cropIn, align: align === 'only' ? 'only' : !!align });
     });
 }
 
 // webview 算完回传
-HostAPI.registerAction('colormatchResult', async function(data) {
+HostAPI.registerAction('colormatchResult', async function(data, ctx) {
+    // 前端回传的 diag(对齐过程状态)打到面板日志 — 实测时能直接看到对齐各阶段结果
+    if (data && data.diag && Array.isArray(data.diag) && data.diag.length) {
+        try {
+            for (var di = 0; di < data.diag.length; di++) {
+                if (ctx && ctx.logToPanel) ctx.logToPanel(data.diag[di], 'info');
+            }
+        } catch (eDiag) { try { console.log('[对齐诊断]', data.diag.join(' | ')); } catch (_) {} }
+    }
     var jobId = data && data.jobId;
     var p = jobId && _pending[jobId];
     if (!p) return;   // 超时已清理/重复回传, 忽略
@@ -93,11 +171,14 @@ function _findLayerById(container, id) {
 // ============================================================
 //  统一贴回一批校色结果 —— 自动传回和手动传回(returnTaskResult)共用
 //  items: [{b64, targetLayerId, targetName, selection, antiMode,
-//           layerType, featherKey, outputIdx}]
-//  返回 { placed, leftovers: [没贴成功的 item] }
+//           layerType, featherKey, outputIdx, runFolderName, alignIdx}]
+//  返回 { placed, leftovers, placedIds: [{layerId, item}] }
+//  · 「只对齐」的 item(alignIdx>0)贴回成功会在内部登记台账 → 下次校色能找到它
 // ============================================================
 async function placeColormatchItems(ctx, docId, methodName, items) {
-    var placed = 0, leftovers = [];
+    var placed = 0, leftovers = [], placedIds = [];
+    var docName = '';
+    try { docName = (app.documents.find(function(d) { return d.id === docId; }) || app.activeDocument || {}).name || ''; } catch (eDN) {}
     for (var i = 0; i < items.length; i++) {
         var it = items[i];
         try {
@@ -131,6 +212,17 @@ async function placeColormatchItems(ctx, docId, methodName, items) {
                     if (item.selection && item.featherKey) {
                         try { await ctx.applyReturnFeatherMaskToLayer(docId, newLayerId, item.selection, item.featherKey); } catch (eF) {}
                     }
+                    // 记录"新贴图层 ↔ item"对应(供调用方查看)
+                    placedIds.push({ layerId: newLayerId, item: item });
+                    // 「只对齐」图: 贴回即登记台账, 下次选中它校色时 findByLayer 能查到 → 读 output_align_NNN
+                    // 自动传回 / 手动传回(✓)两条路都走这里, 一次收口
+                    if (item.alignIdx > 0 && item.runFolderName) {
+                        try {
+                            await _registerAlignLedger(ctx, docId, docName, newLayerId, item);
+                        } catch (eReg) {
+                            console.warn('[校色台账] 对齐后图登记失败:', eReg && eReg.message);
+                        }
+                    }
                 }, 'colormatch');
             })(it);
             placed++;
@@ -139,7 +231,7 @@ async function placeColormatchItems(ctx, docId, methodName, items) {
             _status(ctx, '贴回失败(' + (it.targetName || ('第' + (i + 1) + '张')) + '): ' + ((ePlace && ePlace.message) || ePlace), 'warn', true);
         }
     }
-    return { placed: placed, leftovers: leftovers };
+    return { placed: placed, leftovers: leftovers, placedIds: placedIds };
 }
 
 // 转"待返回": 存进任务结果缓存, 任务磁贴的 ✓ 按钮会来取
@@ -158,6 +250,10 @@ function _stashForManualReturn(ctx, taskId, docId, methodName, items) {
 HostAPI.registerAction('colorMatchRun', async function(data, ctx) {
     var method = (data && data.method) === 'reinhard' ? 'reinhard' : 'wavelet';
     var methodName = (method === 'wavelet') ? '精准校色' : '整体校色';
+    var alignOnly = !!(data && data.alignOnly);   // Dock「只对齐」→ 只做几何对位, 不碰颜色
+    var doAlign = !!(data && data.align) || alignOnly;   // 平时对齐校色; alignOnly 时纯对位
+    if (alignOnly) methodName = '只对齐';
+    else if (doAlign) methodName = '对齐校色';
     var autoReturn = !(data && data.autoReturn === false);   // Dock 把自动传回开关值捎过来
 
     if (_running) { _status(ctx, '上一次校色还没跑完, 稍等再点', 'warn'); return; }
@@ -222,9 +318,19 @@ HostAPI.registerAction('colorMatchRun', async function(data, ctx) {
             try {
                 _status(ctx, tag + ': 读取缓存 ' + e.runFolderName, 'info', true);
                 var inputB64 = await _readCacheImage(ctx, e.runFolderName, 'input', e.inputIdx || 1);
-                var outputB64 = await _readCacheImage(ctx, e.runFolderName, 'output', e.outputIdx || 1);
+                var outputB64 = await _readCacheImage(ctx, e.runFolderName, 'output', e.outputIdx || 1, e.alignOutput);
                 _status(ctx, tag + ': 计算中...', 'info', true);
-                var correctedB64 = await _computeInPanel(ctx, method, inputB64, outputB64);
+                var correctedB64 = await _computeInPanel(ctx, method, inputB64, outputB64, e.selection, alignOnly ? 'only' : (doAlign ? true : false));
+                var alignIdx = 0;
+                // 只在「只对齐」时另存为 output_align_NNN.png: 那是对齐后但还没校色的图, 下次校色拿它作基准跟原图校色。
+                // 「对齐校色」结果已是最终产物, 不存, 避免下次对已校色图再校一次(颜色过浓)。
+                if (alignOnly) {
+                    alignIdx = (e.outputIdx || 1);
+                    var saved = await _saveAlignResult(ctx, e.runFolderName, alignIdx, correctedB64);
+                    if (saved) {
+                        _status(ctx, tag + ': 已存对位后图缓存 output_align_' + _pad3(alignIdx) + '.png', 'info', true);
+                    }
+                }
                 items.push({
                     b64: correctedB64,
                     targetLayerId: job.layer.id,
@@ -233,7 +339,9 @@ HostAPI.registerAction('colorMatchRun', async function(data, ctx) {
                     antiMode: e.antiMode || 0,
                     layerType: e.layerType || 'smartObject',
                     featherKey: e.featherKey || '',
-                    outputIdx: e.outputIdx || 1
+                    outputIdx: e.outputIdx || 1,
+                    alignIdx: alignIdx,                 // 0=非对齐, >0=只对齐后图已存 output_align_这一张
+                    runFolderName: e.runFolderName
                 });
                 ctx.sendToPanel('taskProgress', { taskId: taskId, total: jobs.length, status: 'success' });
             } catch (eJob) {
@@ -246,6 +354,7 @@ HostAPI.registerAction('colorMatchRun', async function(data, ctx) {
         ctx.sendToPanel('colormatchPhase', { taskId: taskId, layerIDs: _cmLayerIds, phase: 'done' });
 
         // --- 5. 一次性传回 / 转待返回 ---
+        // (对齐后图登记台账已收口在 placeColormatchItems 内部: 贴回即登记, 自动/手动都管)
         var cached = false, placedCount = 0;
         if (items.length) {
             if (autoReturn) {
@@ -310,7 +419,7 @@ async function autoColormatchAll(ctx, opts) {
 
     for (var i = 0; i < payloads.length; i++) {
         try {
-            out[i] = await _computeInPanel(ctx, 'wavelet', inputB64, payloads[i]);
+            out[i] = await _computeInPanel(ctx, 'wavelet', inputB64, payloads[i], opts.selection);
             correctedCount++;
             ctx.sendToPanel('taskProgress', { taskId: cmTaskId, total: payloads.length, status: 'success' });
         } catch (eAuto) {
@@ -332,5 +441,6 @@ async function autoColormatchAll(ctx, opts) {
 // 给 tile-tasks.host.js(手动传回校色任务) / tile-run.host.js(自动校色) 用
 module.exports = {
     placeColormatchItems: placeColormatchItems,
-    autoColormatchAll: autoColormatchAll
+    autoColormatchAll: autoColormatchAll,
+    _computeInPanel: _computeInPanel   // 供 DLSS 磁贴做「嵌入校色图层」用(用户端校色)
 };

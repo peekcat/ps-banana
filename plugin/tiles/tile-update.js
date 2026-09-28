@@ -6,7 +6,7 @@
 'use strict';
 
 // ========== Private state ==========
-var VERSION = '6.6.3';
+var VERSION = '6.6.4';
 // 服务器基地址(不含 ?branch=...);分支由 _getBranch() 动态拼上去
 var _serverConfig = window.WheelchairServerConfig;
 var DEFAULT_SERVER_BASE = _serverConfig.OFFICIAL_BASE;

@@ -72,6 +72,7 @@ function createHostContext(deps) {
         saveImageToRunFolder: deps.saveImageToRunFolder,
         deselectAll: deps.deselectAll,
         placeImageToSpecificDoc: deps.placeImageToSpecificDoc,
+        placeImageFileToSpecificDoc: deps.placeImageFileToSpecificDoc,   // 大图: 从磁盘文件置入(不走base64)
         placeImagesBatch: deps.placeImagesBatch,
         placeImagesAuto: deps.placeImagesAuto,
         applyReturnFeatherMaskToLayer: deps.applyReturnFeatherMaskToLayer,

@@ -1,0 +1,50 @@
+/* tile-light-splitter.css — 自动拆光磁贴样式 */
+
+/* 每束光源的行容器 — 独立flex,不依赖.w10-row */
+.ls-source-item {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 6px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  min-height: 32px;
+}
+
+/* flex子元素必须 width:0 + flex:1 1 0 强制从零宽度开始
+   只靠flex分配空间,否则文字撑开容器不换行(UXP通病) */
+.ls-source-info {
+  flex: 1 1 0;
+  width: 0;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+}
+
+.ls-source-info .ls-source-title {
+  font-size: 12px;
+  font-weight: 600;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.ls-source-info .ls-source-desc {
+  font-size: 10px;
+  color: var(--text-sub, #999);
+  margin-top: 2px;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* section-title 内长文字也换行 */
+.ls-section-header {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+/* 遮蔽/提示文字 */
+.ls-placeholder {
+  text-align: center;
+  padding: 20px 0;
+  word-break: break-word;
+}

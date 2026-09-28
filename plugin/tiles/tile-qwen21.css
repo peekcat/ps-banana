@@ -1,0 +1,387 @@
+/* ============================================================
+   tile-qwen21.css — 「Qwen2.1 大家一起研究」磁贴样式
+   前缀统一 q21-，避免跟其他磁贴打架
+   ============================================================ */
+
+.q21-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
+    font-size: 12px;
+    color: #e6e6e6;
+    box-sizing: border-box;
+    height: 100%;
+    overflow-y: auto;
+}
+.q21-wrap-center {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 12px;
+}
+.q21-big { font-size: 40px; line-height: 1; }
+
+.q21-title { font-size: 15px; font-weight: 600; }
+.q21-sub { font-size: 12px; color: rgba(255,255,255,0.55); line-height: 1.5; }
+
+/* ---------- 顶部状态条 ---------- */
+.q21-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.q21-bar-sp { flex: 1; }
+.q21-badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+.q21-good { background: rgba(90,200,120,0.18); color: #7dca7d; }
+.q21-bad  { background: rgba(230,80,80,0.18);  color: #ff8080; }
+.q21-ok   { background: rgba(100,160,255,0.16); color: #7db8ff; }
+.q21-meta { font-size: 10px; color: rgba(255,255,255,0.4); white-space: nowrap; }
+.q21-x {
+    cursor: pointer;
+    opacity: 0.5;
+    font-size: 12px;
+    padding: 0 3px;
+}
+.q21-x:hover { opacity: 1; }
+
+/* ---------- 分区 ---------- */
+.q21-sec { display: flex; flex-direction: column; gap: 6px; }
+.q21-sec-h {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.7);
+}
+.q21-tip { font-size: 10px; color: rgba(255,255,255,0.4); line-height: 1.4; }
+.q21-tip-warn { color: #ffb86b; }
+.q21-ok-tip { color: #7dca7d; }
+
+/* ---------- 抓图区 ---------- */
+.q21-cap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+}
+.q21-thumb {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 4px;
+    background: #000;
+    flex-shrink: 0;
+}
+.q21-cap-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    font-size: 11px;
+}
+.q21-cap-info span { color: rgba(255,255,255,0.45); font-size: 10px; }
+
+/* ---------- 画质分段 ---------- */
+.q21-seg {
+    display: flex;
+    gap: 6px;
+}
+.q21-seg-i {
+    flex: 1;
+    text-align: center;
+    padding: 7px 6px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    transition: all 0.15s;
+    user-select: none;
+}
+.q21-seg-i:hover { background: rgba(255,255,255,0.09); }
+.q21-seg-i.on {
+    background: rgba(255,95,162,0.16);
+    border-color: rgba(255,95,162,0.45);
+    color: #ff9ec4;
+}
+.q21-seg-n {
+    display: block;
+    font-size: 9px;
+    font-weight: 400;
+    color: rgba(255,255,255,0.4);
+    margin-top: 2px;
+}
+.q21-seg-i.on .q21-seg-n { color: rgba(255,158,196,0.7); }
+
+/* ---------- 提示词 ---------- */
+.q21-ta {
+    width: 100%;
+    min-height: 72px;
+    resize: vertical;
+    box-sizing: border-box;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 6px;
+    padding: 8px;
+    color: #fff;
+    font-size: 12px;
+    font-family: inherit;
+    line-height: 1.5;
+    outline: none;
+}
+.q21-ta:focus { border-color: rgba(255,95,162,0.5); }
+.q21-ta::placeholder { color: rgba(255,255,255,0.28); }
+
+/* ---------- 按钮 ---------- */
+.q21-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s;
+    text-align: center;
+}
+.q21-btn-sm { padding: 5px 10px; font-size: 11px; }
+.q21-btn-big { padding: 11px; font-size: 13px; }
+.q21-btn-primary {
+    background: rgba(255,95,162,0.18);
+    border: 1px solid rgba(255,95,162,0.45);
+    color: #ff9ec4;
+}
+.q21-btn-primary:hover { background: #ff5fa2; color: #111; }
+.q21-btn-ghost {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.75);
+}
+.q21-btn-ghost:hover { background: rgba(255,255,255,0.12); }
+.q21-dis {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+.q21-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 2px; }
+
+/* ---------- 进度 ---------- */
+.q21-prog {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+}
+.q21-prog-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #ff5fa2, #ff9ec4);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+.q21-prog-t {
+    font-size: 11px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 5px;
+}
+
+/* ---------- 提示 ---------- */
+.q21-hint {
+    font-size: 11px;
+    line-height: 1.5;
+    padding: 8px 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.65);
+    text-align: left;
+}
+.q21-hint-warn {
+    background: rgba(255,150,70,0.12);
+    color: #ffb86b;
+}
+
+/* ---------- 底部 ---------- */
+.q21-foot {
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+}
+.q21-link {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-style: dotted;
+}
+.q21-link:hover { color: #ff9ec4; }
+.q21-foot-sep {
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    margin: 0 6px;
+}
+
+/* ============================================================
+   弹窗
+   ⚠️ 不能用 inset 简写 —— UXP 的 CSS 不支持（踩过这个坑）
+   ============================================================ */
+.q21-overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.62);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 99999;
+}
+.q21-modal {
+    width: min(560px, 92vw);
+    max-height: 86vh;
+    display: flex;
+    flex-direction: column;
+    background: #22222e;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+    overflow: hidden;
+}
+.q21-modal-head {
+    display: flex;
+    align-items: center;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    background: rgba(255,95,162,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.q21-modal-head span:first-child { flex: 1; }
+.q21-modal-x { cursor: pointer; opacity: 0.5; padding: 0 4px; }
+.q21-modal-x:hover { opacity: 1; }
+.q21-modal-body {
+    padding: 14px;
+    overflow-y: auto;
+    flex: 1;
+    font-size: 12px;
+    line-height: 1.65;
+    color: rgba(255,255,255,0.82);
+}
+.q21-modal-foot {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    padding: 12px 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.18);
+}
+.q21-modal-foot .q21-btn { flex: 0 0 auto; }
+
+/* ---------- 协议排版 ---------- */
+.q21-policy h3 { font-size: 14px; margin: 0 0 8px; }
+.q21-policy h4 { font-size: 12px; margin: 0 0 5px; color: #ff9ec4; }
+.q21-policy p { margin: 0 0 7px; }
+.q21-p-lead { color: rgba(255,255,255,0.7); }
+.q21-p-block {
+    margin: 11px 0;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.035);
+    border-left: 3px solid rgba(255,255,255,0.14);
+    border-radius: 5px;
+}
+.q21-p-block ul { margin: 4px 0; padding-left: 18px; }
+.q21-p-block li { margin: 2px 0; }
+.q21-p-warn { border-left-color: #ffb86b; background: rgba(255,150,70,0.07); }
+.q21-p-warn h4 { color: #ffb86b; }
+.q21-p-foot { font-size: 11px; color: rgba(255,255,255,0.45); margin-top: 6px; }
+.q21-quote {
+    font-family: monospace;
+    font-size: 11px;
+    background: rgba(0,0,0,0.3);
+    padding: 7px 9px;
+    border-radius: 4px;
+    color: #9be7a0;
+    line-height: 1.5;
+}
+.q21-p-legal {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    border-left-color: rgba(255,255,255,0.08);
+}
+
+/* ---------- 历史列表 ---------- */
+.q21-h-empty {
+    color: rgba(255,255,255,0.4);
+    font-size: 11px;
+    padding: 16px 0;
+    text-align: center;
+}
+.q21-h-row {
+    padding: 8px 10px;
+    border-radius: 5px;
+    background: rgba(255,255,255,0.035);
+    margin-bottom: 6px;
+}
+.q21-h-b { font-size: 11px; margin-bottom: 3px; }
+.q21-h-q {
+    font-size: 9px;
+    background: rgba(255,255,255,0.1);
+    padding: 1px 5px;
+    border-radius: 8px;
+    color: rgba(255,255,255,0.6);
+}
+.q21-h-p { font-size: 11px; color: rgba(255,255,255,0.8); word-break: break-word; }
+.q21-h-t { font-size: 9px; color: rgba(255,255,255,0.35); margin-top: 3px; }
+
+/* ============================================================
+   账户区入口（渲染在顶栏磁贴的「账户」tab 里）
+   ============================================================ */
+.q21-entry {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 11px;
+    margin-top: 4px;
+    border-radius: 6px;
+    background: rgba(255,95,162,0.08);
+    border: 1px solid rgba(255,95,162,0.22);
+}
+.q21-entry-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+.q21-entry-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #ff9ec4;
+}
+.q21-entry-sub {
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+}
+.q21-entry-note {
+    font-size: 9px;
+    color: rgba(255,255,255,0.35);
+    padding: 3px 2px 0;
+    line-height: 1.4;
+}
+.q21-entry-note b { color: #ffb86b; }

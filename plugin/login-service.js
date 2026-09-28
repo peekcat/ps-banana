@@ -594,6 +594,9 @@ function decryptUrl(encryptedUrl) {
 
 // ===== 导出 =====
 module.exports = {
+    // 取当前登录态(供需要自定义超时/大 body 的调用方自己发请求, 如 DLSS 大图上传)
+    getAuthToken: function() { return globalAuthParams.access_token || ''; },
+    getAuthEmail: function() { return globalAuthParams.email || ''; },
     loadCloudSetting: loadCloudSetting,
     getCloudSetting: getCloudSetting,
     updateCloudSetting: updateCloudSetting,
