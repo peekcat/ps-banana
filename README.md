@@ -1,8 +1,10 @@
-# 修图轮椅 v6.6.3 —— 归档与自维护分支
+# 修图轮椅 v6.6.4 —— 归档与自维护分支
 
-这是「夏三七的修图轮椅 v6」6.6.3 版的存档与 fork，一个 Photoshop UXP 插件。
+这是「夏三七的修图轮椅 v6」的存档与 fork，一个 Photoshop UXP 插件。当前基线 **6.6.4**（作者 2026-09-22 发布）。
 
-原作者 **xiasanqi（夏三七）**，原项目以 **GPL v3** 发布。作者准备闭源，6.6.3 是最后一个开源版本。本仓库把这个版本完整、可校验地固定下来，作为长期自行维护的基线。
+原作者 **xiasanqi（夏三七）**，原项目以 **GPL v3** 发布。本仓库把上游每个拿到的版本完整、可校验地固定下来，作为长期自行维护的基线。
+
+**作者尚未闭源。** 截至 6.6.4，源码仍以 GPL v3 完整发布——未压缩未混淆，`index.js` 顶部许可头与界面里的「夏三七 · GPL v3」都在。此前本文件曾写「6.6.3 是最后一个开源版本」，已被 6.6.4 推翻，特此更正。
 
 原项目只通过 zip 分发，没有公开的 git 仓库，因此没有上游历史可继承。
 
@@ -12,23 +14,42 @@
 
 ## 相对上游的修改
 
-依 GPL v3 第 5(a) 条，此处载明本仓库相对上游 6.6.3 的全部改动。**改动日期均为 2026-08-29。**
+依 GPL v3 第 5(a) 条，此处载明本仓库相对上游 6.6.4 的全部改动。**最后更新 2026-09-28。**
 
-**上游源码一个字节都没动。** `plugin/` 下 621 个上游文件与安装程序产出的内容逐一 CRC32 相同（校验记录见 `PROVENANCE.md`），`upstream` 分支保存的就是这份未经修改的快照。
+**`plugin/` 目录一个字节都不是我们的。** 639 个文件与作者发布的 `6.6.4.zip` 逐一 CRC32 相同（校验记录见 `PROVENANCE.md`）。`git diff v6.6.4 main -- plugin` 为空可自证。
 
-新增的内容：
+6.6.3 时代我们曾往 `plugin/` 里补过两个重建的 `*-pkg.zip`，因为当时的 exe 安装结果里缺这两个文件。6.6.4 的 zip 自带了真实版本，缺口由上游闭合，那两个重建产物已被上游原始字节替换。
+
+新增的内容全部在 `plugin/` 之外：
 
 | 路径 | 说明 |
 |---|---|
 | `LICENSE` | GPL-3.0 全文。上游分发未附带此文件，此处补上 |
 | `README.md` | 本文件 |
 | `PROVENANCE.md` | 来源、SHA256、校验记录 |
-| `_originals/` | 上游安装包、由其安装结果打包的 zip、解包与重建脚本 |
-| `companion/` | 两个配套插件源码，从安装结果取回，内容未改 |
-| `plugin/browser-pkg.zip` | **重建产物**，非上游文件，详见下文「配套插件」 |
-| `plugin/satellite-pkg.zip` | **重建产物**，非上游文件，同上 |
+| `.gitattributes` | 关闭行尾转换，保住逐字节归档（见文件内注释） |
+| `.gitignore` | |
+| `_originals/` | 上游分发包、解包脚本 `extract.py`、校验脚本 `build-pkgs.py` |
+| `companion/` | 两个配套插件源码的解包形态，内容未改 |
 
-也就是说 `plugin/` 目录里只有那两个 pkg zip 是新加的，其余全是原样上游内容。要拿到纯净的上游快照，`git checkout v6.6.3` 即可。
+要拿到纯净的上游快照：`git checkout v6.6.4`（或 `v6.6.3`）。
+
+## 6.6.4 带来了什么
+
+`git diff --name-status v6.6.3 v6.6.4 -- plugin` 的结果：**未变 603 / 修改 18 / 新增 18 / 删除 0**。
+
+新增的 18 个里有 2 个是 `browser-pkg.zip` / `satellite-pkg.zip`——它们并非 6.6.4 才有的新东西，只是 `v6.6.3` 那份快照来自 exe 安装结果而不含它们（详见「配套插件」）。所以作者真正新增的是 16 个文件，构成四个新功能磁贴加一份文档：
+
+| 磁贴 | 功能 |
+|---|---|
+| `tiles/tile-dlss.*` | DLSS 画质增强。前端只有参数面板与预览对比，引擎在后台静默跑 |
+| `tiles/tile-qwen21.*` | 「Qwen2.1 大家一起研究」。作者注释写明这是研究项目、不是免费改图工具，打开先弹协议 |
+| `tiles/tile-layercm.*` | 双选区互相调色。纯本地，与 AI 无关：框选区 → 抓参照 A → 抓目标 B |
+| `tiles/tile-light-splitter.*` | 自动拆光。LLM vision 分析光源 → 用户确认/编辑 → banana 批量分离 → PS 多图层输出 |
+
+另附 `plugin/GPTdev.md`（1764 行）——作者为 AI 辅助开发生成的代码地图：全文件清单、各目录职责、启动路径、验证手段。对自行维护来说这是最有价值的新增内容，等于补上了原本缺失的开发者文档。注意它引用的 `_dev/` 目录（`_dev/UI_SPEC.md` 等）**未随包发布**。
+
+包里还有三个作者误打包的开发残留（`tiles/tile-dlss.host.js.bak-20260907-134010` 等）。归档原样保留，理由见 `PROVENANCE.md`。
 
 ## 授权
 
@@ -45,17 +66,30 @@ GPL v3。见 `LICENSE`。
 ## 目录
 
 ```
-plugin/       主插件源码，621 个文件，原样解包自上游 zip
+plugin/       主插件源码，639 个文件，原样解包自作者发布的 6.6.4.zip
 companion/    两个配套插件源码：轮椅浏览器 1.0.1、轮椅遥控器 2.0.0
-_originals/   上游安装包 + 由其安装结果打包的两个 zip + 解包/重建脚本
+_originals/   上游分发包 + 解包脚本 extract.py + 校验脚本 build-pkgs.py
 LICENSE       GPL-3.0 全文（上游分发缺这个文件，此处补上）
-PROVENANCE.md 来源、SHA256、校验结果、重建说明
+PROVENANCE.md 来源、SHA256、校验结果、版本间差异
+```
+
+重建 `plugin/` 与 `companion/`：
+
+```
+python3 _originals/extract.py            # 解包，并报告目标目录里的多余文件
+python3 _originals/extract.py --clean    # 先清空目标目录再解（复现校验用）
 ```
 
 ## 分支
 
-- **`upstream`** —— 只放原样解包的上游内容，不掺任何自己的改动。tag `v6.6.3`。
-  将来若再拿到上游包，解到这个分支再打 tag，就能直接 diff 出作者改了什么。
+- **`upstream`** —— 只放原样解包的上游内容，不掺任何自己的改动。tag `v6.6.3`、`v6.6.4`。
+  再拿到上游包就解到这条分支打新 tag，于是能直接看出作者改了什么：
+
+  ```
+  git diff --stat v6.6.3 v6.6.4 -- plugin
+  ```
+
+  这套机制已经派上用场：6.6.3 → 6.6.4 是「未变 603 / 修改 18 / 新增 18 / 删除 0」。
 - **`main`** —— 从 `upstream` 分出，加上 LICENSE / README / PROVENANCE 以及今后所有自己的修改。
 
 ## 加载
@@ -94,6 +128,14 @@ var OFFICIAL_BASE = 'https://xiasanqi.cpolar.top';
 
 cpolar 是内网穿透的临时域名，随时可能变更或失效。要换地址改这一行即可全插件切换（`FALLBACK_BASE` 与之相同，等于关闭回退）。
 
+6.6.4 起另有一条 DLSS 专线，同一台后端、换了条更快的 cpolar 线路：
+
+```js
+var DLSS_BASE = 'https://xiasanqiforge.vip.cpolar.cn';
+```
+
+作者注释说明：主域名走 cn_top 实测约 2Mbps，这条 cn_vip 约 22Mbps，差十倍；DLSS 要传几十 MB 的图才值得单开一条，其余接口流量小继续走主域名。这条线断了会自动回退到 `OFFICIAL_BASE`。
+
 `plugin/login-service.js` 承载登录、注册、积分（`common_points` / `banana_points`）和 `/auth/consume` 先扣分后出图。云 Forge / ComfyUI 的地址做了 XOR + Base64 混淆，密钥明文写在同一个文件里（`_xorKey = "xsq2026banana"`），源码注释说明其用途是「防止用户拿到地址绕过付费直连」。
 
 **出图主链路不依赖作者后台。** `plugin/tiles/ai-api.js` 的 `callAiApi()` 接收 `apiKey` + `apiBaseUrl` + `provider` 参数，`provider` 支持 `aji` / `grs` / `momo` / `others`。在「自带 Key」（BYOK）模式下直连你自己配置的服务商，不经代理、不扣积分。
@@ -113,19 +155,22 @@ cpolar 是内网穿透的临时域名，随时可能变更或失效。要换地�
 
 ## 配套插件
 
-主插件带一键安装两个配套插件的功能，会从自己的插件目录读 `browser-pkg.zip` / `satellite-pkg.zip`。但 exe 安装程序是把三个插件各装成独立文件夹的，装出来的插件目录里并没有这两个文件（已实机核对），那套一键安装流程在 exe 场景下闲置。
-
-配套插件源码在 `companion/`（从安装结果取回），`plugin/` 下的两个 pkg zip 由 `_originals/build-pkgs.py` 重建，补上这个缺口——
-
-```
-python3 _originals/build-pkgs.py
-```
+主插件带一键安装两个配套插件的功能，会从自己的插件目录读 `browser-pkg.zip` / `satellite-pkg.zip`。**6.6.4 的 zip 自带这两个文件**，`plugin/` 下的就是上游原始字节。
 
 | 插件 | 版本 | 说明 |
 |---|---|---|
 | `companion/轮椅浏览器/` | 1.0.1 | 浏览器面板，PS ≥ 24.0.0 |
 | `companion/轮椅遥控器/` | 2.0.0 | 遥控器 / 卫星面板，PS ≥ 26.0.0 |
 
-两者也可以单独用 UDT 加载，不必走主插件的安装流程（那个流程是 Windows 专用的 .bat）。
+`companion/` 是同样内容的解包形态——zip 里没法 diff 也没法改，要看要动就看这里。两者也能单独用 UDT 加载，不必走主插件那套 Windows 专用的 `.bat` 安装流程。
 
-注意 `plugin/browser-pkg.zip` 和 `plugin/satellite-pkg.zip` 是**重建产物**，不是上游原始字节，详见 `PROVENANCE.md`。
+改了 `companion/` 之后要让主插件的安装流程带上你的改动，才需要重新打包：
+
+```
+python3 _originals/build-pkgs.py           # 只比对，报告是否与 plugin/ 一致
+python3 _originals/build-pkgs.py --write   # 重新打包并覆写 plugin/ 下的两个 zip
+```
+
+默认只比对不落盘，就是为了别把上游原始字节换成重建字节（内容相同但字节不同）。
+
+> 6.6.3 时期 exe 安装结果里没有这两个包，当时是靠 `build-pkgs.py` 从 `companion/` 重建补上的。6.6.4 到手后比对发现：**当初重建的版本与上游真实文件内容逐一 CRC32 相同**，也证实了「zip 分发带这两个包、exe 安装不带」。详见 `PROVENANCE.md`。
