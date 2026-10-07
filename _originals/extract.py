@@ -36,6 +36,10 @@ ROOT = os.path.dirname(HERE)
 # (源包, 目标目录, 是否剥掉顶层目录)
 #   6.6.4.zip 没有包裹目录, 文件直接在 zip 根, 不剥。
 #   配套包顶层就是两个插件文件夹, 各自即为一个插件, 也不剥。
+#
+# 这里是显式清单, 不会遍历 _originals/ 下所有 zip —— 那个目录里还存着
+# 轮椅664美式优化.zip(第三方改版, 非作者发布), 它只作归档不参与构建,
+# 绝不该解进工作树。详见 PROVENANCE.md「第三方改版」。
 JOBS = [
     ("6.6.4.zip", "plugin", False),
     ("Plug-ins.zip", "companion", False),
