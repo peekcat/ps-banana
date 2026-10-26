@@ -116,7 +116,6 @@ async function handleMiscAction(action, data, ctx) {
             return true;
 
         // case 'youdaoTranslate' 已迁移到 tiles/tile-translate.host.js
-        // case 'cloud*' 已迁移到 tiles/tile-cloud.host.js
     }
     return false;
 }

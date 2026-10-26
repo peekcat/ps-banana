@@ -232,7 +232,6 @@ function _installGlobalMessageForwarders() {
   window._messageBridge.onHostMessage('flyoutAction', function(data) {
     if (!data || !data.action || !window.TileAPI) return;
     switch (data.action) {
-      case 'flyout-update': TileAPI.expandTile('update'); break;
       case 'flyout-log':    TileAPI.expandTile('log');    break;
       case 'flyout-info':   TileAPI.expandTile('info');   break;
       case 'flyout-reload': location.reload();            break;

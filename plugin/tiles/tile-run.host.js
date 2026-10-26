@@ -16,7 +16,6 @@ var uxpModule = require('uxp');
 var storage = uxpModule.storage;
 var fs = storage.localFileSystem;
 
-var cloudService = require('../login-service.js');
 var comfyEngine = require('../workflow-engine.js');
 var placementLedger = require('../host/placement-ledger.js');   // 校色台账: 记录 图层↔缓存 对应关系
 var evidenceLog = require('../host/evidence-log.js');           // 证据日志: 指纹+签章链
@@ -706,27 +705,8 @@ HostAPI.registerAction('runSingle', async function(params, ctx) {
                         ctx.logToPanel("[API 任务 " + taskId.slice(-4) + "] 第" + (currentIndex + 1) + "张完成 (" + _jobElapsed + "s)", "success");
                     }
                     else if (engine === 'forge') {
-                    // Forge 生成（走统一任务队列）
+                    // Forge 生成（走统一任务队列; 只有本地 Forge, 不再有云端分支）
                     var forgeUrl = params.url;
-                    if ((!forgeUrl || !String(forgeUrl).trim()) && params.encrypted && cloudService && typeof cloudService.decryptUrl === 'function') {
-                        forgeUrl = cloudService.decryptUrl(params.encrypted);
-                        if (forgeUrl) {
-                            forgeUrl = forgeUrl.replace(/\/$/, '');
-                            // 云Forge：与原流程一致，先扣积分再生成
-                            try {
-                                var _modelName = params.model || 'unknown';
-                                var _resSize = resolveForgeTargetSize(params, savedSelection);
-                                var _resMax = Math.max(_resSize.width, _resSize.height);
-                                var _consumeRes = await cloudService.apiConsumePoints({ model: _modelName, resolution: _resMax });
-                                if (!(_consumeRes && (_consumeRes.code === 0 || _consumeRes.errno === 0) && _consumeRes.data)) {
-                                    var _errMsg = (_consumeRes && _consumeRes.message) || (_consumeRes && _consumeRes.msg) || '积分扣除失败';
-                                    throw new Error(_errMsg);
-                                }
-                            } catch(_ce) {
-                                throw new Error('云Forge积分扣除失败: ' + _ce.message);
-                            }
-                        }
-                    }
                     if (!forgeUrl) throw new Error('Forge URL 未配置');
                     forgeUrl = String(forgeUrl).replace(/\/$/, '');
 

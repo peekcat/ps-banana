@@ -107,7 +107,6 @@ function createHostContext(deps) {
         // handleCalibrateBalance 已迁移到 tiles/tile-tasks.host.js
         handleCaptureForChat: deps.handleCaptureForChat,
         // handleYoudaoTranslate 已迁移到 tiles/tile-translate.host.js
-        // handleCloud* 已迁移到 tiles/tile-cloud.host.js
         ipcWriteState: deps.ipcWriteState,
         ipcReadCommand: deps.ipcReadCommand,
         openFolderWithMultipleMethods: deps.openFolderWithMultipleMethods,

@@ -370,23 +370,6 @@ var clearPSLockQueue = _psLockMod.clearPSLockQueue;
 // === 卫星事件侦听 (PS 图层失效检测, 不调 executeAsModal, 不会闪烁) ===
 try { require('./host/satellite-events.js').init(sendToPanel); } catch (e) { console.warn('[satellite-events] init fail:', e); }
 
-// === 清理 dataFolder 里的更新残留, 防止用户翻出旧 bat 双击导致误操作 ===
-// (新版 ps1 已经会拒绝陈年 config, 但提前清掉更稳, 让用户根本找不到 bat)
-(async function _cleanupUpdateLeftovers() {
-    try {
-        var dataFolder = await fs.getDataFolder();
-        var leftovers = ['update_plugin.bat', 'update_plugin.ps1', 'update_config.json', 'update.zip'];
-        for (var i = 0; i < leftovers.length; i++) {
-            try {
-                var entry = await dataFolder.getEntry(leftovers[i]);
-                if (entry) await entry.delete();
-            } catch(_) { /* 不存在就跳过, 正常情况 */ }
-        }
-    } catch(e) {
-        console.warn('[更新清理] 跳过:', e.message);
-    }
-})();
-
 // === AI API 模块 ===
 var _aiApiMod = require("./host/ai-api.js").createAiApiModule({
     logToPanel: logToPanel, base64ToArrayBuffer: base64ToArrayBuffer,
@@ -752,7 +735,6 @@ function buildHostContext() {
         // handleCalibrateBalance 已迁移到 tiles/tile-tasks.host.js
         handleCaptureForChat: handleCaptureForChat,
         // handleYoudaoTranslate 已迁移到 tiles/tile-translate.host.js
-        // handleCloud* 已迁移到 tiles/tile-cloud.host.js
         ipcWriteState: ipcWriteState,
         ipcReadCommand: ipcReadCommand,
         openFolderWithMultipleMethods: openFolderWithMultipleMethods,
@@ -803,12 +785,11 @@ recordableActions.bindRecordableActionSteps(buildHostContext());
 
 // handleLoadPresetsFile / handleSavePresetsFile / handleOpenPresetFolder / handleRefreshPresets 已迁移到 tiles/tile-presets.host.js
 
-// resolveForgeTargetSize 已迁移到 tiles/tile-run.host.js / tile-forge.host.js / tile-cloud.host.js（各自持有副本）
+// resolveForgeTargetSize 已迁移到 tiles/tile-run.host.js / tile-forge.host.js（各自持有副本）
 
 
 // handleYoudaoTranslate 已迁移到 tiles/tile-translate.host.js
 
-// handleCloud* 已迁移到 tiles/tile-cloud.host.js
 
 // handleComfyConnect / handleComfyFetchWorkflows / handleComfyLoadWorkflow / handleComfyGenerate / handleComfyInterrupt
 // 已迁移到 tiles/tile-comfyui.host.js
@@ -836,7 +817,6 @@ try {
                     destroy: function() {},
                     // 面板右上角 ••• 飞出菜单的 5 个菜单项
                     menuItems: [
-                        { id: 'flyout-update', label: '检查更新' },
                         { id: 'flyout-log',    label: '运行日志' },
                         { id: 'flyout-info',   label: '关于插件' },
                         { id: 'flyout-reset',  label: '重置布局' },
