@@ -4,3 +4,7 @@
 
 # 解包产物中转目录 / 拆包尝试的临时输出
 _originals/exe-payload/
+
+# 本机 Key 与 GRS 探测产物(含测试图/结果图), 不入库
+.grs-key.txt
+docs/实机记录/grs-probe/
