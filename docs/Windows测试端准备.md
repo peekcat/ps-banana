@@ -131,7 +131,7 @@ Mac 推开发分支 → Windows: git fetch && git checkout <分支> && git pull
 
 （已被 `docs/Windows任务/开发交接.md` 取代。）
 
-## 9. 当前测试机（2026-10-24 就绪）
+## 9. 当前测试机（2026-10-24 就绪，2026-10-26 22:57 复核）
 
 完整的就绪报告在 git 历史里（`win-test` 分支提交 `2bcc190`），这里只留后续会用到的信息。
 
@@ -140,7 +140,8 @@ Mac 推开发分支 → Windows: git fetch && git checkout <分支> && git pull
 | 系统 / 硬件 | Windows 11 LTSC 24H2，i5-12500，32 GB，**无 N 卡**（本地 Forge / ComfyUI 测不了，相关项一律标「未测」） |
 | Photoshop | 26.11.6（2025），**破解版**：exe 被改过，hosts 里自带 5925 条 Adobe 域名屏蔽。插件本身的行为不受影响，但凡是依赖 Adobe 账号或云的功能失败，不能算到「作者停服」头上 |
 | UDT | 2.3.0.5，加载的是仓库源码 `D:\code\ps-banana\plugin`，改完点 Reload 即生效 |
-| 网络 | 系统代理 `127.0.0.1:7892`，DNS 走 fake-ip（见第 4 步的代理说明） |
+| 网络 | **2026-10-26 22:57 起不用代理**：系统代理关闭（`ProxyEnable=0`），屏蔽只靠 hosts（第 4 步），验证记录见 `docs/实机记录/2026-10-26-6.6.4-停服基线.md` §7。`127.0.0.1:7892` 现在是 **BoostNet**（配置加密，当前对任何请求都超时）；Clash Verge 的混合端口是 7897，平时不启动。**哪天重新启用代理，要先把 Clash Verge `profiles/Script.js` 的三条 `REJECT` 恢复**（备份 `Script.js.bak-psbanana-20261026-214900`），否则 hosts 会被绕过 |
+| Node.js | 24.22.1 LTS，只用来做 `node --check`。装完后已经启动的进程（包括 harness 里的 shell）读不到新 PATH，脚本里请用完整路径 `C:\Program Files\nodejs\node.exe` |
 | 原版插件 | 本机从未装过，无 ID 冲突 |
 | Creative Cloud | 为装 UDT 装过，已卸载。以后要再装，得临时解除 hosts 里对 `cc-api-data.adobe.io` 的屏蔽 |
 | hosts 备份 | `C:\WINDOWS\System32\drivers\etc\hosts.bak-psbanana-20261024-113419` |
