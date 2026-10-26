@@ -67,6 +67,8 @@ Resolve-DnsName qwentest.vip.cpolar.top -Type A
 
 **整个测试期间一直保持屏蔽。** 它也是一道保险：就算代码里漏删了什么，也不会真的连到这几个域名（包括被别人接管之后）。
 
+**开了代理软件（Clash / mihomo 等）时 hosts 可能不起作用**：请求走 HTTP 代理时，域名由代理端解析，绕过本机 hosts。这时还要在代理规则里把三个域名设为 `REJECT`，做法和验证见 `docs/Windows任务/第1轮.md` 任务 1。
+
 ## 5. 用 UDT 加载插件
 
 1. Photoshop → 首选项 → 增效工具 → 勾选 **启用开发人员模式**，重启 PS。
@@ -131,4 +133,30 @@ Mac 推开发分支 → Windows: git fetch && git checkout <分支> && git pull
 → UDT Reload → 按当轮回归清单测 → 记录推到 win-test → Mac 读记录继续改
 ```
 
-每轮的回归清单由 Mac 端随代码一起给出。
+每轮的任务单由 Mac 端写在 `docs/Windows任务/第N轮.md`，随代码一起推送。
+
+Windows 端只往 `docs/实机记录/` 写记录，**不改其他文档**（包括本文和 `去云化评估.md`）。发现文档有错，写进记录里，由 Mac 端改。
+
+## 9. 当前测试机（2026-10-24 就绪）
+
+完整的就绪报告在 git 历史里（`win-test` 分支提交 `2bcc190`），这里只留后续会用到的信息。
+
+| 项 | 情况 |
+|---|---|
+| 系统 / 硬件 | Windows 11 LTSC 24H2，i5-12500，32 GB，**无 N 卡**（本地 Forge / ComfyUI 测不了，相关项一律标「未测」） |
+| Photoshop | 26.11.6（2025），**破解版**：exe 被改过，hosts 里自带 5925 条 Adobe 域名屏蔽。插件本身的行为不受影响，但凡是依赖 Adobe 账号或云的功能失败，不能算到「作者停服」头上 |
+| UDT | 2.3.0.5，加载的是仓库源码 `D:\code\ps-banana\plugin`，改完点 Reload 即生效 |
+| 网络 | 系统代理 `127.0.0.1:7892`，DNS 走 fake-ip（见第 4 步的代理说明） |
+| 原版插件 | 本机从未装过，无 ID 冲突 |
+| Creative Cloud | 为装 UDT 装过，已卸载。以后要再装，得临时解除 hosts 里对 `cc-api-data.adobe.io` 的屏蔽 |
+| hosts 备份 | `C:\WINDOWS\System32\drivers\etc\hosts.bak-psbanana-20261024-113419` |
+
+日志位置：
+
+| 用途 | 路径 |
+|---|---|
+| PS 里的插件 console | `%APPDATA%\Adobe\Adobe Photoshop 2025\Logs\UXPLogs_*.log` |
+| UDT 日志 | `%APPDATA%\Adobe\Adobe UXP Developer Tool\Logs\appLogs-<日期>.log` |
+| 插件数据 | `%APPDATA%\Adobe\UXP\PluginsStorage\PHSP\26\Developer\<插件ID>\PluginData` |
+
+已知噪音（每次加载都会报，不是故障）：`icon_24@1x.png not found`（manifest 声明了 1x 图标但文件缺失）；`Could not find command runSingleCommand in manifest`（`index.js:852` 注册了 manifest 里没声明的命令）；`com.adobe.ccx.start` 版本不兼容（Adobe 自带面板）。前两条是上游遗留问题，改造时顺手修。
