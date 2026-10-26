@@ -71,7 +71,7 @@ function _buildHTML() {
         '<ul>' +
           '<li>每个磁贴 <b>单击展开</b> 看详细设置, <b>长按 0.4 秒</b> 进入编辑模式(拖动 / 调大小 / 换颜色 / 收纳)</li>' +
           '<li>底栏「📐 自动排序」「📁 新建文件夹」「🗄️ 全部收纳」可重排桌面</li>' +
-          '<li>第一步: 在 <b>顶部账号栏</b> 登录并填好你的 API Key(AJI/夏算力/...), 然后才能生成</li>' +
+          '<li>第一步: 在顶部 <b>⚡ 算力</b> 里选服务商并填好你自己的 API Key (AJI / GRS / 墨墨 / 自定义), 然后就能生成</li>' +
         '</ul>' +
       '</div>' +
 
@@ -106,7 +106,7 @@ function _bindEvents() {
   if (btnStart) btnStart.addEventListener('click', function() {
     _markShown();
     _close();
-    if (TileAPI.toast) TileAPI.toast('欢迎使用修图轮椅!记得先在顶部账号栏登录并填 API Key', 'info');
+    if (TileAPI.toast) TileAPI.toast('欢迎使用修图轮椅!记得先在顶部「⚡ 算力」里填自己的 API Key', 'info');
   });
   if (btnSkip) btnSkip.addEventListener('click', function() {
     _markShown();

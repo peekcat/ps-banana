@@ -626,7 +626,7 @@ function _generate(container) {
   var prompt = _buildPrompt();
   if (!prompt) { TileAPI.toast('Prompt 构建失败', 'error'); return; }
 
-  // bug #66 同款: 走统一入口 _settingsGetActiveConnection(provider), 处理 GRS 托管路径(代理用户 key 为空也能拿到 sub-key)
+  // bug #66 同款: 走统一入口 _settingsGetActiveConnection(provider), GRS 直接读用户自己填的 Key
   var apiKey = '', apiUrl = '';
   if (typeof window._settingsGetActiveConnection === 'function') {
     var _conn = window._settingsGetActiveConnection(_state.provider) || {};

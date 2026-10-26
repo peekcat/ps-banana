@@ -411,7 +411,7 @@ function _doStart(container) {
   if (!prompt) { TileAPI.toast('分块放大提示词未填写', 'error'); return; }
 
   // bug #66: 走统一入口 _settingsGetActiveConnection(provider), 按 tiled 自己选的 provider 取 Key/URL,
-  //   并处理 GRS "夏算力托管" 路径(代理用户 connection.grs.key 为空也能拿到 sub-key)。
+  //   GRS 直接读用户自己填的 connection.grs.key。
   //   原来直接读 connection.<provider>.key, 代理用户那里是空的 → 误报"未填 Key"。
   var provider = (container.querySelector('#tiledProviderInput') || {}).value || _getTiledProvider();
   var apiKey = '', apiBaseUrl = '';

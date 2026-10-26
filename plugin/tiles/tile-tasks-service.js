@@ -273,22 +273,6 @@ function _handleTaskComplete(data) {
     }
   } catch(_) {}
 
-  // GRS 算力续杯 ping (proxy 路径专属)
-  try {
-    var taskProvider = provider;
-    if (taskProvider === 'grs' && TileAPI.compute && TileAPI.compute.getState) {
-      var byokActive = TileAPI.compute.isUserByokActive ? TileAPI.compute.isUserByokActive() : !!(TileAPI.storage.get('connection.grs.key'));
-      var cs = TileAPI.compute.getState();
-      if (!byokActive && cs && cs.key) {
-        var attempts = generatedCount + failCount;
-        if (attempts > 0) {
-          var usedTotal = TileAPI.compute.estimateCost ? TileAPI.compute.estimateCost(model, attempts) : (1800 * attempts);
-          TileAPI.compute.refill(usedTotal, attempts);
-        }
-      }
-    }
-  } catch(_) {}
-
   if (generatedCount > 0) {
     if (pendingCount > 0 && returnedCount > 0) TileAPI.toast('生成完成: ' + returnedCount + '张已返回，' + pendingCount + '张待手动返回', 'warn');
     else if (pendingCount > 0) TileAPI.toast('生成完成: ' + pendingCount + '张待确认', 'info');

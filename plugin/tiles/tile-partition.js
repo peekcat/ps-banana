@@ -472,7 +472,7 @@ function _doStart(container) {
 
   // bug #45/#66: provider 以面板下拉为准(退回 partition.provider);
   //   Key/URL 走统一入口 _settingsGetActiveConnection(provider) —— 按分区自己选的 provider 取,
-  //   并处理 GRS "夏算力托管" 路径(代理用户 connection.grs.key 为空也能拿到 sub-key)。
+  //   GRS 直接读用户自己填的 connection.grs.key。
   //   原来先读 connection.<provider>.key 再被 getActiveApiKey(全局引擎)无条件覆盖, 会跨家错配。
   var providerEl0 = container.querySelector('#partProviderInput');
   var provider = (providerEl0 && providerEl0.value) || TileAPI.storage.get('partition.provider') || 'aji';

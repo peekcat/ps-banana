@@ -491,7 +491,7 @@ function _applyProjThumb(projKey, b64) {
 }
 
 // 项目开销: 账单流水按 docPath/docName 聚合, 全部折美元合计。
-// 汇率(用户定, 2026-08-02): 1000 夏算力积分 = $0.1 (即 1积分 = $0.0001)
+// 汇率(用户定, 2026-08-02): 1000 GRS 积分 = $0.1 (即 1积分 = $0.0001)
 var GRS_PTS_TO_USD = 0.0001;
 function _projCost(projKey) {
     var ledger = TileAPI.storage.get('billing.ledger') || [];

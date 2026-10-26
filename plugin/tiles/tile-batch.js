@@ -133,7 +133,7 @@ TileAPI.registerTile({
     _activeLayout = layout;
     _renderPanel(container, layout);
 
-    // 监听夏算力 sub-key 到位事件: 拿到后刷新一下面板, 让"请先在设置中配置 API Key"自动消失
+    // 监听 GRS Key 变化: 拿到后刷新一下面板, 让"请先在设置中配置 API Key"自动消失
     var onKeyReady = function() {
       if (_activeContainer === container) _refreshPanel();
     };

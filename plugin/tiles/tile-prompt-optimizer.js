@@ -25,38 +25,12 @@ var _frozenFollowupText = '';
 
 var PROGRESS_MSG =
   '⏳ 正在调用 AI 优化,请稍候…\n\n' +
-  '当前使用 deepseek-v4-pro 思考模式,通常需要 30 秒到 2 分钟。\n' +
+  '当前用你自己配置的辅助 LLM 来优化, 通常几秒到一分钟。\n' +
   '请勿关闭面板。\n\n' +
   '完成后此处会自动显示优化结果。';
 
 function _esc(s) {
   return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-// 登录态检查 (跟客服磁贴口径一致)
-function _isLoggedIn() {
-  return !!TileAPI.state.get('cloud.loggedIn') && !!TileAPI.storage.get('cloud.token');
-}
-
-// 未登录冻结面板 — 跟 tile-support 一样的"去登录"风格
-function _renderLoginGate(container) {
-  container.innerHTML =
-    '<div class="w10-panel">' +
-      '<div class="w10-section-title">✨ 提示词优化</div>' +
-      '<div class="support-empty" style="padding:24px;text-align:center;line-height:1.8">' +
-        '🔐 提示词优化需要 <b>登录</b> 后才能使用<br>' +
-        '<span style="font-size:12px;color:var(--text-sub,#888)">登录后才能调用云端 AI 模型 (deepseek-v4-pro)</span><br><br>' +
-        '<button class="support-send-btn" id="optGotoLoginBtn">去登录</button>' +
-      '</div>' +
-    '</div>';
-  var loginBtn = container.querySelector('#optGotoLoginBtn');
-  if (loginBtn) loginBtn.addEventListener('click', function() {
-    if (TileAPI && typeof TileAPI.expandTile === 'function') {
-      TileAPI.expandTile('topbar');
-    } else {
-      TileAPI.toast('请打开顶部账号面板登录', 'info');
-    }
-  });
 }
 
 // ========== 正面 ==========
@@ -84,10 +58,6 @@ function _refreshFront() {
 // ========== 展开 ==========
 function onExpand(container, sizeHint) {
   _activeContainer = container;
-  if (!_isLoggedIn()) {
-    _renderLoginGate(container);
-    return function cleanup() { _activeContainer = null; };
-  }
   _renderPanel(container);
   return function cleanup() {
     if (_convo.length === 0) {
@@ -298,17 +268,5 @@ TileAPI.registerTile({
     _setOptimizing(false);
   }
 });
-
-// 登录态变化 → 展开中的面板自动刷新
-if (TileAPI && typeof TileAPI.on === 'function') {
-  TileAPI.on('auth:loggedIn', function() {
-    if (!_activeContainer) return;
-    _renderPanel(_activeContainer);
-  });
-  TileAPI.on('auth:loggedOut', function() {
-    if (!_activeContainer) return;
-    _renderLoginGate(_activeContainer);
-  });
-}
 
 })();

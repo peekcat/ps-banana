@@ -101,8 +101,8 @@ function _getProviderConnection(provider) {
   return { provider: provider, url: url, key: key };
 }
 
-// 影响海报面板显示的"夏算力"状态签名 —— 用于判定 compute:keyUpdated 是否真的需要重渲。
-// 登录 / 恢复会话 / 对账 / 续杯都会连发 compute:keyUpdated; 若每次都整块重建面板
+// 影响海报面板显示的 GRS 状态签名 —— 用于判定 compute:keyUpdated 是否真的需要重渲。
+// 旧版登录 / 恢复会话 / 对账 / 续杯都会连发 compute:keyUpdated; 若每次都整块重建面板
 // (_renderPanel 是一次性同步重砌整面墙), 开面板瞬间就会被重建风暴卡死。
 function _computeKeySig() {
   try {
@@ -2019,8 +2019,8 @@ TileAPI.registerTile({
     _editorPendingClose = false;
     _renderPanel(container);
 
-    // 监听夏算力 sub-key 到位事件: 拿到后自动重渲, 蓝色"准备中"警告自动消失。
-    // 但 compute:keyUpdated 会被登录/对账/续杯连发 —— 必须做两层防抖, 否则整块大面板
+    // 监听 GRS Key 变化事件: 拿到后自动重渲, 蓝色"准备中"警告自动消失。
+    // 但旧版 compute:keyUpdated 会被登录/对账/续杯连发 —— 必须做两层防抖, 否则整块大面板
     // 被反复同步重建, 开面板瞬间卡死:
     //   1. 状态签名没变 → 直接跳过 (重复事件不重渲)
     //   2. 真变了也合并 200ms 内的连发, 只重渲一次

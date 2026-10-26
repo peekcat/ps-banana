@@ -133,12 +133,7 @@ function startApp() {
   window.ThemeEngine.init();
   window.TileEngine.init();
 
-  // 1.5  GRS 算力: 桥接 host 消息 → TileAPI.state, 让所有磁贴用 TileAPI.compute.* 拿 key
-  if (window.TileAPI && window.TileAPI.compute && typeof window.TileAPI.compute._bootstrapHostBridge === 'function') {
-    window.TileAPI.compute._bootstrapHostBridge();
-  }
-
-  // 2. 启动全局消息转发(让 tile-welcome 能收到 cloudAnnouncementResult)
+  // 2. 启动全局消息转发 (日志 / 音效 / 工具消息)
   _installGlobalMessageForwarders();
 
   // 3. 后端消息:ready → 等 storage → 欢迎页 → 加载磁贴 → 渲染主界面
@@ -148,11 +143,6 @@ function startApp() {
     .then(function() {
       // Emoji 图片化: storage 就绪后按保存的风格初始化(observer 提前挂, 后续磁贴渲染自动替换)
       if (window.EmojiPack) { try { window.EmojiPack.init(); } catch (e) {} }
-      // 改进计划许可对话框 — 先于欢迎页, 用户处理完才继续
-      // (没勾 + 不在 snooze 期 才弹)
-      if (window._telemetry && typeof window._telemetry.showOptInDialogIfNeeded === 'function') {
-        return window._telemetry.showOptInDialogIfNeeded();
-      }
     })
     .then(function() {
       // 欢迎页阻塞等待
@@ -187,21 +177,6 @@ function _installGlobalMessageForwarders() {
 
   // pong
   window._messageBridge.onHostMessage('pong', function() {});
-
-  // 用户改进计划 — host 端任务完成时通过这里转给 panel 的 telemetry 模块
-  window._messageBridge.onHostMessage('telemetryTask', function(data) {
-    if (window._telemetry && typeof window._telemetry.trackTask === 'function') {
-      try { window._telemetry.trackTask(data || {}); } catch(_) {}
-    }
-  });
-
-  // 用户改进计划 — host 端报错时通过这里转给 panel 的 telemetry 模块 (msg 在 trackError 入口自动脱敏)
-  window._messageBridge.onHostMessage('telemetryError', function(data) {
-    if (!data) return;
-    if (window._telemetry && typeof window._telemetry.trackError === 'function') {
-      try { window._telemetry.trackError(data.category || 'unknown', data.step || '', data.msg || ''); } catch(_) {}
-    }
-  });
 
   // 音效播放:任务完成触发的 playSound 和设置内试听触发的 forcePlaySound
   // playSound 尊重 sound.enabled(默认开,仅当用户显式关闭才静音),forcePlaySound 强制播放(预览)

@@ -776,19 +776,6 @@ function _renderPanel(container) {
       var hit = _runningCardFor(stopTid);
       if (!hit) return;
       var stopOne = function(tid) {
-        // GRS 续杯 ping(照老任务磁贴的停止逻辑: taskComplete 不会再来, 不 ping 会丢账)
-        try {
-          var rStop = _getRunning()[tid];
-          if (rStop && rStop.provider === 'grs' && TileAPI.compute && TileAPI.compute.getState) {
-            var byokActive = TileAPI.compute.isUserByokActive ? TileAPI.compute.isUserByokActive() : !!(TileAPI.storage.get('connection.grs.key'));
-            var cs = TileAPI.compute.getState();
-            if (!byokActive && cs && cs.key) {
-              var attempts = (rStop.success || 0) + (rStop.fail || 0);
-              var used = TileAPI.compute.estimateCost ? TileAPI.compute.estimateCost(rStop.model || '', attempts) : (1800 * attempts);
-              TileAPI.compute.refill(used, attempts);
-            }
-          }
-        } catch(_) {}
         TileAPI.sendToHost('earlyStopTask', { taskId: tid });
         var curR = _getRunning();
         if (curR[tid]) { delete curR[tid]; TileAPI.state.set('tasks.running', curR); }

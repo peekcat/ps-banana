@@ -1629,8 +1629,8 @@ TileAPI.on('params:providerChanged', function(d) {
   _syncProviderUI((d && d.provider) ? d.provider : (TileAPI.state.get('params.provider') || 'aji'));
 });
 
-// 切「自带Key ↔ 夏三七托管」时, GRS 未改名的按钮标签(GRS/夏三七)要即时跟着换 (修 2026-07-04)
-// byokPrefChanged = 本地开关瞬间; keyUpdated = 登录/登出/服务端确认后
+// GRS 未改名的按钮标签要保持和槽位名一致 (原版切「自带Key ↔ 托管」的联动已删除)
+// keyUpdated = Key 变化后
 function _syncLabelsOnComputeChange() {
   if (typeof _activePanelContainer !== 'undefined' && _activePanelContainer) {
     try { _syncProviderBtnLabels(_activePanelContainer); } catch (e) {}

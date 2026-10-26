@@ -123,9 +123,9 @@ HostAPI.registerAction('netDiagnose', async function(data, ctx) {
         verdict = '公网通但权威 DNS 查询失败 — 你的网络对 DNS 有限制(部分路由器/代理会封外部 DNS), 域名解析可能被劫持。插件大部分功能仍可用, 若出图报"域名解析失败"就是它。';
     } else if (anyAji) {
         var okLine = svcResults.filter(function(s) { return s.ok; }).length;
-        verdict = '网络健康(' + okLine + '/' + svcResults.length + ' 个服务可达)。若仍出图失败, 问题不在网络 — 看任务卡上的具体报错(余额/审核/超时), 或把本报告+报错发给客服。';
+        verdict = '网络健康(' + okLine + '/' + svcResults.length + ' 个服务可达)。若仍出图失败, 问题不在网络 — 看任务卡上的具体报错(余额/审核/超时), 或把本报告+报错复制留存。';
     } else {
-        verdict = '网络部分异常, 详见上面逐项结果。把本报告复制发给客服可加速定位。';
+        verdict = '网络部分异常, 详见上面逐项结果。把本报告复制下来便于对照排查。';
     }
     L.push('');
     L.push('🩺 结论: ' + verdict);

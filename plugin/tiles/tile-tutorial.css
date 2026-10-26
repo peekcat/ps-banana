@@ -5,6 +5,10 @@
   left: 0; top: 0; width: 100%; height: 100%;
   z-index: 9999985;             /* 低于 firstrun(9999990), 高于普通内容 */
   animation: tutFadeIn 0.25s ease-out;
+  /* 去云化修复: 遮罩不再吃鼠标事件, 否则全屏遮罩会挡住底下的按钮。
+     变暗由 .tut-spot 的超大 box-shadow 实现, 它本身就是 pointer-events:none;
+     只有气泡可点(见 .tut-bubble)。 */
+  pointer-events: none;
 }
 @keyframes tutFadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -32,6 +36,7 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
   animation: tutPop 0.28s ease-out;
   transition: opacity 0.18s ease;   /* 转场淡出/淡入平滑, 消除步骤切换的跳变感 */
+  pointer-events: auto;
 }
 @keyframes tutPop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; } }
 
@@ -67,8 +72,7 @@
 
 /* 放行模式(interactive 步骤): 让用户真的能点到底下的界面练手 */
 /* 根层不拦点击, 只有气泡自己能点; 聚光灯阴影调淡, 明示"没冻结" */
-.tut-root.tut-interactive { pointer-events: none; }
-.tut-root.tut-interactive .tut-bubble { pointer-events: auto; }
+/* 交互步骤: 只把变暗程度调淡, 之前"只在交互步骤放行鼠标"的做法已废弃 */
 .tut-root.tut-interactive .tut-spot { box-shadow: 0 0 0 100000px rgba(0, 0, 0, 0.15); }
 
 /* ===== 教程磁贴面板 ===== */

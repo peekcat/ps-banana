@@ -42,7 +42,7 @@ function _renderPanel(container) {
   container.innerHTML =
     '<div class="w10-panel nd-panel">' +
       '<div class="w10-section-title">🩺 网络体检</div>' +
-      '<div class="w10-row-desc nd-desc">出图连不上、报网络错误时点下面按钮:\n约 10 秒定位断在哪一层(整机断网 / DNS 被劫持 / 某家服务挂了 /\nPS 被代理单独拦截), 结论大白话, 报告可直接发客服。</div>' +
+      '<div class="w10-row-desc nd-desc">出图连不上、报网络错误时点下面按钮:\n约 10 秒定位断在哪一层(整机断网 / DNS 被劫持 / 某家服务挂了 /\nPS 被代理单独拦截), 结论大白话, 报告可直接复制留存。</div>' +
       '<div class="nd-actions">' +
         '<button class="w10-btn w10-btn-accent" id="ndRunBtn"' + (_busy ? ' disabled' : '') + '>' + (_busy ? '体检中…(约10秒)' : '▶ 开始体检') + '</button>' +
         (_lastReport ? '<button class="w10-btn" id="ndCopyBtn">📋 复制报告</button>' : '') +
@@ -71,7 +71,7 @@ function _renderPanel(container) {
   var copy = container.querySelector('#ndCopyBtn');
   if (copy) copy.addEventListener('click', function() {
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(_lastReport).then(function() { TileAPI.toast('报告已复制, 可直接粘给客服', 'success'); })
+      navigator.clipboard.writeText(_lastReport).then(function() { TileAPI.toast('报告已复制', 'success'); })
         .catch(function() { TileAPI.toast('复制失败, 请手动框选报告文字复制', 'warn'); });
     } else {
       TileAPI.toast('请手动框选报告文字复制', 'info');

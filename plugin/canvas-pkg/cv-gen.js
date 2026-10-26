@@ -141,7 +141,7 @@ async function generate(data) {
     // 超时: 清掉请求
     _cleanup(cmdDir, genId + '.json');
     for (var ci = 0; ci < refImages.length; ci++) _cleanup(inDir, refImages[ci]);
-    return { success: false, error: '生成超时(主插件没在限时内回结果, 确认主插件开着且已登录/有 key)' };
+    return { success: false, error: '生成超时(主插件没在限时内回结果, 确认主插件开着且已配置 Key)' };
 }
 
 async function _cleanup(folder, name) {

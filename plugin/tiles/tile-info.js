@@ -49,7 +49,7 @@ function _getApiStatus() {
     || TileAPI.storage.get('connection.provider') || 'aji';
   var key = conn ? (conn.key || '') : (TileAPI.storage.get('connection.' + provider + '.key') || '');
   var url = conn ? (conn.url || '') : (TileAPI.storage.get('connection.' + provider + '.url') || '');
-  // 显示名接槽位自定义名; 没改名时 grs 按模式显示 GRS/夏三七, 其余用引擎名大写
+  // 显示名接槽位自定义名; 没改名时 grs 显示 GRS, 其余用引擎名大写
   var defName = (provider === 'grs' && TileAPI.computeBrand) ? TileAPI.computeBrand() : provider.toUpperCase();
   var dispName = TileAPI.slotLabel ? TileAPI.slotLabel(provider, defName) : defName;
   var keyText = key ? '已填写' : '未填写';

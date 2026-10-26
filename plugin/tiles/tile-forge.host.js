@@ -118,7 +118,7 @@ function resolveForgeTargetSize(params, savedSelection) {
 
 HostAPI.registerAction('forgeTestConnection', async function(data, ctx) {
     var url = normalizeUrl(resolveForgeUrl(data));
-    if (!url) { ctx.sendToPanel('forgeTestResult', { success: false, error: '云服务 URL 解密失败' }); return; }
+    if (!url) { ctx.sendToPanel('forgeTestResult', { success: false, error: 'Forge URL 未配置' }); return; }
     var fullUrl = url + '/sdapi/v1/options';
     try {
         var resp = await serverConfig.fetchWithTimeout(fullUrl, { method: 'GET' }, FORGE_QUERY_TIMEOUT_MS);
@@ -144,7 +144,7 @@ HostAPI.registerAction('forgeTestConnection', async function(data, ctx) {
 
 HostAPI.registerAction('forgeFetchModels', async function(data, ctx) {
     var url = normalizeUrl(resolveForgeUrl(data));
-    if (!url) { ctx.sendToPanel('forgeModelsResult', { success: false, error: '云服务 URL 解密失败' }); return; }
+    if (!url) { ctx.sendToPanel('forgeModelsResult', { success: false, error: 'Forge URL 未配置' }); return; }
     try {
         var resp = await serverConfig.fetchWithTimeout(url + '/sdapi/v1/sd-models', { method: 'GET' }, FORGE_QUERY_TIMEOUT_MS);
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -157,7 +157,7 @@ HostAPI.registerAction('forgeFetchModels', async function(data, ctx) {
 
 HostAPI.registerAction('forgeFetchSamplers', async function(data, ctx) {
     var url = normalizeUrl(resolveForgeUrl(data));
-    if (!url) { ctx.sendToPanel('forgeSamplersResult', { success: false, error: '云服务 URL 解密失败' }); return; }
+    if (!url) { ctx.sendToPanel('forgeSamplersResult', { success: false, error: 'Forge URL 未配置' }); return; }
     try {
         var resp = await serverConfig.fetchWithTimeout(url + '/sdapi/v1/samplers', { method: 'GET' }, FORGE_QUERY_TIMEOUT_MS);
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -170,7 +170,7 @@ HostAPI.registerAction('forgeFetchSamplers', async function(data, ctx) {
 
 HostAPI.registerAction('forgeFetchControlNetModules', async function(data, ctx) {
     var url = normalizeUrl(resolveForgeUrl(data));
-    if (!url) { ctx.sendToPanel('forgeCnModulesResult', { success: false, error: '云服务 URL 解密失败' }); return; }
+    if (!url) { ctx.sendToPanel('forgeCnModulesResult', { success: false, error: 'Forge URL 未配置' }); return; }
     try {
         var resp = await serverConfig.fetchWithTimeout(url + '/controlnet/module_list', { method: 'GET' }, FORGE_QUERY_TIMEOUT_MS);
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -184,7 +184,7 @@ HostAPI.registerAction('forgeFetchControlNetModules', async function(data, ctx) 
 
 HostAPI.registerAction('forgeFetchControlNetModels', async function(data, ctx) {
     var url = normalizeUrl(resolveForgeUrl(data));
-    if (!url) { ctx.sendToPanel('forgeCnModelsResult', { success: false, error: '云服务 URL 解密失败' }); return; }
+    if (!url) { ctx.sendToPanel('forgeCnModelsResult', { success: false, error: 'Forge URL 未配置' }); return; }
     try {
         var resp = await serverConfig.fetchWithTimeout(url + '/controlnet/model_list', { method: 'GET' }, FORGE_QUERY_TIMEOUT_MS);
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -198,7 +198,7 @@ HostAPI.registerAction('forgeFetchControlNetModels', async function(data, ctx) {
 
 HostAPI.registerAction('forgeFetchLoras', async function(data, ctx) {
     var url = normalizeUrl(resolveForgeUrl(data));
-    if (!url) { ctx.sendToPanel('forgeLorasResult', { success: false, error: '云服务 URL 解密失败' }); return; }
+    if (!url) { ctx.sendToPanel('forgeLorasResult', { success: false, error: 'Forge URL 未配置' }); return; }
     try {
         var resp = await serverConfig.fetchWithTimeout(url + '/sdapi/v1/loras', { method: 'GET' }, FORGE_QUERY_TIMEOUT_MS);
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
@@ -275,8 +275,8 @@ HostAPI.registerAction('forgeImg2Img', async function(params, ctx) {
     var runPath = (runFolder && (runFolder.wcRunPath || runFolder.name)) || '';
     var url = normalizeUrl(resolveForgeUrl(params));
     if (!url) {
-        ctx.sendToPanel('forgeComplete', { taskId: forgeTaskId, success: false, error: '云服务 URL 解密失败', error_category: 'forge.crypto.url_decrypt_fail' });
-        ctx.sendToPanel('taskComplete', { taskId: forgeTaskId, successCount: 0, failCount: 1, engine: 'forge', error: '云服务 URL 解密失败', error_category: 'forge.crypto.url_decrypt_fail' });
+        ctx.sendToPanel('forgeComplete', { taskId: forgeTaskId, success: false, error: 'Forge URL 未配置', error_category: 'forge.input.no_url' });
+        ctx.sendToPanel('taskComplete', { taskId: forgeTaskId, successCount: 0, failCount: 1, engine: 'forge', error: 'Forge URL 未配置', error_category: 'forge.input.no_url' });
         return;
     }
     var _progressTimer;
@@ -572,8 +572,8 @@ HostAPI.registerAction('forgeTxt2Img', async function(params, ctx) {
     var runPath = (runFolder && (runFolder.wcRunPath || runFolder.name)) || '';
     var url = normalizeUrl(resolveForgeUrl(params));
     if (!url) {
-        _sendForgeTxtComplete({ success: false, error: '云服务 URL 解密失败', error_category: 'forge.crypto.url_decrypt_fail' });
-        _sendForgeTxtTaskComplete({ successCount: 0, failCount: 1, engine: 'forge', error: '云服务 URL 解密失败', error_category: 'forge.crypto.url_decrypt_fail' });
+        _sendForgeTxtComplete({ success: false, error: 'Forge URL 未配置', error_category: 'forge.input.no_url' });
+        _sendForgeTxtTaskComplete({ successCount: 0, failCount: 1, engine: 'forge', error: 'Forge URL 未配置', error_category: 'forge.input.no_url' });
         return;
     }
     var _progressTimer2;

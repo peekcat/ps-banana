@@ -139,25 +139,6 @@ function _doBilling(info, successCount, failCount) {
         });
     } catch (_) {}
 
-    // 2. GRS 算力续杯: 仅 provider=grs + 走 proxy(非 BYOK)路径时 ping
-    try {
-        if (provider === 'grs' && successCount > 0 && TileAPI.compute && TileAPI.compute.getState) {
-            var byokActive = false;
-            if (typeof TileAPI.compute.isUserByokActive === 'function') {
-                byokActive = TileAPI.compute.isUserByokActive();
-            } else {
-                byokActive = !!(TileAPI.storage.get('connection.grs.key'));
-            }
-            var cs = TileAPI.compute.getState();
-            if (!byokActive && cs && cs.key) {
-                var usedTotal = 1800 * successCount;
-                if (typeof TileAPI.compute.estimateCost === 'function') {
-                    usedTotal = TileAPI.compute.estimateCost(model, successCount) || usedTotal;
-                }
-                TileAPI.compute.refill(usedTotal, successCount);
-            }
-        }
-    } catch (_) {}
 }
 
 // ---- host 就绪回执(调试) ----

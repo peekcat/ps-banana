@@ -3,7 +3,7 @@
 
 // ============================================================
 //  tile-billing.js —— 算力账单磁贴
-//  · AJI / 夏算力(grs): 本地按任务流水累计花费 + 读现有实时余额/积分
+//  · AJI / GRS: 本地按任务流水累计花费 + 读现有实时余额/积分
 //      流水来源: 模块级监听 generate:complete, 每出一张图记一笔
 //      单价: 从模型视图 models.<provider>[model].prices[size] 取(真实ID计费)
 //  · 墨墨(momo): 通过 new-api 接口 /api/billing/token 拉取消费(无余额接口)
@@ -391,7 +391,7 @@ function _renderPanel(container) {
   container.innerHTML =
     '<div class="w10-panel bill-panel">' +
       '<div class="w10-section-title">💰 算力账单</div>' +
-      '<div class="bill-intro">AJI / 夏算力按本地任务流水估算花费(以服务端余额为准);墨墨从在线接口查消费。</div>' +
+      '<div class="bill-intro">AJI / GRS 按本地任务流水估算花费(以服务端余额为准);墨墨从在线接口查消费。</div>' +
       localHtml +
       _momoCardHtml() +
       '<div class="bill-actions">' +
@@ -673,7 +673,7 @@ TileAPI.registerTile({
   group: 'main',
   icon: '💰',
   label: '算力账单',
-  desc: 'AJI/夏算力本地估算 · 墨墨在线查询',
+  desc: 'AJI/GRS 本地估算 · 墨墨在线查询',
   defaultSize: { w: 1, h: 1 },
   minSize: { w: 1, h: 1 },
   maxSize: { w: 4, h: 8 },

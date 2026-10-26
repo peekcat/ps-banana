@@ -359,3 +359,8 @@
   .welcome-badges { margin-bottom: 14px; }
 }
 
+/* 去云化后欢迎页改为"三步开始" (原公告/联系与资源已删) */
+.welcome-steps { margin: 4px 0 14px; }
+.welcome-step-list { margin: 6px 0 0; padding-left: 20px; color: var(--text); font-size: 12px; line-height: 1.9; }
+.welcome-step-list li { margin-bottom: 2px; }
+.welcome-note { margin-top: 8px; font-size: 11px; line-height: 1.7; color: var(--text-sub); }
