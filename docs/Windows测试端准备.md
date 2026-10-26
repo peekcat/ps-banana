@@ -4,14 +4,10 @@
 
 ## 分工
 
-| | Mac | Windows（本文） |
-|---|---|---|
-| 角色 | 开发：改代码、静态检查 | 实机测试：在 Photoshop 里加载、观察、记录 |
-| 改 `plugin/` 代码 | 是 | **否**，只读 |
-| git | 在开发分支上提交 | 只 `pull`；测试记录推到 `win-test` 分支 |
+**2026-10-26 起开发和测试都在 Windows 上做**，Mac 端不再改代码。开发任务、规矩和验收标准见 `docs/Windows任务/开发交接.md`；本文只管环境。第 7、8 节是之前「Mac 开发、Windows 测试」时的流程，已经被交接文档取代，留着备查。
 
-Agent 能做：装软件、git、改 hosts、检查网络、整理记录。
-**只有人能做**：操作 Photoshop 和 UXP Developer Tool 的界面、看 DevTools、按回归清单逐项点。
+Agent 能做：装软件、git、改代码、改 hosts、检查网络、整理记录。
+**只有人能做**：操作 Photoshop 和 UXP Developer Tool 的界面、按回归清单逐项点。
 
 ## 1. 环境清单
 
@@ -67,7 +63,7 @@ Resolve-DnsName qwentest.vip.cpolar.top -Type A
 
 **整个测试期间一直保持屏蔽。** 它也是一道保险：就算代码里漏删了什么，也不会真的连到这几个域名（包括被别人接管之后）。
 
-**开了代理软件（Clash / mihomo 等）时 hosts 可能不起作用**：请求走 HTTP 代理时，域名由代理端解析，绕过本机 hosts。这时还要在代理规则里把三个域名设为 `REJECT`，做法和验证见 `docs/Windows任务/第1轮.md` 任务 1。
+**开了代理软件（Clash / mihomo 等）时 hosts 可能不起作用**：请求走 HTTP 代理时，域名由代理端解析，绕过本机 hosts。这时还要在代理规则里把三个域名设为 `REJECT`，做法和验证见 `docs/Windows任务/开发交接.md` 阶段 0。
 
 ## 5. 用 UDT 加载插件
 
@@ -133,9 +129,7 @@ Mac 推开发分支 → Windows: git fetch && git checkout <分支> && git pull
 → UDT Reload → 按当轮回归清单测 → 记录推到 win-test → Mac 读记录继续改
 ```
 
-每轮的任务单由 Mac 端写在 `docs/Windows任务/第N轮.md`，随代码一起推送。
-
-Windows 端只往 `docs/实机记录/` 写记录，**不改其他文档**（包括本文和 `去云化评估.md`）。发现文档有错，写进记录里，由 Mac 端改。
+（已被 `docs/Windows任务/开发交接.md` 取代。）
 
 ## 9. 当前测试机（2026-10-24 就绪）
 
