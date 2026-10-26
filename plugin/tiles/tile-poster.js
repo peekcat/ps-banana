@@ -93,32 +93,12 @@ function _getGptAspects(provider) {
 
 // 按指定 provider 拿连接配置(从 storage 直接读,不走 _settingsGetActiveConnection
 // 那个函数只返回"当前激活的 provider"的配置,海报要按用户在面板里选的 provider 取)
+// 只有自带 Key 模式: 直接用用户自己填的 connection.<provider>.url / .key
 function _getProviderConnection(provider) {
   if (provider !== 'grs' && provider !== 'aji') provider = 'grs';
   var url = TileAPI.storage.get('connection.' + provider + '.url') || '';
   var key = TileAPI.storage.get('connection.' + provider + '.key') || '';
-  var grsKeyPending = false;
-  var grsNeedLogin = false;
-  // GRS 双路径: BYOK (填了 key 且没在云服务里关) 用自己的; 否则走云端 sub-key (proxy)
-  // 切换开关: connection.grs.use_byok (TileAPI.compute.isUserByokActive 统一判定)
-  if (provider === 'grs') {
-    var byokActive = (window.TileAPI && TileAPI.compute && TileAPI.compute.isUserByokActive)
-      ? TileAPI.compute.isUserByokActive() : !!key;
-    if (!byokActive) {
-      key = '';
-      var cs = (window.TileAPI && TileAPI.compute && TileAPI.compute.getState) ? TileAPI.compute.getState() : null;
-      var subKey = cs ? cs.key : '';
-      if (subKey) {
-        key = subKey;
-      } else if (window._cloudIsLoggedIn && window._cloudIsLoggedIn()) {
-        grsKeyPending = true;
-        if (TileAPI.compute && TileAPI.compute.getKey) TileAPI.compute.getKey().catch(function(){});
-      } else {
-        grsNeedLogin = true;   // 托管模式没登录: 该提示登录, 不是让用户填 key
-      }
-    }
-  }
-  return { provider: provider, url: url, key: key, _grsKeyPending: grsKeyPending, _grsNeedLogin: grsNeedLogin };
+  return { provider: provider, url: url, key: key };
 }
 
 // 影响海报面板显示的"夏算力"状态签名 —— 用于判定 compute:keyUpdated 是否真的需要重渲。
@@ -126,12 +106,8 @@ function _getProviderConnection(provider) {
 // (_renderPanel 是一次性同步重砌整面墙), 开面板瞬间就会被重建风暴卡死。
 function _computeKeySig() {
   try {
-    var C = window.TileAPI && TileAPI.compute;
-    var s = (C && C.getState) ? C.getState() : {};
-    var byok = (C && C.isUserByokActive && C.isUserByokActive()) ? '1' : '0';
-    var logged = (window._cloudIsLoggedIn && window._cloudIsLoggedIn()) ? '1' : '0';
-    var brand = TileAPI.computeBrand ? TileAPI.computeBrand() : '';
-    return [s.mode || '', s.key ? 'k' : '', s.status || '', byok, logged, brand].join('|');
+    var s = (window.TileAPI && TileAPI.compute && TileAPI.compute.getState) ? TileAPI.compute.getState() : {};
+    return [s.mode || '', s.key ? 'k' : '', s.status || ''].join('|');
   } catch (e) { return ''; }
 }
 
@@ -736,27 +712,11 @@ function _renderStepGenerate(cat) {
   if (!connOK) {
     var pnameDef = provider === 'grs' ? TileAPI.computeBrand() : 'AJI';
     var pname = TileAPI.slotLabel ? TileAPI.slotLabel(provider, pnameDef) : pnameDef;
-    if (connInfo && connInfo._grsKeyPending) {
-      // 夏算力 sub-key 还在异步拉, 不是真没配, 显示蓝色"准备中"
-      connWarn = '<div class="w10-row" style="background:rgba(74,158,255,0.08);border:1px solid rgba(74,158,255,0.3);border-radius:6px;padding:10px 12px;margin-bottom:10px;">' +
-        '<div class="w10-row-left">' +
-          '<div class="w10-row-label" style="color:#7ab8ff;">⏳ 正在准备夏三七 Key, 稍等...</div>' +
-          '<div class="w10-row-desc">拿到后这里会自动消失, 不用刷新</div>' +
-        '</div></div>';
-    } else if (connInfo && connInfo._grsNeedLogin) {
-      // 托管模式没登录: 该提示登录, 不是让用户去填 key
-      connWarn = '<div class="w10-row" style="background:rgba(255,69,58,0.08);border:1px solid rgba(255,69,58,0.3);border-radius:6px;padding:10px 12px;margin-bottom:10px;">' +
-        '<div class="w10-row-left">' +
-          '<div class="w10-row-label" style="color:#ff8a8a;">⚠️ 夏算力托管需要登录</div>' +
-          '<div class="w10-row-desc">到顶栏账号区登录, 或切回「自带 Key」再回来生成</div>' +
-        '</div></div>';
-    } else {
-      connWarn = '<div class="w10-row" style="background:rgba(255,69,58,0.08);border:1px solid rgba(255,69,58,0.3);border-radius:6px;padding:10px 12px;margin-bottom:10px;">' +
-        '<div class="w10-row-left">' +
-          '<div class="w10-row-label" style="color:#ff8a8a;">⚠️ 当前未配置 ' + pname + ' 通道的 URL 和 Key</div>' +
-          '<div class="w10-row-desc">请到顶栏 → 服务通道选 ' + pname + ' → 填好 URL 和 Key 后再回来生成</div>' +
-        '</div></div>';
-    }
+    connWarn = '<div class="w10-row" style="background:rgba(255,69,58,0.08);border:1px solid rgba(255,69,58,0.3);border-radius:6px;padding:10px 12px;margin-bottom:10px;">' +
+      '<div class="w10-row-left">' +
+        '<div class="w10-row-label" style="color:#ff8a8a;">⚠️ 当前未配置 ' + pname + ' 通道的 URL 和 Key</div>' +
+        '<div class="w10-row-desc">请到顶栏 → 服务通道选 ' + pname + ' → 填好 URL 和 Key 后再回来生成</div>' +
+      '</div></div>';
   }
 
   return '<div class="w10-section-title">⚙️ STEP 5 · 生成参数</div>' +
@@ -1936,9 +1896,7 @@ function _doGenerate(container) {
   if (!conn || !conn.url || !conn.key) {
     var pnameDef2 = provider === 'grs' ? TileAPI.computeBrand() : 'AJI';
     var pname = TileAPI.slotLabel ? TileAPI.slotLabel(provider, pnameDef2) : pnameDef2;
-    if (conn && conn._grsKeyPending) TileAPI.toast('正在准备夏三七, 请稍后再试', 'info');
-    else if (conn && conn._grsNeedLogin) TileAPI.toast('夏算力托管需要登录 (顶栏账号区), 或切回「自带 Key」', 'error');
-    else TileAPI.toast('请先到「设置」磁贴配置 ' + pname + ' 通道的 URL 和 Key', 'error');
+    TileAPI.toast('请先到「设置」磁贴配置 ' + pname + ' 通道的 URL 和 Key', 'error');
     return;
   }
 

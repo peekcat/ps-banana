@@ -62,21 +62,8 @@ async function _withForgeDocLock(ctx, taskId, docId, fn) {
     }, taskId);
 }
 
-// 云服务(用于 source='cloud' 时解密 URL);若不可用则云源自动失效
-var cloudService = null;
-try { cloudService = require('../login-service.js'); } catch(e) { /* 未装云服务也不影响本地 */ }
-
-// 统一的 URL 解析:前端传 {url} 或 {encrypted}
-// 若传 encrypted 且有 cloudService → 解密
-// 否则直接用 url
+// 统一的 URL 解析: 只有本地 Forge, 直接用前端传来的 url
 function resolveForgeUrl(data) {
-    if (data && data.encrypted && cloudService && cloudService.decryptUrl) {
-        try {
-            var u = cloudService.decryptUrl(data.encrypted);
-            if (u) return u.replace(/\/$/, '');
-        } catch(e) {}
-        return null;  // 解密失败
-    }
     return data && data.url ? data.url : '';
 }
 
@@ -435,7 +422,7 @@ HostAPI.registerAction('forgeImg2Img', async function(params, ctx) {
             runFolder: runFolder, runPath: runPath,
             taskId: forgeTaskId, startTs: _evStartTs, endTs: Date.now(),
             engine: 'forge', model: params.model || '',
-            source: params.encrypted ? 'cloud' : 'local',
+            source: 'local',
             docName: _docInfo.docName, prompt: params.prompt || '',
             inputs: capture && capture.base64 ? [capture.base64] : [],
             outputs: forgePayloads.slice()
@@ -721,7 +708,7 @@ HostAPI.registerAction('forgeTxt2Img', async function(params, ctx) {
             runFolder: runFolder, runPath: runPath,
             taskId: forgeTxtTaskId, startTs: _evStartTs2, endTs: Date.now(),
             engine: 'forge', model: params.model || '',
-            source: params.encrypted ? 'cloud' : 'local',
+            source: 'local',
             docName: _docInfo2.docName, prompt: params.prompt || '',
             inputs: _txtInputB64 ? [_txtInputB64] : [],
             outputs: forgePayloads2.slice()

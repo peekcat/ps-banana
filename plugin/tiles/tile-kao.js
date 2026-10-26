@@ -668,9 +668,7 @@ function _doStart(container) {
   var provider = (container.querySelector('#kaoProvider') || {}).value || TileAPI.state.get('params.provider') || 'aji';
   var conn = window._settingsGetActiveConnection ? window._settingsGetActiveConnection(provider) : { provider: provider, url: '', key: '' };
   if (!conn || !conn.key) {
-    if (conn && conn._grsKeyPending) TileAPI.toast('正在准备夏算力, 请稍后再试', 'info');
-    else if (conn && conn._grsNeedLogin) TileAPI.toast('夏算力托管需要登录 (顶栏账号区), 或切回「自带 Key」', 'error');
-    else TileAPI.toast('当前渠道未配置 API Key，请到设置里填写', 'error');
+    TileAPI.toast('当前渠道未配置 API Key，请到设置里填写', 'error');
     return;
   }
   if (!conn.url) { TileAPI.toast('当前渠道未配置 API 地址', 'error'); return; }

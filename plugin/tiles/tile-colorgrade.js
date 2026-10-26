@@ -393,9 +393,7 @@ function _doStart(container) {
   var apiKey = conn.key || '';
   var apiBaseUrl = conn.url || '';
   if (!apiKey) {
-    if (conn._grsKeyPending) TileAPI.toast('正在准备夏算力, 请稍后再试', 'info');
-    else if (conn._grsNeedLogin) TileAPI.toast('夏算力托管需要登录 (顶栏账号区), 或切回「自带 Key」', 'error');
-    else TileAPI.toast('API Key 未填写', 'error');
+    TileAPI.toast('API Key 未填写', 'error');
     return;
   }
   if (!apiBaseUrl) { TileAPI.toast('API 地址未填写', 'error'); return; }

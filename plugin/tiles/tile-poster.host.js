@@ -141,7 +141,7 @@ async function _uploadRefsToTempServer(refs, ctx) {
     var deviceId = _readDeviceId(ctx);
     if (!deviceId) throw new Error('未找到设备 ID,请先打开过客服磁贴');
     var urls = new Array(refs.length);
-    // 串行上传:并发会让 cpolar 限流,串行更稳;每张几百 KB,16 张大概 5-10 秒
+    // 串行上传:并发容易触发服务端限流,串行更稳;每张几百 KB,16 张大概 5-10 秒
     for (var i = 0; i < refs.length; i++) {
         var r = refs[i];
         if (!r || !r.base64) {
@@ -432,7 +432,7 @@ HostAPI.registerAction('posterCaptureFromPS', async function(data, ctx) {
         var finalBase64 = cap.base64;
         // 强制压缩条件:任一满足就重压到 1024 长边 jpeg q78
         //   1) 选区长边 > 1024(避免大尺寸 PNG)
-        //   2) base64 > 1.2 MB(cpolar/JSON body 上限保险)
+        //   2) base64 > 1.2 MB(JSON body 上限保险)
         // 这一步独立于用户 maxResolution 设置,海报场景对图质要求不严,优先保上传成功
         if (longestEdge > 1024 || b64Size > 1.2 * 1024 * 1024) {
             try {

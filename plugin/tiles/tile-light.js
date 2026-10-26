@@ -501,9 +501,7 @@ function _submitLightGenerate(container, prompt, lossless) {
     apiKey = conn.key;
     apiBaseUrl = conn.url;
     if (!apiKey || !apiBaseUrl) {
-      if (conn._grsKeyPending) TileAPI.toast('正在准备夏算力, 请稍后再试', 'info');
-      else if (conn._grsNeedLogin) TileAPI.toast('夏算力托管需要登录 (顶栏账号区), 或切回「自带 Key」', 'error');
-      else TileAPI.toast('请先在顶栏配置 ' + _curProvider.toUpperCase() + ' 的 URL 和 Key', 'error');
+      TileAPI.toast('请先在顶栏配置 ' + _curProvider.toUpperCase() + ' 的 URL 和 Key', 'error');
       return;
     }
   } else {

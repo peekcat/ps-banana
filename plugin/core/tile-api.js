@@ -240,36 +240,16 @@ var TileAPI = {
     return null;
   },
 
-  // ========== GRS 算力 (Stage 4) ==========
+  // ========== GRS 算力 (只剩自带 Key 模式) ==========
   //
-  //  状态机:
-  //    compute.mode   = 'proxy' | 'byok'        (默认 'proxy')
-  //    compute.key    = 'sk-xxxx' 或 ''        (proxy 模式且已建 key 时有值; BYOK 时为空, 用户的 key 在 connection.grs.key)
-  //    compute.status = 'ok' | 'no_balance' | 'paused' | 'create_failed' | 'byok_no_key_on_server' | ''
-  //    compute.cap    = 28800 (或 0)
-  //    compute.balance= 上次同步到的余额 (估计值, 不是实时)
-  //  事件:
-  //    'compute:keyUpdated'   key/状态有变化时触发, 携带最新 state 对象
-  //
-  //  典型用法 (在 banana 类磁贴里):
-  //    var st = TileAPI.compute.getState();
-  //    if (st.mode === 'byok') {
-  //        var byokKey = TileAPI.storage.get('connection.grs.key');
-  //        ...用 byokKey 直接打 GRS
-  //    } else if (st.key) {
-  //        ...用 st.key 直接打 GRS
-  //    } else {
-  //        TileAPI.toast('还没拿到夏算力 key, 充值后再试', 'warn');
-  //    }
-  //
-  //  生成完了 (无论成败) 调一次:
-  //    TileAPI.compute.refill(1800);   // 1800 = 这次估算用掉的 credits, 仅日志用
-  //
+  //  原版的「夏算力托管」已删除: 不再有服务器下发的子 Key、积分扣减、续杯和风控。
+  //  余额由磁贴直接查用户自己的 GRS 账户 (见 tile-topbar 的 grsCheckCredits)。
+  //  下面这些方法只为兼容历史调用方保留, 语义统一退化成"自带 Key"。
   compute: {
-    // 粗估生成 credits 消耗 (服务端按规则决定要不要续杯, 数字不必精确)
-    //   nano-banana / 默认 → 1800/张
-    //   含 'pro' (Pro 系列) → 3600/张
-    //   含 'fast' → 1200/张
+    getState: function() {
+      return { mode: 'byok', key: '', status: '', cap: 0, balance: 0, lastSyncAt: '', expiresAt: '' };
+    },
+    getKey: function() { return Promise.resolve(TileAPI.compute.getState()); },
     estimateCost: function(model, count) {
       count = parseInt(count, 10) || 1;
       if (!model) return 1800 * count;
@@ -278,188 +258,19 @@ var TileAPI = {
       if (lower.indexOf('fast') >= 0) return 1200 * count;
       return 1800 * count;
     },
-
-    getState: function() {
-      return {
-        mode:    _state['compute.mode']    || 'proxy',
-        key:     _state['compute.key']     || '',
-        status:  _state['compute.status']  || '',
-        cap:     _state['compute.cap']     || 0,
-        balance: _state['compute.balance'] || 0,
-        lastSyncAt: _state['compute.lastSyncAt'] || '',
-        expiresAt: _state['compute.expiresAt'] || ''
-      };
-    },
-
-    // 异步拿 key. 若 state 已有则秒回; 否则触发 host 拉一次. 永远 resolve, 失败时 key=''
-    getKey: function(opts) {
-      opts = opts || {};
-      var s = TileAPI.compute.getState();
-      if (s.key && !opts.forceRefresh) return Promise.resolve(s);
-      return new Promise(function(resolve) {
-        var done = false;
-        var off = function() {};
-        var timer = setTimeout(function() {
-          if (done) return;
-          done = true;
-          off();
-          resolve(TileAPI.compute.getState());
-        }, 8000);
-        var handler = function(data) {
-          if (done) return;
-          done = true;
-          clearTimeout(timer);
-          off();
-          // compute:keyUpdated is emitted after _applyResult has already normalized
-          // the host payload. Applying it again would erase camelCase timestamps.
-          resolve(data && typeof data === 'object' ? data : TileAPI.compute.getState());
-        };
-        TileAPI.on('compute:keyUpdated', handler);
-        off = function() { TileAPI.off('compute:keyUpdated', handler); };
-        TileAPI.sendToHost('cloudComputeGetKey', { forceRefresh: !!opts.forceRefresh });
-      });
-    },
-
-    // 生成完后调一次 (fire-and-forget). 服务端按规则决定是否真续杯.
-    //   usedCredits: 累计 credits (仅日志); attempts: 本次图片张数 (风控计数关键, 必传)
-    refill: function(usedCredits, attempts) {
-      TileAPI.sendToHost('cloudComputeRefill', {
-        used: usedCredits || 0,
-        attempts: attempts || 0
-      });
-    },
-
-    // 强制对账, 返回 Promise<{ success, remaining }>
-    sync: function() {
-      return new Promise(function(resolve) {
-        var done = false;
-        var timer = setTimeout(function() {
-          if (done) return; done = true;
-          TileAPI.off('compute:syncResult', handler);
-          resolve({ success: false, timeout: true });
-        }, 8000);
-        var handler = function(data) {
-          if (done) return; done = true;
-          clearTimeout(timer);
-          TileAPI.off('compute:syncResult', handler);
-          resolve(data || { success: false });
-        };
-        TileAPI.on('compute:syncResult', handler);
-        TileAPI.sendToHost('cloudComputeSync', {});
-      });
-    },
-
-    // 切 BYOK/proxy. 返回 Promise<{ success, mode }>
-    setByok: function(mode) {
-      return new Promise(function(resolve) {
-        var done = false;
-        var timer = setTimeout(function() {
-          if (done) return; done = true;
-          TileAPI.off('compute:byokResult', handler);
-          resolve({ success: false, timeout: true });
-        }, 6000);
-        var handler = function(data) {
-          if (done) return; done = true;
-          clearTimeout(timer);
-          TileAPI.off('compute:byokResult', handler);
-          resolve(data || { success: false });
-        };
-        TileAPI.on('compute:byokResult', handler);
-        TileAPI.sendToHost('cloudComputeSetByok', { mode: (mode === 'byok' ? 'byok' : 'proxy') });
-      });
-    },
-
-    // 用户本地的 BYOK 开关 (storage: connection.grs.use_byok)
-    //   默认 true (历史行为: 填了 key 就用 BYOK)
-    //   false = 强制走 proxy 子 key 模式, 即使本地填了 key 也不用
-    //   说明: 这个开关只影响"路由决策", 不影响 server 端的 compute.mode
-    //         server 端 mode 仍由 setByok() 控制 (主要影响余额展示/审计)
-    isUserByokActive: function() {
-      // 用户填了 key 且没明确关掉 = BYOK
-      var key = TileAPI.storage.get('connection.grs.key');
-      if (!key) return false;
-      var pref = TileAPI.storage.get('connection.grs.use_byok');
-      return pref !== false;
-    },
-
-    setUserByokPreference: function(useByok) {
-      TileAPI.storage.set('connection.grs.use_byok', !!useByok);
-      TileAPI.emit('compute:byokPrefChanged', { use_byok: !!useByok });
-    },
-
-    // 内部: 把 host 拉到的结构写到 state 并广播事件
-    _applyResult: function(data) {
-      if (!data) return;
-      var mode = data.mode || 'proxy';
-      var key = data.key || '';
-      var status = data.key_status || (data.success ? 'ok' : '');
-      _state['compute.mode']       = mode;
-      _state['compute.key']        = key;
-      _state['compute.status']     = status;
-      _state['compute.cap']        = (typeof data.cap === 'number') ? data.cap : 0;
-      _state['compute.balance']    = (typeof data.balance === 'number') ? data.balance : 0;
-      _state['compute.lastSyncAt'] = data.last_sync_at || data.lastSyncAt || '';
-      _state['compute.expiresAt']  = data.expires_at || data.expiresAt || '';
-      TileAPI.emit('compute:keyUpdated', TileAPI.compute.getState());
-    },
-
-    // 由 app.js 在初始化时调一次, 把跨场景的 host → state 桥接好
-    _bootstrapHostBridge: function() {
-      if (!window._messageBridge) return;
-      // 主路: host 主动推 compute key 状态 (登录后/充值后/手动 sync 后)
-      window._messageBridge.onHostMessage('cloudComputeKeyResult', function(data) {
-        TileAPI.compute._applyResult(data);
-      });
-      // sync / byok 仅触发自定义事件, 走 Promise 路径
-      window._messageBridge.onHostMessage('cloudComputeSyncResult', function(data) {
-        TileAPI.emit('compute:syncResult', data);
-        // sync 之后 host 也会推 cloudComputeKeyResult, 这里不重复写 state
-      });
-      window._messageBridge.onHostMessage('cloudComputeByokResult', function(data) {
-        TileAPI.emit('compute:byokResult', data);
-      });
-      window._messageBridge.onHostMessage('cloudComputeRefillResult', function(data) {
-        TileAPI.emit('compute:refillResult', data);
-        // 续杯成功的话 host 也会推 cloudComputeKeyResult 校准, 不在这写
-        // Stage 7 风控: 触发上限/限流/熔断时给用户一个友好提示 (errno=10 或 paused/throttled 为 true)
-        try {
-          if (data && data.errno === 10 && data.info) {
-            TileAPI.toast(data.info, 'warn');
-          } else if (data && (data.paused || data.throttled)) {
-            var msg = data.paused
-              ? '今日算力额度已用满, 明日 0 点自动恢复'
-              : '触发短时限流, 稍等一会再发图';
-            TileAPI.toast(msg, 'warn');
-          }
-        } catch(_){}
-      });
-      // 登录/恢复会话/离线登录的结果里如果带了 compute, 也走同一条路径
-      window._messageBridge.onHostMessage('cloudLoginResult', function(data) {
-        if (data && data.compute) TileAPI.compute._applyResult(data.compute);
-      });
-      window._messageBridge.onHostMessage('cloudRestoreResult', function(data) {
-        if (data && data.compute) TileAPI.compute._applyResult(data.compute);
-      });
-      window._messageBridge.onHostMessage('cloudLogoutResult', function() {
-        // 登出清空
-        TileAPI.compute._applyResult({ mode: 'proxy', key: '', key_status: '', cap: 0, balance: 0 });
-      });
-    }
+    refill: function() {},
+    sync: function() { return Promise.resolve({ success: true }); },
+    setByok: function() { return Promise.resolve({ success: true, mode: 'byok' }); },
+    isUserByokActive: function() { return true; },
+    setUserByokPreference: function() {},
+    _applyResult: function() {},
+    _bootstrapHostBridge: function() {}
   },
 };
 
-// 算力品牌标签: BYOK → "GRS"; 代理 → "夏三七"/"夏"; 未登录 → 由 hideWhenAnon 决定空或 GRS
-// 用法: TileAPI.computeBrand({short:true, hideWhenAnon:true})
-// 切模式时各 tile 监听 'compute:keyUpdated' 重渲, 标签自动跟着变
-TileAPI.computeBrand = function(opts) {
-  opts = opts || {};
-  if (!TileAPI.compute || !TileAPI.compute.isUserByokActive) return opts.hideWhenAnon ? '' : 'GRS';
-  // 用 loggedIn 而不是 pointsReady: 后者要等 cloud 磁贴的积分查询完成才 true,
-  // 但代理用户可能根本没展开过 cloud 磁贴, pointsReady 永远 false, 品牌就退化成 GRS.
-  var loggedIn = !!TileAPI.state.get('cloud.loggedIn');
-  if (!loggedIn) return opts.hideWhenAnon ? '' : 'GRS';
-  if (TileAPI.compute.isUserByokActive()) return 'GRS';
-  return opts.short ? '夏' : '夏三七';
+// 算力品牌标签: 现在只有自带 Key 模式, 一律显示 GRS
+TileAPI.computeBrand = function() {
+  return 'GRS';
 };
 
 // ============================================================

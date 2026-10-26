@@ -6,7 +6,6 @@
 //  使用工厂函数 createAiApiModule 注入外部依赖。
 // ============================================================
 
-var serverConfig = require('../core/server-config.js');
 
 function createAiApiModule(deps) {
     var logToPanel = deps.logToPanel;
@@ -36,7 +35,7 @@ function createAiApiModule(deps) {
     // 据"原始报错 + 失败用时 + 域名"推断最可能诱因, 帮人判断到底哪儿出问题
     function _diagnoseNet(msg, elapsedMs, host) {
         var hints = [];
-        var isTunnel = /cpolar|ngrok|natapp|frp/i.test(host || '');
+        var isTunnel = /ngrok|natapp|frp/i.test(host || '');
         if (/Network request failed|Failed to fetch|NetworkError/i.test(msg)) {
             if (elapsedMs < 800) hints.push('几乎瞬间就失败 → 多半是 DNS 解析不到 / 代理拒绝连接 / 域名根本没连上(Clash 等代理同时开多条连接时尤其常见)');
             else hints.push('连到一半断了 → 可能网络不稳 / 代理抽风 / TLS 握手被打断');
@@ -107,140 +106,6 @@ function createAiApiModule(deps) {
             }
         }
     }
-
-// ============================================================
-//  AI 服务可用度上报 (开源, 用户可监管)
-//
-//  ★ 严格关卡: 用户在 "服务器状态" 磁贴里没勾"启用上报",
-//    reportAiUsage() 立刻 return, 不发任何网络请求
-//
-//  会上报的 7 个字段:
-//    1. provider:  aji | grs | others
-//    2. modelType: banana | gpt-image
-//    3. size:      1K | 2K | 4K
-//    4. success:   true | false
-//    5. elapsed:   秒数
-//    6. endReason: success | timeout | userStop | apiError
-//    7. errMsg:    报错文字 (经 _sanitizeAiErrMsg 脱敏后)
-//
-//  绝对不上报: 提示词 / 图片 / API URL / API Key / 任何身份信息
-// ============================================================
-
-var AI_USAGE_REPORT_PATH = '/api/aiusage';
-
-// 脱敏: 抹掉报错中的网址 / API Key / IP / Bearer token
-function _sanitizeAiErrMsg(s) {
-    if (!s) return '';
-    s = String(s);
-    s = s.replace(/https?:\/\/[^\s,)\]"']+/g, '<URL>');
-    s = s.replace(/sk-[a-zA-Z0-9_\-]{8,}/g, '<KEY>');
-    s = s.replace(/\b\d{1,3}(\.\d{1,3}){3}\b/g, '<IP>');
-    s = s.replace(/Bearer\s+[a-zA-Z0-9_\-\.]{8,}/gi, 'Bearer <TOKEN>');
-    return s.slice(0, 200);
-}
-
-// 把 modelName 归类成大类 (不上报具体模型名, 只大类)
-//   AJI 侧细分: banana-pro / banana-2 / banana-old (香蕉1=gemini)
-//   GRS 侧不细分: 都归 banana
-//   gpt-image 系列: gpt-image (不分 vip/vt/cl)
-function _classifyModel(modelName, provider) {
-    var m = String(modelName || '').toLowerCase();
-    if (m.indexOf('gpt-image') !== -1) return 'gpt-image';
-    // AJI 侧细分
-    if (provider === 'aji') {
-        if (m.indexOf('ajbanana3') !== -1) return 'banana-pro';
-        if (m.indexOf('banana-pro-d') !== -1) return 'banana-pro';   // Banana-pro-D 归 pro 系
-        if (m.indexOf('ajbanana2') !== -1) return 'banana-2';
-        if (m.indexOf('gemini') !== -1) return 'banana-old';
-        return 'banana-other';
-    }
-    // GRS / Others 侧统一归 banana
-    return 'banana';
-}
-
-// 从错误推断 endReason
-//   safetyFilter    — 内容被 AI 安全审查拦截 (提示词或图片有问题, 不是服务器坏)
-//   timeout         — 网络超时
-//   userStop        — 用户主动中断
-//   auth_failed     — API Key 无效 / 过期 / 未授权 (401/403)
-//   quota_exhausted — 余额不足 / 限流 / 额度耗尽 (402/429)
-//   server_error    — 服务端 5xx / 网关错误 / 服务不可用 (500/502/503)
-//   apiError        — 其他未归类的服务端错误
-function _deduceEndReason(err) {
-    if (!err) return 'success';
-    var msg = String(err.message || err);
-    // 用户主动中断
-    if (msg.indexOf('已被提前结束') !== -1) return 'userStop';
-    // 网络超时
-    if (msg.indexOf('请求超时') !== -1 || msg.indexOf('网关超时') !== -1) return 'timeout';
-    // 内容安全审查相关 (这些是用户的图/词触发了 AI 审查, 不是服务器问题)
-    var safetyKeywords = [
-        '安全过滤', '安全审查', '内容策略', '内容审查',
-        'blockReason', 'PROHIBITED_CONTENT', 'RECITATION', 'IMAGE_SAFETY',
-        'safety_violations', 'content_policy', 'moderation', 'safety system',
-        '仅返回文本', '未返回图片', '未返回任何数据', 'candidates为空', 'candidates 为空'
-    ];
-    for (var i = 0; i < safetyKeywords.length; i++) {
-        if (msg.indexOf(safetyKeywords[i]) !== -1) return 'safetyFilter';
-    }
-    // 422 也常常是内容审查
-    if (msg.indexOf('422') !== -1 || msg.indexOf('内容不合法') !== -1) return 'safetyFilter';
-    // 鉴权失败 — 401 / 403 / Key 无效或过期
-    if (msg.indexOf('401') !== -1 || msg.indexOf('403') !== -1 ||
-        msg.indexOf('API Key 无效') !== -1 || msg.indexOf('已过期') !== -1 ||
-        msg.indexOf('权限不足') !== -1 || msg.indexOf('未授权') !== -1) return 'auth_failed';
-    // 余额/限流 — 402 / 429 / 余额不足 / 额度耗尽
-    if (msg.indexOf('402') !== -1 || msg.indexOf('429') !== -1 ||
-        msg.indexOf('余额不足') !== -1 || msg.indexOf('额度耗尽') !== -1 ||
-        msg.indexOf('限流') !== -1 || msg.indexOf('TPM超限') !== -1) return 'quota_exhausted';
-    // 服务端 5xx
-    if (msg.indexOf('500') !== -1 || msg.indexOf('502') !== -1 || msg.indexOf('503') !== -1 ||
-        msg.indexOf('服务器内部错误') !== -1 || msg.indexOf('网关错误') !== -1 ||
-        msg.indexOf('服务暂时不可用') !== -1) return 'server_error';
-    return 'apiError';
-}
-
-// 把任务耗时分桶 (用于 telemetry, 防止具体秒数变成时间指纹)
-function _bucketElapsed(sec) {
-    if (sec == null) return null;
-    if (sec < 5) return '0-5s';
-    if (sec < 10) return '5-10s';
-    if (sec < 20) return '10-20s';
-    if (sec < 40) return '20-40s';
-    if (sec < 80) return '40-80s';
-    if (sec < 180) return '80-180s';
-    return '180s+';
-}
-
-function reportAiUsage(args) {
-    // 关卡 1: 用户没启用 → 立刻退出
-    var hs = getHostStorage() || {};
-    var enabledRaw = hs['aistatus.enabled'];
-    // hostStorage 里值是 JSON 字符串
-    var enabled = enabledRaw === true || enabledRaw === 'true';
-    if (!enabled) return;
-    // 关卡 2: 字段白名单, 防止外部传脏数据进来
-    var providers = ['aji','grs','momo','others'];
-    var sizes = ['1K','2K','4K','Auto'];
-    var reasons = ['success','timeout','userStop','apiError','safetyFilter'];
-    var payload = {
-        provider: providers.indexOf(args.provider) !== -1 ? args.provider : 'others',
-        modelType: _classifyModel(args.modelName, args.provider),
-        size: sizes.indexOf(args.size) !== -1 ? args.size : '?',
-        success: !!args.success,
-        elapsed: Math.min(3600, Math.max(0, +args.elapsed || 0)),
-        endReason: reasons.indexOf(args.endReason) !== -1 ? args.endReason : 'apiError',
-        errMsg: args.success ? '' : _sanitizeAiErrMsg(args.errMsg || '')
-    };
-    // 异步发送, 失败静默 (绝不影响主流程)
-    try {
-        serverConfig.fetchApi(AI_USAGE_REPORT_PATH, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        }).catch(function() {});
-    } catch (_) {}
-}
 
 // ============================================================
 //  对话式生成磁贴 — 事件 emit
@@ -1546,37 +1411,6 @@ async function _callAiApiInner(apiKey, prompt, inputImageBase64, imageSize, time
             var tidx = g_taskControllers[taskId].indexOf(controllerEntry);
             if (tidx !== -1) g_taskControllers[taskId].splice(tidx, 1);
         }
-        // ★ 上报 AI 服务可用度 (用户没启用时函数会立刻退出)
-        try {
-            var _elapsed = (Date.now() - __aistatusStartTs) / 1000;
-            var _endReason = __aiOutcome.success ? 'success' : _deduceEndReason(__aiOutcome.err);
-            reportAiUsage({
-                provider: provider,
-                modelName: requestModelName,
-                size: imageSize,
-                success: __aiOutcome.success,
-                elapsed: _elapsed,
-                endReason: _endReason,
-                errMsg: __aiOutcome.err ? (__aiOutcome.err.message || String(__aiOutcome.err)) : ''
-            });
-            // 用户改进计划: panel 端 telemetry 同时上报任务事件
-            // host 没法直接访问 window._telemetry, 通过 sendToPanel 转发
-            try {
-                if (typeof sendToPanel === 'function') {
-                    sendToPanel('telemetryTask', {
-                        feature: (options && options.feature) || 'single',
-                        provider: provider,
-                        model_type: _classifyModel(requestModelName, provider),
-                        size: imageSize,
-                        aspect_ratio: aspectRatio || null,
-                        batch_size: (options && options.batchSize) || 1,
-                        result: __aiOutcome.success ? 'success' : (_endReason === 'safetyFilter' ? 'safety' : (_endReason === 'userStop' ? 'cancel' : 'fail')),
-                        elapsed_bucket: _bucketElapsed(_elapsed),
-                        error_category: __aiOutcome.success ? null : _endReason
-                    });
-                }
-            } catch(_) {}
-        } catch (_) {}
     }
 }
 

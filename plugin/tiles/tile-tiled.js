@@ -419,8 +419,6 @@ function _doStart(container) {
     var conn = window._settingsGetActiveConnection(provider) || {};
     apiKey = conn.key || '';
     apiBaseUrl = conn.url || '';
-    if (!apiKey && conn._grsKeyPending) { TileAPI.toast('正在准备夏算力, 请稍后再试', 'info'); return; }
-    if (!apiKey && conn._grsNeedLogin) { TileAPI.toast('夏算力托管需要登录 (顶栏账号区), 或切回「自带 Key」', 'error'); return; }
   } else {
     apiKey = TileAPI.storage.get('connection.' + provider + '.key') || '';
     apiBaseUrl = TileAPI.storage.get('connection.' + provider + '.url') || '';

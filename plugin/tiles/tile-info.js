@@ -32,17 +32,7 @@ function _getComfyStatus() {
 }
 
 function _getForgeStatus() {
-  var src = TileAPI.storage.get('forge.activeSource') || 'local';
-  if (src === 'cloud') {
-    if (window._cloudIsReady && window._cloudIsReady()) {
-      var pts = (window._cloudGetPoints && window._cloudGetPoints()) || 0;
-      return { text: '云 · ' + pts + ' 积分', cls: 'ok' };
-    }
-    if (window._cloudIsLoggedIn && window._cloudIsLoggedIn()) {
-      return { text: '云 · 查询中', cls: 'warn' };
-    }
-    return { text: '云 · 未登录', cls: 'err' };
-  }
+  // 只有本地 Forge (原版的「云 Forge」已删除)
   var connected = TileAPI.state.get('forge.connected');
   var url = TileAPI.storage.get('forge.url') || '';
   if (connected) return { text: '本地 · ' + url, cls: 'ok' };
@@ -51,8 +41,7 @@ function _getForgeStatus() {
 }
 
 function _getApiStatus() {
-  // 走统一入口拿"当前真正生效"的连接(params.provider 优先; GRS 托管时用云端子 key 判断),
-  // 否则夏算力托管用户会被误显示成红色"未填写"(修 2026-07-04)
+  // 走统一入口拿"当前真正生效"的连接 (params.provider 优先; 只有自带 Key 模式)
   var conn = (typeof window._settingsGetActiveConnection === 'function')
     ? window._settingsGetActiveConnection() : null;
   var provider = (conn && conn.provider)
@@ -65,12 +54,6 @@ function _getApiStatus() {
   var dispName = TileAPI.slotLabel ? TileAPI.slotLabel(provider, defName) : defName;
   var keyText = key ? '已填写' : '未填写';
   var keyCls = key ? 'ok' : 'err';
-  if (provider === 'grs' && TileAPI.compute && TileAPI.compute.isUserByokActive && !TileAPI.compute.isUserByokActive()) {
-    // 托管(夏算力)模式: 本地 key 本来就该是空的, 按托管状态显示
-    if (key) { keyText = '托管中'; keyCls = 'ok'; }
-    else if (conn && conn._grsKeyPending) { keyText = '托管准备中'; keyCls = ''; }
-    else { keyText = '未登录'; keyCls = 'err'; }
-  }
   return {
     provider: dispName,
     key: keyText,
@@ -183,11 +166,6 @@ function _getPublicIp() {
   return TileAPI.state.get('info.publicIp') || null;  // { masked, time }
 }
 
-// 云 Forge 探测结果: { success, modelCount, error, time }
-function _getCloudForgeProbe() {
-  return TileAPI.state.get('info.cloudForgeProbe') || null;
-}
-
 function _getPsCompat() {
   var doc = _getDocInfo();
   var ver = doc.psVersion || '';
@@ -198,11 +176,6 @@ function _getPsCompat() {
   if (major >= 26) return { text: ver + ' ✓', cls: 'ok' };
   if (major >= 22) return { text: ver + ' (兼容)', cls: '' };
   return { text: ver + ' ⚠ 版本可能过低', cls: 'warn' };
-}
-
-function _getUserId() {
-  var user = TileAPI.storage.get('cloud.user') || {};
-  return user.email || user.nickname || '未登录云服务';
 }
 
 // ========== 磁贴正面 ==========
@@ -251,23 +224,10 @@ TileAPI.registerTile({
       TileAPI.sendToHost('fetchPublicIp', {});
     }
 
-    // 首次展开时探测云 Forge(只在已登录且有 URL 时)
-    // 10 分钟缓存,避免频繁探测影响云服务
-    var probe = TileAPI.state.get('info.cloudForgeProbe');
-    if (!probe || (Date.now() - probe.time) > 600000) {
-      var enc = (window._cloudGetForgeEncrypted && window._cloudGetForgeEncrypted()) || '';
-      if (enc) {
-        TileAPI.state.set('info.cloudForgeProbe', { probing: true, time: Date.now() });
-        TileAPI.sendToHost('cloudForgeProbe', { encrypted: enc });
-      }
-    }
-
     // 订阅各种状态变化,面板局部刷新
     var refresh = function() { _refreshDynamic(container, layout); };
     TileAPI.on('balance:updated', refresh);
     TileAPI.on('grs:creditsUpdated', refresh);
-    TileAPI.on('cloud:pointsReady', refresh);
-    TileAPI.on('forge:sourceChanged', refresh);
     TileAPI.on('refimages:updated', refresh);
     TileAPI.on('params:providerChanged', refresh);
     TileAPI.on('info:errorLogged', refresh);
@@ -283,8 +243,6 @@ TileAPI.registerTile({
     return function() {
       TileAPI.off('balance:updated', refresh);
       TileAPI.off('grs:creditsUpdated', refresh);
-      TileAPI.off('cloud:pointsReady', refresh);
-      TileAPI.off('forge:sourceChanged', refresh);
       TileAPI.off('refimages:updated', refresh);
       TileAPI.off('params:providerChanged', refresh);
       TileAPI.off('info:errorLogged', refresh);
@@ -305,21 +263,6 @@ TileAPI.registerTile({
         TileAPI.state.set('info.publicIp', { masked: data.ip, time: Date.now() });
       } else {
         TileAPI.state.set('info.publicIp', { masked: '获取失败', time: Date.now() });
-      }
-    }
-    if (action === 'cloudForgeProbeResult' && data) {
-      if (data.success) {
-        TileAPI.state.set('info.cloudForgeProbe', {
-          success: true,
-          modelCount: data.modelCount || 0,
-          time: Date.now()
-        });
-      } else {
-        TileAPI.state.set('info.cloudForgeProbe', {
-          success: false,
-          error: data.error || '连接失败',
-          time: Date.now()
-        });
       }
     }
   },
@@ -391,20 +334,12 @@ function _renderDynamicSection(layout) {
     // 紧凑版:只关键几条
     var rate = _getSuccessRate();
     var le = _getLastError();
-    var probeSq = _getCloudForgeProbe();
-    var probeText, probeCls;
-    if (!probeSq) { probeText = '未探测'; probeCls = ''; }
-    else if (probeSq.probing) { probeText = '探测中'; probeCls = ''; }
-    else if (probeSq.success) { probeText = probeSq.modelCount + ' 模型'; probeCls = 'ok'; }
-    else { probeText = '未连接'; probeCls = 'err'; }
-
     return '<div class="info-dyn" data-info-dyn>' +
       _row('Photoshop', doc.psVersion || '--') +
       _row('当前文档', doc.docName || '无') +
       _sep() +
       _row(api.provider + ' Key', api.key, api.keyCls) +
       _row('Forge', forge.text, forge.cls) +
-      _row('云 Forge', probeText, probeCls) +
       _sep() +
       _row('成功率', rate.rate + (rate.total ? ' (' + rate.success + '/' + rate.total + ')' : ''), rate.rate === '--' ? '' : (parseInt(rate.rate) >= 80 ? 'ok' : 'warn')) +
       _row('平均耗时', _getAvgDuration()) +
@@ -457,14 +392,6 @@ function _renderDynamicSection(layout) {
     _row(api.provider + ' URL', api.url, api.urlCls) +
     _row('Forge', forge.text, forge.cls) +
     _row('ComfyUI', comfy.text, comfy.cls) +
-    _row('云服务账号', _getUserId()) +
-    (function() {
-      var probe = _getCloudForgeProbe();
-      if (!probe) return _row('云 Forge', '未探测');
-      if (probe.probing) return _row('云 Forge', '探测中...');
-      if (probe.success) return _row('云 Forge', '已连接 · ' + probe.modelCount + ' 个模型', 'ok');
-      return _row('云 Forge', (probe.error || '未连接').slice(0, 50), 'err');
-    })() +
 
     '<div class="w10-section-title">余额/积分</div>' +
     _row((TileAPI.slotLabel ? TileAPI.slotLabel('aji', 'AJI') : 'AJI') + ' 余额', bal.aji) +
@@ -627,7 +554,6 @@ window._buildInfoSnapshot = function() {
   lines.push(pad('API厂商', api.provider));
   lines.push(pad('API密钥', api.key));
   lines.push(pad('API地址', api.url));
-  lines.push(pad('云账号', _getUserId()));
   lines.push('');
 
   // 余额

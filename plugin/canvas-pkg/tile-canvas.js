@@ -745,7 +745,6 @@ async function _execGenerate(n, cache, stack) {
 
   var conn = (typeof window._settingsGetActiveConnection === 'function') ? window._settingsGetActiveConnection(n.provider) : null;
   if (!conn) throw new Error('读不到服务商连接');
-  if (conn._grsKeyPending) throw new Error('算力 Key 正在准备, 稍候再运行');
   if (!conn.key) throw new Error((n.provider || '') + ' 没有 Key, 去顶栏/设置填一下');
 
   n.status = '生成中…'; _renderNodes();

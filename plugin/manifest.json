@@ -55,7 +55,7 @@
     "allowCodeGenerationFromStrings": true,
     "launchProcess": {
       "schemes": ["https", "http", "file"],
-      "extensions": [".bat", ".cmd", ""]
+      "extensions": [".bat", ".cmd"]
     },
     "network": { "domains": "all" },
     "webview": {

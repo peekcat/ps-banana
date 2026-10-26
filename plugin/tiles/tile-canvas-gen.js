@@ -38,26 +38,11 @@ TileAPI.onHostMessage('cvGenResolveAndRun', function(msg) {
     }
 
     if (!conn || !conn.key) {
-        // 检查是否是 GRS key 还在加载中
-        if (conn && conn._grsKeyPending) {
-            TileAPI.sendToHost('cvGenWriteResult', {
-                reqId: ipcReqId,
-                success: false,
-                error: '算力密钥正在加载中, 请稍后重试'
-            });
-        } else if (conn && conn._grsNeedLogin) {
-            TileAPI.sendToHost('cvGenWriteResult', {
-                reqId: ipcReqId,
-                success: false,
-                error: '夏算力托管需要登录 (主面板顶栏账号区), 或切回「自带 Key」'
-            });
-        } else {
-            TileAPI.sendToHost('cvGenWriteResult', {
-                reqId: ipcReqId,
-                success: false,
-                error: '没有可用的 API 密钥 (provider: ' + (provider || '未指定') + ')'
-            });
-        }
+        TileAPI.sendToHost('cvGenWriteResult', {
+            reqId: ipcReqId,
+            success: false,
+            error: '没有可用的 API 密钥 (provider: ' + (provider || '未指定') + '), 请到顶栏「算力配置」里填写'
+        });
         return;
     }
 

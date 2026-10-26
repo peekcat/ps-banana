@@ -801,9 +801,6 @@ function continueBoot() {
   }
 
   // 6.2.5 起 AJI URL 不再让用户填, 强制清掉老 storage 里的手填值 (一次性迁移, 静默)
-  if (window._ajiUrlMigration && typeof window._ajiUrlMigration.run === 'function') {
-    try { window._ajiUrlMigration.run(); } catch(e) { console.error('[aji-url-migration] error:', e); }
-  }
 
   // 布局快照引导: 单次弹窗 (storage 标记, 只弹一次). 延后最久, 避开迁移弹窗.
   try {

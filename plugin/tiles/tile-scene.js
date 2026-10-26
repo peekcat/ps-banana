@@ -632,8 +632,6 @@ function _generate(container) {
     var _conn = window._settingsGetActiveConnection(_state.provider) || {};
     apiKey = _conn.key || '';
     apiUrl = _conn.url || '';
-    if (!apiKey && _conn._grsKeyPending) { TileAPI.toast('正在准备夏算力, 请稍后再试', 'info'); return; }
-    if (!apiKey && _conn._grsNeedLogin) { TileAPI.toast('夏算力托管需要登录 (顶栏账号区), 或切回「自带 Key」', 'error'); return; }
   } else {
     apiKey = TileAPI.storage.get('connection.' + _state.provider + '.key') || '';
     apiUrl = TileAPI.storage.get('connection.' + _state.provider + '.url') || '';

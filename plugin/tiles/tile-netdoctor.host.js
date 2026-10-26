@@ -9,13 +9,12 @@
 //  探测层级:
 //    L1 公网基准(baidu/qq)          → 整机断网?
 //    L2 DNS对照(DoH权威 vs 本机解析) → DNS劫持/污染?
-//    L3 目标服务(AJI三线/夏三七服务器) → 哪家服务挂?
+//    L3 目标服务(AJI 三条线 / GRS / 墨墨) → 哪家服务挂?
 //    L4 错误指纹归类                → 超时/重置/证书/握手
 //  输出: 逐层结果 + 大白话结论, 发回面板(进日志+可复制)
 // ============================================================
 
 var HostAPI = require('../host/host-api.js');
-var serverConfig = require('../core/server-config.js');
 
 var TIMEOUT_MS = 6000;
 
@@ -88,7 +87,6 @@ HostAPI.registerAction('netDiagnose', async function(data, ctx) {
         { name: 'AJI 主线', url: 'https://ai.ajiai.top/favicon.ico' },
         { name: 'AJI 备线1', url: 'https://cn.ajiai.top/favicon.ico' },
         { name: 'AJI 备线2', url: 'https://ai.ajiapi.top/favicon.ico' },
-        { name: '夏三七正式服务器', url: serverConfig.url('/api/presets/manifest') },
         { name: 'GRS', url: 'https://grsai.dakka.com.cn/favicon.ico' },
         { name: '墨墨(momo)', url: 'https://api.momoapi.icu/favicon.ico' }
     ];
@@ -119,7 +117,7 @@ HostAPI.registerAction('netDiagnose', async function(data, ctx) {
         var altUp = [];
         if (svcResults[4] && svcResults[4].ok) altUp.push('GRS');
         if (svcResults[5] && svcResults[5].ok) altUp.push('墨墨');
-        verdict = 'AJI 三条线路全部不通(夏三七服务器是通的) — AJI 在维护或被你的网络屏蔽。'
+        verdict = 'AJI 三条线路全部不通, 但其他渠道是通的 — AJI 在维护或被你的网络屏蔽。'
             + (altUp.length ? '可临时切到 ' + altUp.join(' / ') + ' 渠道出图。' : '其他渠道也不通, 建议等恢复。');
     } else if (!dohRes.ok && internetOk) {
         verdict = '公网通但权威 DNS 查询失败 — 你的网络对 DNS 有限制(部分路由器/代理会封外部 DNS), 域名解析可能被劫持。插件大部分功能仍可用, 若出图报"域名解析失败"就是它。';

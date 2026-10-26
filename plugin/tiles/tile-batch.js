@@ -798,9 +798,7 @@ function _runBatch() {
 
   var conn = _getConn();
   if (!conn.key) {
-    if (conn._grsKeyPending) TileAPI.toast('正在准备夏算力, 请稍后再试', 'info');
-    else if (conn._grsNeedLogin) TileAPI.toast('夏算力托管需要登录 (顶栏账号区), 或切回「自带 Key」', 'error');
-    else TileAPI.toast('请先在设置中配置 API Key', 'error');
+    TileAPI.toast('请先在设置中配置 API Key', 'error');
     return;
   }
 

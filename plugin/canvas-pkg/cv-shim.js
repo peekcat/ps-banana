@@ -188,7 +188,7 @@ window.TileAPI = {
 
 // 生成委托用: 返回占位连接, 让 tile-canvas 的 key 校验通过; 真正的 key/账号在主插件侧 (走 IPC)
 window._settingsGetActiveConnection = function (provider) {
-    return { provider: provider || (state.get('params.provider') || 'aji'), url: '', key: '__DELEGATE__', _grsKeyPending: false };
+    return { provider: provider || (state.get('params.provider') || 'aji'), url: '', key: '__DELEGATE__' };
 };
 
 // 启动: 异步读存档, 读完 + registerTile 都就绪后挂载画布

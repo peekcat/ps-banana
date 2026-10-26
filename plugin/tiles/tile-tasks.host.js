@@ -494,18 +494,4 @@ HostAPI.registerAction('momoFetchModels', async function(params, ctx) {
     return true;
 }, { tileId: 'tasks' });
 
-// 墨墨「购买额度」链接: 从统一服务器配置拉后台 URL/文案
-HostAPI.registerAction('getMomoLink', async function(params, ctx) {
-    var rid = params.requestId;
-    try {
-        var resp = await serverConfig.fetchApi('/api/momo-link', { method: 'GET', cache: 'no-cache' });
-        if (!resp.ok) { ctx.sendToPanel('momoLinkResult', { requestId: rid, success: false, error: 'HTTP ' + resp.status }); return true; }
-        var j = await resp.json();
-        ctx.sendToPanel('momoLinkResult', { requestId: rid, success: true, url: (j && j.url) || '', title: (j && j.title) || '' });
-    } catch (e) {
-        ctx.sendToPanel('momoLinkResult', { requestId: rid, success: false, error: (e && e.message) || '网络连接失败' });
-    }
-    return true;
-}, { tileId: 'tasks' });
-
 module.exports = {};

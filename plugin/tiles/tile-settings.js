@@ -49,8 +49,8 @@ function _stopBalanceAutoRefresh() {
 var _SETTINGS_CAT_DEF = [
   { key: 'conn',  name: '生成 · 输出', titles: ['输出设置', '传回羽化', 'GPT-Image 高级设置'] },
   { key: 'ui',    name: '外观 · 交互', titles: ['外观', '音效', '快捷键'] },
-  { key: 'tools', name: '工具 · 信息', titles: ['余额追踪', '预设', '图片缓存', '公告'] },
-  { key: 'sys',   name: '隐私 · 调试', titles: ['用户改进计划', '调试'] }
+  { key: 'tools', name: '工具 · 信息', titles: ['余额追踪', '预设', '图片缓存'] },
+  { key: 'sys',   name: '隐私 · 调试', titles: ['调试'] }
 ];
 
 function _injectSettingsCatCss() {
@@ -202,7 +202,6 @@ TileAPI.registerTile({
   defaultSize: { w: 2, h: 2 },
 
   onExpand: function(container) {
-    var annHtml = TileAPI.state.get('announcement.html') || '';
     var provider = TileAPI.storage.get('connection.provider') || 'aji';
     var themeColor = TileAPI.storage.get('appearance.themeColor') || '#0078d4';
     var textMode = TileAPI.storage.get('appearance.textMode') || 'auto';
@@ -541,17 +540,6 @@ TileAPI.registerTile({
         '</div>' +
       '</div>' +
 
-      // ===== 9. 公告 (NEW) =====
-      '<div class="w10-section-title">\u516C\u544A</div>' +
-      '<div class="w10-row" style="flex-direction:column;align-items:stretch;">' +
-        '<div class="w10-announce" id="announceArea">' +
-          (annHtml ? _sanitizeAnn(annHtml) : '<span style="color:var(--text-sub);font-style:italic;">\u6682\u65E0\u516C\u544A</span>') +
-        '</div>' +
-        '<div style="margin-top:8px;text-align:right;">' +
-          '<button class="w10-btn" id="btnRefreshAnn">\u5237\u65B0</button>' +
-        '</div>' +
-      '</div>' +
-
       // ===== 10. 图片缓存 =====
       '<div class="w10-section-title">图片缓存</div>' +
       '<div class="w10-row">' +
@@ -564,16 +552,6 @@ TileAPI.registerTile({
       '</div>' +
 
       // ===== 11. 调试 =====
-      '<div class="w10-section-title">用户改进计划</div>' +
-      '<div class="w10-row">' +
-        '<div class="w10-row-left"><div class="w10-row-label">参加用户改进计划</div><div class="w10-row-desc">匿名上报使用数据帮我们改进插件 (默认关闭, 完全自愿)</div></div>' +
-        '<div class="w10-row-right"><div class="w10-toggle' + (TileAPI.storage.get('improvement.optedIn') === true ? ' on' : '') + '" id="togImprovement"></div></div>' +
-      '</div>' +
-      '<div class="w10-row" id="improvementDeviceIdRow"' + (TileAPI.storage.get('improvement.optedIn') === true ? '' : ' style="display:none"') + '>' +
-        '<div class="w10-row-left"><div class="w10-row-label">设备 ID</div><div class="w10-row-desc">本地随机生成, 不绑账号. 重置后服务端把你视作新用户</div></div>' +
-        '<div class="w10-row-right" style="display:flex;gap:6px;align-items:center"><span id="improvementDevId" style="font-family:ui-monospace,monospace;font-size:10px;color:var(--text-sub)">' + _esc((TileAPI.storage.get('improvement.deviceId') || '?').slice(0,12) + '...') + '</span><button class="w10-btn" id="setResetDevId" style="font-size:10px">重置</button></div>' +
-      '</div>' +
-
       '<div class="w10-section-title">调试</div>' +
       '<div class="w10-row">' +
         '<div class="w10-row-left"><div class="w10-row-label">教程调试模式</div><div class="w10-row-desc">开着 = 每次打开插件都自动弹新手教程(审稿/演示用); 关着 = 正常行为(新用户只弹一次)</div></div>' +
@@ -1084,15 +1062,6 @@ TileAPI.registerTile({
       TileAPI.sendToHost('openPresetFolder', {});
     });
 
-    // ========== 公告 事件 (NEW) ==========
-    TileAPI.sendToHost('cloudGetAnnouncement', {});
-
-    var btnRefAnn = container.querySelector('#btnRefreshAnn');
-    if (btnRefAnn) btnRefAnn.addEventListener('click', function() {
-      TileAPI.sendToHost('cloudGetAnnouncement', {});
-      TileAPI.toast('\u6B63\u5728\u83B7\u53D6\u516C\u544A...', 'info');
-    });
-
     // ========== 清除缓存 (existing) ==========
     var clearBtn = container.querySelector('#setClearCache');
     if (clearBtn) clearBtn.addEventListener('click', function() {
@@ -1103,29 +1072,6 @@ TileAPI.registerTile({
       });
     });
 
-    // ========== 用户改进计划 ==========
-    var togImp = container.querySelector('#togImprovement');
-    var devIdRow = container.querySelector('#improvementDeviceIdRow');
-    var devIdSpan = container.querySelector('#improvementDevId');
-    if (togImp) togImp.addEventListener('click', function() {
-      var nowOn = !togImp.classList.contains('on');
-      togImp.classList.toggle('on', nowOn);
-      if (nowOn) {
-        if (window._telemetry && window._telemetry.optIn) window._telemetry.optIn();
-        else TileAPI.storage.set('improvement.optedIn', true);
-        if (devIdRow) devIdRow.style.display = '';
-        if (devIdSpan) {
-          var did = (window._telemetry && window._telemetry.getDeviceId && window._telemetry.getDeviceId()) || TileAPI.storage.get('improvement.deviceId') || '?';
-          devIdSpan.textContent = did.slice(0, 12) + '...';
-        }
-        TileAPI.toast('已开启用户改进计划, 谢谢支持 ❤️', 'success');
-      } else {
-        if (window._telemetry && window._telemetry.optOut) window._telemetry.optOut();
-        else TileAPI.storage.set('improvement.optedIn', false);
-        if (devIdRow) devIdRow.style.display = 'none';
-        TileAPI.toast('已关闭用户改进计划, 后续不再上报', 'info');
-      }
-    });
     // --- 教程调试模式 (每次打开插件都弹教程; 持久开关, 默认关) ---
     var ttd = container.querySelector('#togTutorialDebug');
     if (ttd) ttd.addEventListener('click', function() {
@@ -1133,17 +1079,6 @@ TileAPI.registerTile({
       TileAPI.storage.set('tutorial.debugAlwaysShow', now);
       ttd.classList.toggle('on', now);
       TileAPI.toast(now ? '教程调试模式已开: 每次打开插件都会弹教程' : '已恢复正常: 教程不再每次自动弹', 'info');
-    });
-
-    var resetDevBtn = container.querySelector('#setResetDevId');
-    if (resetDevBtn) resetDevBtn.addEventListener('click', function() {
-      TileAPI.confirm('重置设备 ID?\n\n服务端会把你视作一个全新用户, 之前的所有数据无法关联回来.\n\n这个操作不可恢复.').then(function(ok) {
-        if (!ok) return;
-        if (window._telemetry && window._telemetry.resetDeviceId) window._telemetry.resetDeviceId();
-        var newDid = (window._telemetry && window._telemetry.getDeviceId && window._telemetry.getDeviceId()) || '?';
-        if (devIdSpan) devIdSpan.textContent = newDid.slice(0, 12) + '...';
-        TileAPI.toast('设备 ID 已重置: ' + newDid.slice(0, 8) + '...', 'success');
-      });
     });
 
     // ========== 图片缓存 ==========
@@ -1252,15 +1187,6 @@ TileAPI.registerTile({
         TileAPI.toast('额度查询失败', 'error');
       }
     }
-    // 公告
-    if (action === 'announcementResult' || action === 'cloudAnnouncementResult') {
-      var html = (data && (data.html || data.content)) || '';
-      TileAPI.state.set('announcement.html', html);
-      var area = document.querySelector('#announceArea');
-      if (area) {
-        area.innerHTML = html ? _sanitizeAnn(html) : '<span style="color:var(--text-sub);font-style:italic;">\u6682\u65E0\u516C\u544A</span>';
-      }
-    }
   },
 
   onStorageLoaded: function(storage) {
@@ -1298,11 +1224,6 @@ TileAPI.registerTile({
 function _esc(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-// 公告 HTML 清洗(去 script/on*/危险协议); 走 TileAPI.sanitizeHtml, 缺失时兜底纯文本转义
-function _sanitizeAnn(html) {
-  if (window.TileAPI && typeof TileAPI.sanitizeHtml === 'function') return TileAPI.sanitizeHtml(html);
-  return _esc(html);
 }
 function _clampInt(v, min, max) {
   v = Math.round(v);
@@ -1381,8 +1302,7 @@ function _populateSoundSelects(data) {
 // 取连接配置 (URL + Key).
 //   不传参 → 用全局当前 provider (params.provider / connection.provider)
 //   传 forceProvider → 按指定 provider 取 (灯光/相机磁贴有自己的 provider 选择)
-// GRS 双路径 (BYOK / 夏算力托管) 由本函数统一处理, 调用方拿到 key 就直接用.
-//   _grsKeyPending: true 表示已登录但 sub-key 还在异步拉, 调用方可显示"准备中"
+// 只有自带 Key 模式: 直接用用户自己填的 connection.<provider>.url / .key
 window._settingsGetActiveConnection = function(forceProvider) {
   var provider = forceProvider
     || TileAPI.state.get('params.provider')
@@ -1394,40 +1314,7 @@ window._settingsGetActiveConnection = function(forceProvider) {
   if (provider === 'momo') {
     url = 'https://api.momoapi.icu';
   }
-  var grsKeyPending = false;
-  var grsNeedLogin = false;
-  // GRS 双路径:
-  //   1) BYOK (用户填了 connection.grs.key 且没在云服务里关掉) → 用他自己的, 不碰云端 sub-key
-  //   2) proxy (没填 / 在云服务里关了开关 ⇒ 走"夏算力"的免配置路径) → 用后台分给他的 sub-key
-  // 切换开关: connection.grs.use_byok (TileAPI.compute.isUserByokActive 统一判定)
-  if (provider === 'grs') {
-    var byokActive = (window.TileAPI && TileAPI.compute && TileAPI.compute.isUserByokActive)
-      ? TileAPI.compute.isUserByokActive() : !!key;
-    if (!byokActive) {
-      // 走 proxy: 忽略本地填的 key (如果有), 改用云端 sub-key
-      key = '';
-      var cs = (window.TileAPI && TileAPI.compute && TileAPI.compute.getState) ? TileAPI.compute.getState() : null;
-      var subKey = cs ? cs.key : '';
-      if (subKey) {
-        key = subKey;
-      } else if (window._cloudIsLoggedIn && window._cloudIsLoggedIn()) {
-        // 已登录但 sub-key 还没拿到 → 后台异步拉一次, 给调用方一个"准备中"标记
-        grsKeyPending = true;
-        if (TileAPI.compute && TileAPI.compute.getKey) TileAPI.compute.getKey().catch(function(){});
-      } else {
-        // 托管模式但没登录(登出后 sub-key 已清) → 提示登录, 而不是误导用户去填 key
-        // (托管模式下本地 key 会被忽略, 照老提示去填也没用)
-        grsNeedLogin = true;
-      }
-    }
-  }
-  return {
-    provider: provider,
-    url: url,
-    key: key,
-    _grsKeyPending: grsKeyPending,
-    _grsNeedLogin: grsNeedLogin
-  };
+  return { provider: provider, url: url, key: key };
 };
 
 window._settingsCheckBalance = function() {

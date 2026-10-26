@@ -264,77 +264,34 @@ TileAPI.registerTile({
     if (url) TileAPI.state.set('forge.url', url);
     TileAPI.state.set('forge.connected', false);
     TileAPI.state.set('forge.running', false);
-    // 恢复算力源选择(默认本地)
-    var src = storage.get('forge.activeSource') || 'local';
-    TileAPI.state.set('forge.activeSource', src);
+    // 只有本地 Forge, 不再有算力源切换
+    storage.set('forge.activeSource', 'local');
+    TileAPI.state.set('forge.activeSource', 'local');
   },
 });
 
 // ========== Layouts ==========
 
-// ===== 算力源 helpers =====
+// ===== Forge helpers (只有本地 Forge) =====
+// 兼容老调用: 现在算力源固定为本地
 function _getActiveSource() {
-  return TileAPI.storage.get('forge.activeSource') || 'local';
+  return 'local';
 }
-function _isCloudReady() {
-  return !!(window._cloudIsReady && window._cloudIsReady());
-}
-function _getCloudEncrypted() {
-  return (window._cloudGetForgeEncrypted && window._cloudGetForgeEncrypted()) || '';
-}
-// 生成中禁止切源;读共享 state
+// 生成中禁止切换;读共享 state
 function _isGenerating() {
   return !!TileAPI.state.get('forge.running');
 }
-// 统一拿当前源对应的 fetch 参数 (用于传给 host)
+// 拿本地 Forge 的 fetch 参数 (用于传给 host)
 function _getSourceFetchParams() {
-  if (_getActiveSource() === 'cloud') {
-    var enc = _getCloudEncrypted();
-    return enc ? { encrypted: enc } : null;
-  }
   var u = (TileAPI.storage.get('forge.url') || '').replace(/\/$/, '');
   return u ? { url: u } : null;
 }
 
-// 切换算力源:清状态 + 重拉资源 + 广播
-function _switchSource(newSrc) {
-  if (newSrc !== 'local' && newSrc !== 'cloud') return;
-  TileAPI.storage.set('forge.activeSource', newSrc);
-  TileAPI.state.set('forge.activeSource', newSrc);
-
-  // 切源 → 清掉旧的资源缓存(决策:不缓存,每次重拉)
-  TileAPI.state.set('forge.models', []);
-  TileAPI.state.set('forge.samplers', []);
-  TileAPI.state.set('forge.cnModules', []);
-  TileAPI.state.set('forge.cnModels', []);
-  TileAPI.state.set('forge.loras', []);
-
-  TileAPI.emit('forge:sourceChanged', { source: newSrc });
-
-  // 重绘面板(包括源开关状态 + 隐藏/显示 URL 输入栏)
-  if (_activeContainer) {
-    // 用容器实际尺寸 + forge 自己的分类算 layout,不读 _layoutType
-    // (_layoutType 被 core 引擎覆盖,可能是 core _calcLayout 给的不准确分类)
-    var w = _activeContainer.clientWidth || 0;
-    var h = _activeContainer.clientHeight || 0;
-    var layout = w > 0 ? _recalcForgeLayout(w, h) : 'wide';
-    _triggerReRender(_activeContainer, layout);
-  }
-
-  // 拉取新源的资源
-  _fetchResourcesForCurrentSource();
-}
-
-// 根据当前源拉 models/samplers/lora/cn
+// 拉取 Forge 的资源 (models/samplers/lora/cn)
 function _fetchResourcesForCurrentSource() {
   var params = _getSourceFetchParams();
   if (!params) {
-    // 云源但未登录/未查积分 → 不发请求,toast 警告
-    if (_getActiveSource() === 'cloud') {
-      TileAPI.toast('云 Forge 不可用:请先登录并等待积分查询', 'error');
-    } else {
-      TileAPI.toast('本地 Forge 未设置 URL', 'error');
-    }
+    TileAPI.toast('本地 Forge 未设置 URL', 'error');
     return;
   }
   TileAPI.sendToHost('forgeFetchModels', params);
@@ -360,37 +317,12 @@ function _triggerReRender(container, layout) {
 }
 
 function _renderSourceBar() {
-  var src = _getActiveSource();
-  var cloudReady = _isCloudReady();
-  var cloudPoints = (window._cloudGetPoints && window._cloudGetPoints()) || 0;
-  var cloudStatusHtml = '';
-  if (src === 'cloud') {
-    if (cloudReady) {
-      cloudStatusHtml = '<span class="forge-source-status forge-source-status-ok">✓ 云 Forge · ' + cloudPoints + ' 积分</span>';
-    } else if (window._cloudIsLoggedIn && window._cloudIsLoggedIn()) {
-      cloudStatusHtml = '<span class="forge-source-status forge-source-status-warn">⚠ 云服务积分查询中</span>';
-    } else {
-      cloudStatusHtml = '<span class="forge-source-status forge-source-status-warn">⚠ 未登录云服务</span>';
-    }
-  }
-  var disabled = _isGenerating() ? ' disabled' : '';
-  return '' +
-    '<div class="forge-source-bar">' +
-      '<span class="forge-source-label">算力源</span>' +
-      '<div class="forge-source-toggle">' +
-        '<button class="forge-source-btn' + (src === 'local' ? ' active' : '') + '" data-source="local"' + disabled + '>本地</button>' +
-        '<button class="forge-source-btn' + (src === 'cloud' ? ' active' : '') + '" data-source="cloud"' + disabled + '>云</button>' +
-      '</div>' +
-      cloudStatusHtml +
-    '</div>';
+  // 只有本地 Forge, 原版的「本地 / 云」切换栏已删除
+  return '';
 }
 
 function _renderConnectionBar() {
   var url = TileAPI.storage.get('forge.url') || 'http://127.0.0.1:7860';
-  // 云源模式:隐藏本地连接栏(URL 用户看不到,按钮无意义)
-  if (_getActiveSource() === 'cloud') {
-    return '';
-  }
   return '' +
     '<div class="forge-connection-bar">' +
       '<input class="w10-input forge-url-input" id="forgeUrl" placeholder="http://127.0.0.1:7860" value="' + _esc(url) + '">' +
@@ -598,20 +530,11 @@ function _renderSquare(container) {
 
 // --- WideShort layout (w>=3, h=1) ---
 function _renderWideShort(container) {
-  var src = _getActiveSource();
-  var urlInputHtml = (src === 'local')
-    ? '<input class="w10-input forge-url-input" id="forgeUrl" placeholder="http://127.0.0.1:7860" value="' + _esc(TileAPI.storage.get('forge.url') || 'http://127.0.0.1:7860') + '" style="max-width:200px;">' +
-      '<button class="w10-btn w10-btn-accent" id="forgeConnectBtn">连接</button>'
-    : '';
-  var disabled = _isGenerating() ? ' disabled' : '';
   container.innerHTML =
     '<div class="w10-panel forge-panel forge-layout-wideshort">' +
       '<div class="forge-wideshort-strip">' +
-        '<div class="forge-source-toggle forge-source-toggle-mini">' +
-          '<button class="forge-source-btn' + (src === 'local' ? ' active' : '') + '" data-source="local"' + disabled + '>本地</button>' +
-          '<button class="forge-source-btn' + (src === 'cloud' ? ' active' : '') + '" data-source="cloud"' + disabled + '>云</button>' +
-        '</div>' +
-        urlInputHtml +
+        '<input class="w10-input forge-url-input" id="forgeUrl" placeholder="http://127.0.0.1:7860" value="' + _esc(TileAPI.storage.get('forge.url') || 'http://127.0.0.1:7860') + '" style="max-width:200px;">' +
+        '<button class="w10-btn w10-btn-accent" id="forgeConnectBtn">连接</button>' +
         '<span class="forge-status" id="forgeStatus">--</span>' +
         '<select class="w10-select" id="forgePresetSelect" style="max-width:180px;"><option value="">预设</option></select>' +
         '<button class="w10-btn w10-btn-accent forge-generate-btn" id="forgeGenerateBtn">生成</button>' +
@@ -635,21 +558,6 @@ function _renderWideShort(container) {
 function _bindCoreEvents(container) {
   // 可折叠分组: 标题点击折叠/展开
   _bindForgeGroups(container);
-  // --- 算力源切换 ---
-  var srcBtns = container.querySelectorAll('.forge-source-btn');
-  for (var si = 0; si < srcBtns.length; si++) {
-    srcBtns[si].addEventListener('click', function(e) {
-      e.stopPropagation();
-      var target = this.getAttribute('data-source');
-      if (_isGenerating()) {
-        TileAPI.toast('生成中不可切换算力源', 'info');
-        return;
-      }
-      if (target === _getActiveSource()) return;  // 已是当前源
-      _switchSource(target);
-    });
-  }
-
   // --- Connection ---
   var connectBtn = container.querySelector('#forgeConnectBtn');
   if (connectBtn) connectBtn.addEventListener('click', function() {
@@ -682,23 +590,11 @@ function _bindCoreEvents(container) {
       return;
     }
 
-    // 算力源路由 + 前置检查
+    // 前置检查: 必须有本地 Forge URL
     var sourceParams = _getSourceFetchParams();
     if (!sourceParams) {
-      if (_getActiveSource() === 'cloud') {
-        TileAPI.toast('云 Forge 不可用:请先登录并等待积分查询', 'error');
-      } else {
-        TileAPI.toast('请先在本地栏输入 Forge URL 并连接', 'error');
-      }
+      TileAPI.toast('请先在本地栏输入 Forge URL 并连接', 'error');
       return;
-    }
-    // 云源额外检查:积分必须 > 0
-    if (_getActiveSource() === 'cloud') {
-      var pts = (window._cloudGetPoints && window._cloudGetPoints()) || 0;
-      if (pts <= 0) {
-        TileAPI.toast('云服务积分为 0,无法生成,请充值', 'error');
-        return;
-      }
     }
 
     // Gather LoRA string
@@ -774,17 +670,10 @@ function _bindCoreEvents(container) {
       cnWeight: cnWeight,
       presetTitle: TileAPI.state.get('prompt.lastPresetTitle') || ''   // 缓存文件夹命名用
     };
-    // 注入源路由参数
-    if (sourceParams.encrypted) payload.encrypted = sourceParams.encrypted;
+    // 注入本地 Forge 地址
     if (sourceParams.url) payload.url = sourceParams.url;
-    payload.source = _getActiveSource();
-    // 云端走扣分通道(cloudForgeImg2Img 先扣分再生成,errno:4 时拦死 0 积分)
-    // 本地直发 forgeImg2Img(不扣分)
-    if (payload.source === 'cloud') {
-      TileAPI.sendToHost('cloudForgeImg2Img', payload);
-    } else {
-      TileAPI.sendToHost('forgeImg2Img', payload);
-    }
+    payload.source = 'local';
+    TileAPI.sendToHost('forgeImg2Img', payload);
 
     // 写入统一任务池 (engine:'forge' 让任务磁贴/历史磁贴识别)
     var presetTitle = TileAPI.state.get('prompt.lastPresetTitle') || '';
@@ -1660,14 +1549,10 @@ window._forgeStartGenerateViaRun = function(opts) {
   var taskId = opts.taskId;
   if (!taskId) return { ok: false, error: '缺 taskId' };
 
-  // 前置: 连接 + 云积分检查 (同独立按钮)
-  if (_getActiveSource() === 'cloud') {
-    var pts = (window._cloudGetPoints && window._cloudGetPoints()) || 0;
-    if (pts <= 0) return { ok: false, error: '云服务积分为 0,请充值' };
-  }
+  // 前置: 必须有本地 Forge URL
   var sourceParams = _getSourceFetchParams();
   if (!sourceParams) {
-    return { ok: false, error: _getActiveSource() === 'cloud' ? '云 Forge 不可用,请登录并等积分查询' : '请先连接本地 Forge URL' };
+    return { ok: false, error: '请先连接本地 Forge URL' };
   }
 
   var effectivePrompt = TileAPI.storage.get('forge.positivePrompt') || '';
@@ -1713,17 +1598,11 @@ window._forgeStartGenerateViaRun = function(opts) {
     cnWeight: cnEnabled ? cnUnits[0].weight : 1,
     presetTitle: TileAPI.state.get('prompt.lastPresetTitle') || ''   // 缓存文件夹命名用
   };
-  if (sourceParams.encrypted) payload.encrypted = sourceParams.encrypted;
   if (sourceParams.url) payload.url = sourceParams.url;
-  payload.source = _getActiveSource();
+  payload.source = 'local';
 
   TileAPI.state.set('forge.running', true);
-  // 云端走扣分通道, 本地直发(同独立按钮路径)
-  if (payload.source === 'cloud') {
-    TileAPI.sendToHost('cloudForgeImg2Img', payload);
-  } else {
-    TileAPI.sendToHost('forgeImg2Img', payload);
-  }
+  TileAPI.sendToHost('forgeImg2Img', payload);
   return {
     ok: true,
     batchSize: payload.batchSize,
@@ -1768,62 +1647,6 @@ TileAPI.on('forge:applyPreset', function(data) {
 
 // ========== 监听 提示词磁贴 对 forge 正向/反向提示词的编辑 ==========
 // 用户在提示词磁贴里改动时,把修改同步进 forge storage + DOM
-// 云服务积分就绪时:若当前是云源,自动补刷资源 + 重绘源栏
-TileAPI.on('cloud:pointsReady', function() {
-  if (_getActiveSource() !== 'cloud') {
-    // 非云源:仅当下一次 render 时更新源栏上显示的积分
-    if (_activeContainer) _refreshSourceBarOnly(_activeContainer);
-    return;
-  }
-  _fetchResourcesForCurrentSource();
-  if (_activeContainer) _refreshSourceBarOnly(_activeContainer);
-});
-
-// 更新源栏(显示积分变化/状态变化),不重建整个面板
-function _refreshSourceBarOnly(container) {
-  if (!container) return;
-  var old = container.querySelector('.forge-source-bar');
-  if (!old) return;
-  var tmp = document.createElement('div');
-  tmp.innerHTML = _renderSourceBar().trim();
-  var newEl = tmp.firstChild;
-  if (newEl) {
-    old.parentNode.replaceChild(newEl, old);
-    // 重新绑源按钮
-    var btns = newEl.querySelectorAll('.forge-source-btn');
-    for (var si = 0; si < btns.length; si++) {
-      btns[si].addEventListener('click', function(e) {
-        e.stopPropagation();
-        var target = this.getAttribute('data-source');
-        if (_isGenerating()) { TileAPI.toast('生成中不可切换算力源', 'info'); return; }
-        if (target === _getActiveSource()) return;
-        _switchSource(target);
-      });
-    }
-  }
-}
-
-// 多 forge 服务器列表/选中变更 (顶栏切了服务器): 清缓存 + 重拉资源, 同时刷新源栏状态文字
-TileAPI.on('cloud:forgeUrlListChanged', function() {
-  // 首次拿到云 forge 服务器列表 → 自动切到云模式 (只触发一次, 之后用户手动切回本地不再被打扰)
-  var list = (window._cloudGetForgeUrlList && window._cloudGetForgeUrlList()) || [];
-  if (list.length > 0 && !TileAPI.storage.get('forge.autoSwitchedOnce')) {
-    TileAPI.storage.set('forge.autoSwitchedOnce', true);
-    if (_getActiveSource() === 'local' && !_isGenerating()) {
-      _switchSource('cloud');
-      return;  // _switchSource 已经清缓存+重拉+刷新 UI
-    }
-  }
-  if (_getActiveSource() !== 'cloud') return;
-  TileAPI.state.set('forge.models', []);
-  TileAPI.state.set('forge.samplers', []);
-  TileAPI.state.set('forge.cnModules', []);
-  TileAPI.state.set('forge.cnModels', []);
-  TileAPI.state.set('forge.loras', []);
-  _fetchResourcesForCurrentSource();
-  if (_activeContainer) _refreshSourceBarOnly(_activeContainer);
-});
-
 TileAPI.on('forge:syncFromPrompt', function(data) {
   if (!data) return;
   if (typeof data.positivePrompt === 'string') {

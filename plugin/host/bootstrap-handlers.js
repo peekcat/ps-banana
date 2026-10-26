@@ -1,4 +1,3 @@
-var serverConfig = require('../core/server-config.js');
 
 async function handleBootstrapAction(action, data, ctx) {
     switch (action) {
@@ -99,20 +98,15 @@ async function handleBootstrapAction(action, data, ctx) {
             return true;
 
         case 'validateAjiKey':
-            // 拉服务器 AJI URL 列表 + 跑赛马 (并发查余额, 选最快可用的)
-            // 用户填错 URL 的根本性救星: URL 不再让用户填, 全部由服务端下发
-            //
-            // 容灾: 3 级降级
-            //   1. 服务器 /api/aji-urls 拿最新列表  (主路径)
-            //   2. 服务器拉不到 → 用 panel 传过来的本地缓存 (data.cachedUrlList)
-            //   3. 缓存也没有 → 用代码里硬编码的 FALLBACK_URLS
-            // 任一级别有列表就开赛马, 拿到最快可用的 URL
+            // AJI 地址赛马: 并发查余额, 选最快可用的
+            // 原版会先从作者服务器拉最新地址列表; 去云化后地址来源只有两级:
+            //   1. panel 传过来的本地缓存 (data.cachedUrlList)
+            //   2. 代码里硬编码的 FALLBACK_URLS
             //
             // 赛马成功时, urlList 会回传给 panel, panel 存到 storage 当下次缓存
             (async function() {
                 var FETCH_TIMEOUT = 8000;       // 单个 URL 查余额超时
                 var TOTAL_TIMEOUT = 12000;      // 整体赛马超时
-                var URL_LIST_TIMEOUT = 5000;    // 拉服务器列表的超时, 单独短一点, 服务器死了就快速降级
 
                 // 硬编码兜底列表 — 服务器和本地缓存都没有时的最后救命稻草
                 // 顺序无所谓, 反正赛马会挑最快的
@@ -129,58 +123,24 @@ async function handleBootstrapAction(action, data, ctx) {
                     return;
                 }
 
-                ctx.logToPanel('[AJI 校验] 开始, 拉取服务器 URL 列表...', 'info');
+                ctx.logToPanel('[AJI 校验] 开始, 用本地缓存 + 内嵌地址列表...', 'info');
 
-                // 1. 拉服务器 URL 列表
-                //    硬超时双保险: AbortController + Promise.race。
-                //    万一某环境(如部分 Mac)abort 对卡死连接不生效, Promise.race 也能在
-                //    URL_LIST_TIMEOUT 后放行, 绝不让这一步把整个校验冻死。
-                var serverUrls = [];
-                try {
-                    var listAbort = new AbortController();
-                    var listTimer = setTimeout(function() { try { listAbort.abort(); } catch(_) {} }, URL_LIST_TIMEOUT);
-                    var listFetchP = serverConfig.fetchApi('/api/aji-urls', { method: 'GET', cache: 'no-cache', signal: listAbort.signal })
-                        .then(function(resp) {
-                            if (!resp.ok) throw new Error('HTTP ' + resp.status);
-                            return resp.json();
-                        });
-                    var listGuardP = new Promise(function(resolve) {
-                        setTimeout(function() { resolve({ __timeout: true }); }, URL_LIST_TIMEOUT + 200);
-                    });
-                    var listJson = await Promise.race([listFetchP, listGuardP]);
-                    clearTimeout(listTimer);
-                    if (listJson && listJson.__timeout) {
-                        ctx.logToPanel('[AJI 校验] 拉服务器 URL 列表超时, 跳过, 直接用缓存+兜底', 'warn');
-                    } else if (listJson && Array.isArray(listJson.urls)) {
-                        for (var i = 0; i < listJson.urls.length; i++) {
-                            if (listJson.urls[i] && typeof listJson.urls[i].url === 'string') {
-                                serverUrls.push(listJson.urls[i].url);
-                            }
-                        }
-                    }
-                } catch(listErr) {
-                    ctx.logToPanel('[AJI 校验] 服务器拉 URL 列表失败: ' + (listErr.message || listErr) + ' — 用缓存+兜底', 'warn');
-                }
-
-                // 2. 把 服务器名单 + 本地缓存 + 写死兜底 全部凑成一个候选池, 去重后一起赛马。
-                //    ★ 关键修复: 兜底不再是"名单拿不到才用", 而是"永远参赛"。
-                //    这样即使服务器给的地址在某些机器(如部分 Mac 网络)上连不上,
-                //    那几个公认能用的兜底地址也在赛道里, 照样能赢出来, 不会整体判失败。
+                // 1. 候选来源: 本地缓存 + 内嵌兜底 (没有服务器名单了)
                 var cachedUrls = (data && Array.isArray(data.cachedUrlList)) ? data.cachedUrlList : [];
                 var urls = [];
                 var _seen = {};
-                [serverUrls, cachedUrls, FALLBACK_URLS].forEach(function(group) {
+                [cachedUrls, FALLBACK_URLS].forEach(function(group) {
                     (group || []).forEach(function(u) {
                         if (u && typeof u === 'string' && !_seen[u]) { _seen[u] = 1; urls.push(u); }
                     });
                 });
 
                 if (urls.length === 0) {
-                    ctx.sendToPanel('ajiValidateResult', { success: false, error: '无任何可用 URL (服务器/缓存/兜底全空), 请联系作者' });
-                    ctx.logToPanel('[AJI 校验] 所有来源都没拿到 URL', 'error');
+                    ctx.sendToPanel('ajiValidateResult', { success: false, error: '没有任何可用的 AJI 地址' });
+                    ctx.logToPanel('[AJI 校验] 没有候选地址', 'error');
                     return;
                 }
-                ctx.logToPanel('[AJI 校验] 候选池 ' + urls.length + ' 个 (服务器 ' + serverUrls.length + ' + 缓存 ' + cachedUrls.length + ' + 兜底 ' + FALLBACK_URLS.length + ', 已去重), 开始赛马...', 'info');
+                ctx.logToPanel('[AJI 校验] 候选池 ' + urls.length + ' 个 (缓存 ' + cachedUrls.length + ' + 兜底 ' + FALLBACK_URLS.length + ', 已去重), 开始赛马...', 'info');
 
                 // 4. 赛马: 并发查余额, 第一个返回合法 JSON 的胜出
                 //    AJI 余额接口: GET {url}/api/usage/token, 返回 data.data.total_available
@@ -282,8 +242,7 @@ async function handleBootstrapAction(action, data, ctx) {
 
                 if (winners.length > 0) {
                     var w = winners[0];
-                    var winnerSource = (serverUrls.indexOf(w.url) !== -1) ? 'server'
-                                     : (cachedUrls.indexOf(w.url) !== -1 ? 'cache' : 'fallback');
+                    var winnerSource = (cachedUrls.indexOf(w.url) !== -1) ? 'cache' : 'fallback';
                     ctx.logToPanel('[AJI 校验] ✓ 选中 ' + w.url + ' (' + w.latency + 'ms, 余额 $' + w.balanceUSD.toFixed(4) + '), 候选 ' + winners.length + '/' + urls.length + ' 通过, 中选来源: ' + winnerSource, 'success');
                     ctx.sendToPanel('ajiValidateResult', {
                         success: true,
@@ -291,9 +250,7 @@ async function handleBootstrapAction(action, data, ctx) {
                         latency: w.latency,
                         balanceUSD: w.balanceUSD,
                         urlSource: winnerSource,
-                        // 服务器名单非空就回给 panel 当下次缓存(保持缓存=最新的服务器名单);
-                        // 没拿到服务器名单则回 null, 不覆盖已有缓存
-                        urlList: (serverUrls.length > 0) ? serverUrls.slice() : null
+                        urlList: null
                     });
                     return;
                 }
@@ -309,7 +266,7 @@ async function handleBootstrapAction(action, data, ctx) {
                 var has403 = results.some(function(r) { return /HTTP 403/.test(r.error || ''); });
                 var hintMsg;
                 if (has403) {
-                    hintMsg = '校验被服务器策略拦截(403, 常见于 Mac / 代理网络), 非 Key 问题, 已用应急地址放行';
+                    hintMsg = '校验被服务商策略拦截(403, 常见于 Mac / 代理网络), 非 Key 问题, 已用应急地址放行';
                 } else if (has401) {
                     hintMsg = '校验返回 401, 已用应急地址放行; 若生成报鉴权错请检查 Key 是否填对';
                 } else {

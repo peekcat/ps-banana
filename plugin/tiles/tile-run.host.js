@@ -274,7 +274,7 @@ async function _ensureSmallEnough(b64, ctx, idx) {
 }
 
 // 把所有 pending 占位转 failed — 用在 jobPromises 启动前的前置步骤失败时
-// (比如 GRS-GPT 临时图床上传挂了 / 参考图缺失 / cpolar 抽风 ...).
+// (比如 GRS-GPT 临时图床上传挂了 / 参考图缺失 / 网络抽风 ...).
 // 没这个的话, 前置失败会让任务"静默消失", 用户既看不到回收站红卡也看不到对话式生成记录.
 async function _failAllPending(ctx, archMetas, errMsg) {
     if (!Array.isArray(archMetas) || archMetas.length === 0) return;
@@ -632,7 +632,7 @@ HostAPI.registerAction('runSingle', async function(params, ctx) {
                 await _failAllPending(ctx, _archMetas, 'GRS+GPT-Image 模式需要至少一张图作为参考');
                 throw new Error('GRS+GPT-Image 模式需要至少一张图作为参考');
             }
-            // 强制压缩: 任何 > 1.2 MB 的图都重压, 避免 cpolar 转发时 502 / server 端 413 (上限 2 MB)
+            // 强制压缩: 任何 > 1.2 MB 的图都重压, 避免中转层 502 / server 端 413 (上限 2 MB)
             ctx.logToPanel('[GRS] 检查 ' + _allRefs.length + ' 张图体积...', 'info');
             for (var _ci = 0; _ci < _allRefs.length; _ci++) {
                 _allRefs[_ci].base64 = await _ensureSmallEnough(_allRefs[_ci].base64, ctx, _ci);

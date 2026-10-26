@@ -466,9 +466,7 @@ function _startGenerate() {
   if (!prompt.trim()) { TileAPI.toast('提示词是空的 — 先在提示词磁贴里写上要做什么', 'error'); return; }
   var conn = window._settingsGetActiveConnection ? window._settingsGetActiveConnection() : null;
   if (!conn || !conn.key) {
-    if (conn && conn._grsKeyPending) TileAPI.toast('正在准备夏算力, 请稍后再试', 'info');
-    else if (conn && conn._grsNeedLogin) TileAPI.toast('夏算力托管需要登录 (顶栏账号区), 或切回「自带 Key」', 'error');
-    else TileAPI.toast('请先在顶栏配置 API Key', 'error');
+    TileAPI.toast('请先在顶栏配置 API Key', 'error');
     return;
   }
 
