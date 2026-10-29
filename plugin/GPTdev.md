@@ -3,6 +3,10 @@
 > Generated for the current UXP plugin workspace on 2026-06-10.
 > This file is a source-oriented map for future GPT/Codex development work.
 > It summarizes the live codebase, with `_dev/` notes cross-checked against current source where possible.
+>
+> **去云化后的状态（2026-10-29）**：账号、积分、充值、夏算力托管、云 Forge、公告、客服、自动更新、
+> 预设云同步、DLSS、Qwen2.1、遥测已从代码中删除。本文里对应的条目已清理；其余仍是 6.6.4 的
+> 历史描述，整体重写留到阶段 D（见 `docs/Windows任务/开发交接.md`）。
 
 ## 0A. Coverage Scope and Verification
 
@@ -48,7 +52,8 @@ Verification passes used for this map:
 
 Full scoped inventory:
 
-- root (11): `builtin_roles.json`, `index.html`, `index.js`, `install_browser.bat`, `install_satellite.bat`, `login-service.js`, `manifest.json`, `panel.html`, `update_plugin.bat`, `wheelchair-tutorial.html`, `workflow-engine.js`.
+- root (9): `builtin_roles.json`, `index.html`, `index.js`, `install_browser.bat`, `install_satellite.bat`, `manifest.json`, `panel.html`, `wheelchair-tutorial.html`, `workflow-engine.js`.
+  - 另有打包产物 `browser-pkg.zip` / `satellite-pkg.zip` 与本文件 `GPTdev.md`，不计入运行时清单。
 - `_dev` templates (3): `_TEMPLATE.css`, `_TEMPLATE.host.js`, `_TEMPLATE.js`.
 - `core` (13): `app.js`, `aspect-warn.js`, `dock.js`, `emoji-pack.js`, `group-manager.js`, `message-bridge.js`, `storage-manager.js`, `telemetry.js`, `theme-engine.js`, `tile-api.js`, `tile-engine.js`, `ui-kit.js`, `ui-tooltip.js`.
 - `defaults` (6): `aji-url-migration.js`, `default-layout.js`, `default-layout.json`, `layout-migration.js`, `timeout-migration.js`, `v5-data-migration.js`.
@@ -56,7 +61,7 @@ Full scoped inventory:
 - `factory_scenes` (1): `cyberpunk.json`.
 - `host` (22): `ai-api.js`, `bootstrap-handlers.js`, `concurrency-pool.js`, `context-builder.js`, `fs-utils.js`, `high-risk-task-handlers.js`, `host-api.js`, `ipc.js`, `low-risk-handlers.js`, `misc-handlers.js`, `ps-io.js`, `ps-lock.js`, `ps-pixels.js`, `recordable-actions.js`, `recycle-bin.js`, `router.js`, `satellite-events.js`, `selection-flow-handlers.js`, `sound.js`, `stop-control-handlers.js`, `tile-host-loader.js`, `tile-scanner-handlers.js`.
 - `styles` (8): `base.css`, `components.css`, `dock.css`, `expand-panels.css`, `groups.css`, `simple-mode.css`, `tiles.css`, `ui-kit.css`.
-- `tiles` (114): `_order.json`, `tile-aistatus.css`, `tile-aistatus.host.js`, `tile-aistatus.js`, `tile-automation.host.js`, `tile-automation.js`, `tile-batch.host.js`, `tile-batch.js`, `tile-billing.css`, `tile-billing.js`, `tile-bodypreset.css`, `tile-bodypreset.js`, `tile-browser.css`, `tile-browser.host.js`, `tile-browser.js`, `tile-camera.css`, `tile-camera.js`, `tile-chat.css`, `tile-chat.host.js`, `tile-chat.js`, `tile-cloud.host.js`, `tile-codex.css`, `tile-codex.js`, `tile-colorgrade.css`, `tile-colorgrade.host.js`, `tile-colorgrade.js`, `tile-comfyui.css`, `tile-comfyui.host.js`, `tile-comfyui.js`, `tile-community-mock.css`, `tile-community-mock.js`, `tile-conversation.css`, `tile-conversation.host.js`, `tile-conversation.js`, `tile-dev-ruler.css`, `tile-dev-ruler.js`, `tile-dock.js`, `tile-drawer.css`, `tile-drawer.js`, `tile-firstrun-satellite.css`, `tile-firstrun-satellite.js`, `tile-firstrun-welcome.css`, `tile-firstrun-welcome.js`, `tile-forge.css`, `tile-forge.host.js`, `tile-forge.js`, `tile-history.js`, `tile-info.css`, `tile-info.js`, `tile-kao.css`, `tile-kao.host.js`, `tile-kao.js`, `tile-layout.css`, `tile-layout.host.js`, `tile-layout.js`, `tile-light.css`, `tile-light.js`, `tile-light.prompt-2d.js`, `tile-light.prompt-relight.js`, `tile-lighthand.host.js`, `tile-log.css`, `tile-log.js`, `tile-params.css`, `tile-params.js`, `tile-partition.host.js`, `tile-partition.js`, `tile-perf-monitor.css`, `tile-perf-monitor.js`, `tile-poster.css`, `tile-poster.host.js`, `tile-poster.js`, `tile-poster.prompts.js`, `tile-presets.host.js`, `tile-presets.js`, `tile-prompt.css`, `tile-prompt.js`, `tile-prompt-optimizer.css`, `tile-prompt-optimizer.host.js`, `tile-prompt-optimizer.js`, `tile-qa.css`, `tile-qa.data.js`, `tile-qa.js`, `tile-recyclebin.css`, `tile-recyclebin.host.js`, `tile-recyclebin.js`, `tile-refimages.js`, `tile-run.css`, `tile-run.host.js`, `tile-run.js`, `tile-satellite.css`, `tile-satellite.js`, `tile-scene.css`, `tile-scene.host.js`, `tile-scene.js`, `tile-scope.css`, `tile-scope.host.js`, `tile-scope.js`, `tile-settings.js`, `tile-support.css`, `tile-support.js`, `tile-sync.css`, `tile-sync.host.js`, `tile-sync.js`, `tile-tasks.host.js`, `tile-tasks.js`, `tile-tiled.host.js`, `tile-tiled.js`, `tile-topbar.css`, `tile-topbar.js`, `tile-translate.host.js`, `tile-update.css`, `tile-update.js`, `tile-welcome.css`, `tile-welcome.js`.
+- `tiles` (130): `_order.json`, `tile-automation.host.js`, `tile-automation.js`, `tile-batch.host.js`, `tile-batch.js`, `tile-batchworks.js`, `tile-billing.css`, `tile-billing.js`, `tile-bodypreset.css`, `tile-bodypreset.js`, `tile-browser.css`, `tile-browser.host.js`, `tile-browser.js`, `tile-camera.css`, `tile-camera.js`, `tile-canvas-gen.host.js`, `tile-canvas-gen.js`, `tile-canvas.css`, `tile-canvas.host.js`, `tile-canvas.js`, `tile-center.css`, `tile-center.js`, `tile-chat.css`, `tile-chat.host.js`, `tile-chat.js`, `tile-codex.css`, `tile-codex.js`, `tile-colorgrade.css`, `tile-colorgrade.host.js`, `tile-colorgrade.js`, `tile-colormatch.host.js`, `tile-colormatch.js`, `tile-comfyui.css`, `tile-comfyui.host.js`, `tile-comfyui.js`, `tile-community-mock.css`, `tile-community-mock.js`, `tile-conversation.host.js`, `tile-dev-ruler.css`, `tile-dev-ruler.js`, `tile-dock.js`, `tile-drawer.css`, `tile-drawer.js`, `tile-firstrun-satellite.css`, `tile-firstrun-satellite.js`, `tile-firstrun-welcome.css`, `tile-firstrun-welcome.js`, `tile-forge.css`, `tile-forge.host.js`, `tile-forge.js`, `tile-hemisynth.host.js`, `tile-hemisynth.js`, `tile-hemisynth.prompts.js`, `tile-info.css`, `tile-info.js`, `tile-kao.css`, `tile-kao.host.js`, `tile-kao.js`, `tile-layercm.css`, `tile-layercm.host.js`, `tile-layercm.js`, `tile-layout.css`, `tile-layout.host.js`, `tile-layout.js`, `tile-light-splitter.css`, `tile-light-splitter.host.js`, `tile-light-splitter.js`, `tile-light-splitter.prompts.js`, `tile-light.css`, `tile-light.js`, `tile-light.prompt-2d.js`, `tile-light.prompt-relight.js`, `tile-lighthand.host.js`, `tile-log.css`, `tile-log.js`, `tile-netdoctor.css`, `tile-netdoctor.host.js`, `tile-netdoctor.js`, `tile-params.css`, `tile-params.js`, `tile-partition.host.js`, `tile-partition.js`, `tile-perf-monitor.css`, `tile-perf-monitor.js`, `tile-perftest.host.js`, `tile-perftest.js`, `tile-poster.css`, `tile-poster.host.js`, `tile-poster.js`, `tile-poster.prompts.js`, `tile-presets.host.js`, `tile-presets.js`, `tile-prompt-optimizer.css`, `tile-prompt-optimizer.host.js`, `tile-prompt-optimizer.js`, `tile-prompt.css`, `tile-prompt.js`, `tile-qa.css`, `tile-qa.data.js`, `tile-qa.js`, `tile-records.css`, `tile-records.js`, `tile-recyclebin.host.js`, `tile-refimages.js`, `tile-run.css`, `tile-run.host.js`, `tile-run.js`, `tile-satellite.css`, `tile-satellite.js`, `tile-scene.css`, `tile-scene.host.js`, `tile-scene.js`, `tile-scope.css`, `tile-scope.host.js`, `tile-scope.js`, `tile-settings.js`, `tile-stitch.css`, `tile-stitch.host.js`, `tile-stitch.js`, `tile-tasks-service.js`, `tile-tasks.host.js`, `tile-tiled.host.js`, `tile-tiled.js`, `tile-topbar.css`, `tile-topbar.js`, `tile-translate.host.js`, `tile-tutorial.css`, `tile-tutorial.js`, `tile-welcome.css`, `tile-welcome.js`.
 
 `_dev/` document coverage note:
 
@@ -401,7 +406,7 @@ Tiles are loaded in `tiles/_order.json` order, with unlisted files appended alph
 
 | Tile id | File | Purpose |
 |---|---|---|
-| `topbar` | `tiles/tile-topbar.js` | pinned account/compute/connection topbar |
+| `topbar` | `tiles/tile-topbar.js` | pinned compute/connection topbar |
 | `prompt` | `tiles/tile-prompt.js` | prompt and preset-derived prompt editing |
 | `prompt-optimizer` | `tiles/tile-prompt-optimizer.js` | AI prompt optimization |
 | `poster` | `tiles/tile-poster.js` | GPT-image poster/layout generation |
@@ -435,20 +440,16 @@ Tiles are loaded in `tiles/_order.json` order, with unlisted files appended alph
 
 | Tile id | File | Purpose |
 |---|---|---|
-| `sync` | `tiles/tile-sync.js` | cloud preset sync/import |
 | `layout` | `tiles/tile-layout.js` | layout snapshots; registered noGrid |
-| `update` | `tiles/tile-update.js` | update check/download/install |
-| `support` | `tiles/tile-support.js` | online support |
 | `qa` | `tiles/tile-qa.js` | help/FAQ |
 | `chat` | `tiles/tile-chat.js` | AI assistant |
 | `log` | `tiles/tile-log.js` | runtime log |
 | `drawer` | `tiles/tile-drawer.js` | stash uncommon tiles |
-| `settings` | `tiles/tile-settings.js` | output, appearance, sound, telemetry settings |
+| `settings` | `tiles/tile-settings.js` | output, appearance, sound, debug settings |
 | `info` | `tiles/tile-info.js` | diagnostic/version/status info |
 | `billing` | `tiles/tile-billing.js` | compute billing and Momo billing |
 | `satellite` | `tiles/tile-satellite.js` | remote satellite plugin control |
 | `browser` | `tiles/tile-browser.js` | separate browser plugin install/config |
-| `aistatus` | `tiles/tile-aistatus.js` | AI service status |
 | `dock` | `tiles/tile-dock.js` | right-side shortcut Dock settings |
 | `dev-ruler` | `tiles/tile-dev-ruler.js` | developer width ruler |
 | `perf-monitor` | `tiles/tile-perf-monitor.js` | FPS/memory/render monitor |
@@ -458,29 +459,6 @@ Tiles are loaded in `tiles/_order.json` order, with unlisted files appended alph
 ## 7. Host Action Map
 
 HostAPI actions are tile-local when possible.
-
-### Cloud and Account
-
-`tiles/tile-cloud.host.js`:
-
-- `cloudLogin`
-- `cloudRegister`
-- `cloudLogout`
-- `cloudGetCaptcha`
-- `cloudRestoreSession`
-- `cloudGetAnnouncement`
-- `cloudGetUserPoints`
-- `cloudRechargeCardKey`
-- `cloudComputeGetKey`
-- `cloudComputeRefill`
-- `cloudComputeSync`
-- `cloudComputeSetByok`
-- `cloudGetForgeUrl`
-- `cloudTestForgeConnection`
-- `cloudForgeProbe`
-- `cloudForgeImg2Img`
-- `cloudConsumePoints`
-- `cloudResetPasswordByCard`
 
 ### Banana/API Generation and Tasks
 
@@ -634,12 +612,6 @@ HostAPI actions are tile-local when possible.
 - `layoutDeleteUser`
 - `layoutOpenUserFolder`
 
-`tiles/tile-sync.host.js`:
-
-- `syncFetchList`
-- `syncFetchManifest`
-- `syncFetchOne`
-
 ### External Helpers
 
 `tiles/tile-browser.host.js`:
@@ -648,11 +620,6 @@ HostAPI actions are tile-local when possible.
 - `installBrowser`
 - `openBrowserFolder`
 - `ipcWriteBrowserConfig`
-
-`tiles/tile-aistatus.host.js`:
-
-- `aistatusFetch`
-- `aistatusOpenCodeFile`
 
 `tiles/tile-automation.host.js`:
 
@@ -902,37 +869,27 @@ Behavior:
 - Some default URLs are fetched through server or fallback list.
 - Balance can be checked through `/api/usage/token`.
 
-### 12.3 GRS / Summer Compute
+### 12.3 GRS
 
 Storage:
 
 - `connection.grs.url`
 - `connection.grs.key`
-- `connection.grs.use_byok`
 
 Runtime state:
 
-- `compute.mode`
-- `compute.key`
-- `compute.status`
-- `compute.cap`
-- `compute.balance`
 - `grs.credits`
 - `grs.modelStatuses`
 
-Modes:
+Mode:
 
-- BYOK: user-provided GRS key.
-- proxy: cloud account receives server-managed subkey.
+- 只有 BYOK（用户自己的 GRS key）。原「夏算力托管 / proxy 子 key」已删除（阶段 A）。
 
 Helpers:
 
-- `TileAPI.compute.getKey`
-- `TileAPI.compute.refill`
-- `TileAPI.compute.sync`
-- `TileAPI.compute.setByok`
-- `TileAPI.compute.isUserByokActive`
-- `TileAPI.computeBrand`
+- `TileAPI.compute.isUserByokActive`（兼容桩，恒 true）
+- `TileAPI.computeBrand`（恒返回 "GRS"）
+- 其余 `TileAPI.compute.*`（getKey / refill / sync / setByok）都是兼容空实现
 
 ### 12.4 Momo
 
@@ -987,8 +944,7 @@ Provider differences:
 Critical details:
 
 - `callAiApi` supports archive callbacks for soft-stop/archive behavior.
-- error messages are sanitized before telemetry/logging.
-- usage reporting URL currently points to cpolar and must be changed before public release.
+- error messages are sanitized before logging.
 - prompt/model/size/aspect are passed by the caller; host does not consult panel state.
 
 ## 14. Photoshop IO
@@ -1027,28 +983,16 @@ Important:
 
 Owns:
 
-- account login/register/logout;
-- captcha;
-- recharge;
-- cloud points;
-- GRS compute mode and key;
-- AJI/GRS/Others/Momo configuration;
+- AJI/GRS/Others/Momo configuration (BYOK keys, user-provided URLs);
 - slot names/order/model visibility;
 - Momo model fetch and quota;
-- cloud Forge URL selection/test;
 - layout panel toggle.
 
 Exports globals:
 
-- `window._cloudIsLoggedIn`
-- `window._cloudIsReady`
-- `window._cloudGetPoints`
-- `window._cloudIsForgeConnected`
-- `window._cloudGetForgeEncrypted`
-- `window._cloudGetForgeUrlList`
-- `window._cloudGetForgeSelectedIdx`
-- `window._cloudSetForgeSelectedIdx`
 - `window._topbarToggleLayoutPanel`
+
+原来的账号 / 积分 / 充值 / 云 Forge / 公告 / 客服 / 找回密码以及对应的 `window._cloud*` 桥接都已删除（阶段 A）。
 
 Risk:
 
@@ -1137,10 +1081,10 @@ Owns:
 
 - poster prompt templates;
 - prompt editor;
-- PS capture/upload slots;
-- autofill;
+- PS capture slots;
+- autofill（阶段 B 改造中）;
 - GPT-image generation;
-- usage reporting.
+- usage reporting（阶段 B 删除）.
 
 Host:
 
@@ -1149,7 +1093,7 @@ Host:
 Risk:
 
 - Large file and external-server dependent.
-- Several proxy URLs currently point to cpolar.
+- 参考图上传仍走旧的临时图床接口，阶段 C 改成 data URI 直传；自动填充 / 用量上报阶段 B 改造。
 
 ### 15.6 Light and Camera
 
@@ -1202,58 +1146,21 @@ Storage:
 
 ## 16. External Services and URLs
 
-Critical current issue:
+插件不再连接作者的任何服务器（阶段 A 已删除）。当前外部请求只有：
 
-- many production-facing URLs still point to `https://xiasanqi.cpolar.top`.
-- `_dev/DEBUG_CHECKLIST.md` marks this as P0 before public release.
+- 用户自己配置的服务商：AJI / GRS / 墨墨 / 自定义渠道（URL + Key 由用户填在「⚡ 算力配置」）；
+- GRS 默认节点：`https://grsai.dakka.com.cn`（国内）/ `https://grsaiapi.com`（海外）；
+- 墨墨：`https://api.momoapi.icu`；
+- 可选：`api.ipify.org` / `ipinfo.io`（展开「信息」磁贴时查一次公网 IP，用户主动触发，已决定保留）；
+- 本地引擎：Forge `http://127.0.0.1:7860`、ComfyUI `http://127.0.0.1:8188`。
 
-Known cpolar occurrences include:
-
-- `login-service.js`
-- `host/ai-api.js`
-- `host/bootstrap-handlers.js`
-- `core/telemetry.js`
-- `tiles/tile-aistatus.host.js`
-- `tiles/tile-poster.host.js`
-- `tiles/tile-prompt-optimizer.host.js`
-- `tiles/tile-run.host.js`
-- `tiles/tile-sync.host.js`
-- `tiles/tile-support.js`
-- `tiles/tile-tasks.host.js`
-- `tiles/tile-update.js`
-
-Other external APIs:
-
-- Momo: `https://api.momoapi.icu`
-- Youdao translate: hardcoded credentials in `tiles/tile-translate.host.js`
-- AJI/GRS/Others user-provided or server-fetched endpoints.
+翻译 / 提示词优化 / 海报自动填充当前仍是「待改造」（阶段 B 改成直连用户配置的 LLM）。
 
 ## 17. Update System
 
-Frontend:
+已整块删除（阶段 A）：更新磁贴、`host/bootstrap-handlers.js` 里的下载/启动更新逻辑、`update_plugin.bat` 都不在了。插件不再自动更新；升级方式是替换插件目录后在 UXP Developer Tool 里重新加载。
 
-- `tiles/tile-update.js`
-
-Host:
-
-- `host/bootstrap-handlers.js`
-- `update_plugin.bat`
-
-Flow:
-
-```txt
-tile-update checks /api/update/check
-  -> receives version/downloadUrl/sha256
-  -> sendToHost('downloadUpdate', { url, expectedSha256 })
-  -> host downloads zip to dataFolder
-  -> optional sha256 validation
-  -> copies update_plugin.bat to dataFolder
-  -> sends updateReady
-  -> frontend sends launchUpdateBat
-  -> host launches updater
-```
-
-Current code includes sha256 support when server supplies it.
+`manifest.json` 仍保留 `launchProcess` 的 `.bat` / `.cmd`：配套浏览器 / 遥控器的安装脚本要靠它启动。
 
 ## 18. Layout System
 
@@ -1422,7 +1329,6 @@ Treat these as high-risk because they are large, central, or cross-cutting:
 - `host/ps-io.js`
 - `host/ai-api.js`
 - `index.js`
-- `login-service.js`
 
 Before changing these:
 
@@ -1436,16 +1342,14 @@ Before changing these:
 
 P0 before public release:
 
-- replace all cpolar URLs with official production domain;
-- ensure update/check/download/install path uses final domain and hash;
-- confirm Momo API request format in real environment.
+- 确认 Momo API 请求格式在真实环境可用；
+- GRS + GPT-Image 带图仍是旧图床路径（阶段 C 改成 data URI 直传）。
 
 Security/privacy:
 
-- Youdao key/secret are hardcoded in `tiles/tile-translate.host.js`.
-- XOR key for cloud Forge URL is hardcoded in `login-service.js`.
-- Some cloud host logs may expose token or decrypted URL fragments.
-- Login UI still stores `login.savedPassword` in panel storage when remember behavior is used; host-side cloud_setting password cleanup exists, but panel storage should be reviewed.
+- 不再有账号 / token / 云端密码；本地存储只保存用户自己填的 Key 与设置。
+- 阶段 B 接入辅助 LLM 时，注意不要把 Key 写进日志。
+- 原版的遥测（用户改进计划）已换成空实现，不发任何数据。
 
 Reliability:
 
@@ -1519,9 +1423,7 @@ TileAPI.onHostMessage(
 TileAPI.state.set(
 TileAPI.storage.set(
 sendToPanel(
-SERVER_HOST_SWITCH
-AUTH_HOST_SWITCH
-cpolar
+computeBrand
 slotOrder
 slotOrderAll
 archiveToRecycleBin
