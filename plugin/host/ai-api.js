@@ -1111,8 +1111,6 @@ async function _runWithArchive(apiKey, prompt, inputImageBase64, imageSize, time
 async function _callAiApiInner(apiKey, prompt, inputImageBase64, imageSize, timeoutSeconds, apiBaseUrl, extraImages, modelName, provider, taskId, aspectRatio, options) {
     options = options || {};
     var softMode = !!options.softMode;
-    // ★ 上报: 记录开始时间, 用于算 elapsed
-    var __aistatusStartTs = Date.now();
     // 统一入口净化:参数=0 的 MODULE 块整块删除(所有调用入口自动受益,无需各自 sanitize)
     prompt = sanitizePrompt(prompt);
     // 守门人:净化后若提示词为空,直接拒绝调用 AI
@@ -1212,8 +1210,6 @@ async function _callAiApiInner(apiKey, prompt, inputImageBase64, imageSize, time
         if (!g_taskControllers[taskId]) g_taskControllers[taskId] = [];
         g_taskControllers[taskId].push(controllerEntry);
     }
-    // ★ 上报: 用一个闭包标志记录最终结果, finally 里上报一次
-    var __aiOutcome = { success: false, err: null };
     try {
         var fetchHeaders = { "Content-Type": "application/json" };
         if (isAji || isGrs || provider === 'others' || provider === 'momo') { fetchHeaders["Authorization"] = "Bearer " + apiKey; }
@@ -1352,7 +1348,6 @@ async function _callAiApiInner(apiKey, prompt, inputImageBase64, imageSize, time
                     ts: Date.now()
                 });
             } catch(_) {}
-            __aiOutcome.success = true;
             return collectedB64s[0];
         }
 
@@ -1369,7 +1364,6 @@ async function _callAiApiInner(apiKey, prompt, inputImageBase64, imageSize, time
         e3.solution = "建议：1. 检查模型是否支持图片生成 2. 开启抗截断模式 3. 稍后重试";
         throw e3;
     } catch (e) {
-        __aiOutcome.err = e;
         clearTimeout(timeoutId);
         // 对话磁贴 — 广播失败(只在最外层捕获时发一次)
         var convErrSent = false;

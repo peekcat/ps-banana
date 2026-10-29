@@ -775,8 +775,6 @@ function continueBoot() {
     }, 2000);
   }
 
-  // 6.2.5 起 AJI URL 不再让用户填, 强制清掉老 storage 里的手填值 (一次性迁移, 静默)
-
   // 布局快照引导: 单次弹窗 (storage 标记, 只弹一次). 延后最久, 避开迁移弹窗.
   try {
     if (!TileAPI.storage.get('layout.tipShown')) {

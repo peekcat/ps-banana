@@ -24,7 +24,7 @@ const uxpModule = require("uxp");
 const { storage } = uxpModule;
 const fs = storage.localFileSystem;
 
-// cloudService / comfyEngine 已迁移到各 tile host.js 中直接 require
+// comfyEngine 已迁移到各 tile host.js 中直接 require
 
 // === Host 路由模块（拆解过渡） ===
 const hostRouter = require("./host/router.js");
