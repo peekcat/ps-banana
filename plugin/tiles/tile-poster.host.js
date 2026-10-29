@@ -53,12 +53,6 @@ var POSTER_AUTOFILL_PROXY_PATH = '/api/poster-autofill';
 // 调用统计上报(选了哪个选项)
 var POSTER_USAGE_PROXY_PATH = '/api/usage';
 // 海报参考图临时图床(给 GRS 流用,base64 转外网 URL)
-var POSTER_TEMP_UPLOAD_PATH = '/api/poster/upload-temp';
-
-// 跟服务端默认密钥保持一致(server.js 里 WC_SHARED_SECRET_DEFAULT)
-var _WC_SECRET = 'wc-v6-public-default-secret-2026';
-
-// 纯 JS SHA-256(UXP 不支持 require('crypto'),抄自 tile-translate.host.js)
 function _sha256(str) {
     function utf8Encode(s) {
         var bytes = [];
@@ -119,69 +113,6 @@ function _signBody(bodyStr) {
     var ts = Math.floor(Date.now() / 1000).toString();
     var sig = _sha256(ts + bodyStr + _WC_SECRET);
     return { ts: ts, sig: sig };
-}
-function _readDeviceId(ctx) {
-    try {
-        var hs = (ctx.hostStorageRef && ctx.hostStorageRef.value) || {};
-        var v = hs['support.deviceId'];
-        if (typeof v === 'string') {
-            try { v = JSON.parse(v); } catch(_) {}
-        }
-        if (typeof v === 'string' && /^[a-zA-Z0-9_-]{4,64}$/.test(v)) return v;
-    } catch(_) {}
-    return '';
-}
-
-// 把参考图 base64 上传到 preset-server 临时图床,换成外网 URL(给 GRS 流用)
-//   refs: [{name, base64}, ...]
-//   返回: ['https://...', 'https://...', ...] 跟入参顺序对齐
-//   失败抛错(任意一张失败就整组失败,触发本页跳过)
-async function _uploadRefsToTempServer(refs, ctx) {
-    if (!refs || !refs.length) return [];
-    var deviceId = _readDeviceId(ctx);
-    if (!deviceId) throw new Error('未找到设备 ID,请先打开过客服磁贴');
-    var urls = new Array(refs.length);
-    // 串行上传:并发容易触发服务端限流,串行更稳;每张几百 KB,16 张大概 5-10 秒
-    for (var i = 0; i < refs.length; i++) {
-        var r = refs[i];
-        if (!r || !r.base64) {
-            throw new Error('第 ' + (i + 1) + ' 张参考图无内容');
-        }
-        var bodyObj = { deviceId: deviceId, base64: r.base64, mime: 'image/jpeg' };
-        var bodyStr = JSON.stringify(bodyObj);
-        var sigInfo = _signBody(bodyStr);
-        try { ctx.logToPanel('[海报·GRS] 第 ' + (i + 1) + '/' + refs.length + ' 张:body ' + (bodyStr.length / 1024).toFixed(1) + ' KB,base64 ' + (r.base64.length / 1024).toFixed(1) + ' KB', 'info'); } catch(_) {}
-        var ctrl = new AbortController();
-        var to = setTimeout(function() { try { ctrl.abort(); } catch(_){} }, 60 * 1000);
-        var resp;
-        var raw = '';
-        try {
-            resp = await serverConfig.fetchApi(POSTER_TEMP_UPLOAD_PATH, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WC-Ts': sigInfo.ts,
-                    'X-WC-Sig': sigInfo.sig
-                },
-                body: bodyStr,
-                signal: ctrl.signal
-            });
-            raw = await resp.text();
-        } catch (e) {
-            throw new Error('第 ' + (i + 1) + ' 张上传失败(网络): ' + (e.message || e));
-        } finally {
-            clearTimeout(to);
-        }
-        var json = null;
-        try { json = JSON.parse(raw); } catch(_) {}
-        if (!resp.ok || !json || !json.success || !json.url) {
-            var errMsg = (json && json.error) || ('HTTP ' + resp.status);
-            throw new Error('第 ' + (i + 1) + ' 张上传失败: ' + errMsg);
-        }
-        urls[i] = json.url;
-        try { ctx.logToPanel('[海报·GRS] 上传参考图 ' + (i + 1) + '/' + refs.length, 'info'); } catch(_) {}
-    }
-    return urls;
 }
 
 function _b64ToArrayBuffer(b64) {
@@ -679,28 +610,6 @@ HostAPI.registerAction('posterGenerate', async function(data, ctx) {
                 try { await ctx.savePromptTxtToRunFolder(pageRunFolder, rollJobs[0].prompt || ''); } catch (_) {}
             }
 
-            // GRS 流:把该页所有参考图上传到临时图床换 URL(同页所有 roll 共享同一组 URL,只传一次)
-            var pageRefUrls = null;   // 仅 GRS 流用
-            if (provider === 'grs') {
-                ctx.sendToPanel('posterGenerateProgress', {
-                    msg: '第 ' + (pgi + 1) + '/' + totalPages + ' 页:正在上传 ' + (rollJobs[0].refs || []).length + ' 张参考图…',
-                    kind: 'info'
-                });
-                try {
-                    pageRefUrls = await _uploadRefsToTempServer(rollJobs[0].refs || [], ctx);
-                } catch (upErr) {
-                    var upMsg = '参考图上传失败: ' + (upErr.message || upErr);
-                    ctx.logToPanel('[海报] ' + upMsg, 'error');
-                    failedPages.push({ pageNum: pageNum, error: upMsg });
-                    if (!firstErr) firstErr = upMsg;
-                    // 参考图上传失败时尚未发出图像请求，只结束已登记的任务卡，不计消费。
-                    rollJobs.forEach(function(job) {
-                        tryCompletePosterJob(job, { error: upMsg, error_category: 'poster.input.reference_upload_fail' });
-                    });
-                    continue;   // 跳过本页
-                }
-            }
-
             ctx.sendToPanel('posterGenerateProgress', {
                 msg: '第 ' + (pgi + 1) + '/' + totalPages + ' 页:并发调用 ' + rollJobs.length + ' 个 GPT-Image 请求…',
                 kind: 'info'
@@ -708,7 +617,6 @@ HostAPI.registerAction('posterGenerate', async function(data, ctx) {
 
             // 同页 N 个 roll 并发跑(共享 convTaskId 让对话气泡自动合并)
             // 每 roll 各自 callAiApi,Promise.allSettled 等齐
-            var pageRefUrlsForClosure = pageRefUrls;   // 闭包捕获
             var rollPromises = rollJobs.map(function(job) {
                 var state = getPosterJobState(job);
                 var convTaskId = '';
@@ -732,28 +640,16 @@ HostAPI.registerAction('posterGenerate', async function(data, ctx) {
                         extras: { pageNum: job.pageNum, rollIdx: job.rollIdx }
                     };
                     var _posterCb = function(b64, st, err) { return ctx.archiveToRecycleBin(_posterArch, b64, st, err); };
-                    var apiPromise;
-                    if (provider === 'grs') {
-                        // GRS 流:走 URL 数组,base64 不传
-                        // 第 0 个 URL 当 mainImage,其他当 extras(逻辑跟 AJI 一样,只是载体从 base64 换成 URL)
-                        apiPromise = ctx.callAiApi(
-                            apiKey, job.prompt, null, gptSize,
-                            3600, apiUrl, null,
-                            gptModel, 'grs', convTaskId, gptAspect,
-                            // 第 13 个参数:GRS 流的 URL 数组(挂在 options 里) + archiveCallback
-                            { grsUrls: pageRefUrlsForClosure || [], archiveCallback: _posterCb }
-                        );
-                    } else {
-                        // AJI 流:走 base64
-                        var inputBase64 = job.refs && job.refs[0] && job.refs[0].base64;
-                        var extras = (job.refs || []).slice(1).map(function(r) { return r.base64; }).filter(Boolean);
-                        apiPromise = ctx.callAiApi(
-                            apiKey, job.prompt, inputBase64, gptSize,
-                            3600, apiUrl, extras,
-                            gptModel, 'aji', convTaskId, gptAspect,
-                            { archiveCallback: _posterCb }
-                        );
-                    }
+                    // 所有服务商都走 base64: GRS 新接口会把它们转成 data URI,
+                    // AJI 走 multipart, 都不再需要图床
+                    var inputBase64 = job.refs && job.refs[0] && job.refs[0].base64;
+                    var extras = (job.refs || []).slice(1).map(function(r) { return r.base64; }).filter(Boolean);
+                    var apiPromise = ctx.callAiApi(
+                        apiKey, job.prompt, inputBase64, gptSize,
+                        3600, apiUrl, extras,
+                        gptModel, provider, convTaskId, gptAspect,
+                        { archiveCallback: _posterCb }
+                    );
                     if (state) state.apiDispatched = true;
                     return apiPromise;
                 }).then(function(b64) {
@@ -1137,8 +1033,7 @@ HostAPI.registerAction('posterAutofill', async function(data, ctx) {
     var timeoutId = setTimeout(function() { try { controller.abort(); } catch(_){} }, 200 * 1000);
 
     try {
-        var deviceId = _readDeviceId(ctx);
-        var bodyObj = { mode: mode, userText: userText, deviceId: deviceId };
+        var bodyObj = { mode: mode, userText: userText };
         var bodyStr = JSON.stringify(bodyObj);
         var sigInfo = _signBody(bodyStr);
         var resp = await serverConfig.fetchApi(POSTER_AUTOFILL_PROXY_PATH, {
@@ -1319,9 +1214,7 @@ HostAPI.registerAction('posterPromptsResetCategory', async function(data, ctx) {
 HostAPI.registerAction('posterReportUsage', async function(data, ctx) {
     try {
         if (!data) return;
-        var deviceId = _readDeviceId(ctx);
         var bodyObj = {
-            deviceId: deviceId,
             category: data.category || '',
             sectionId: data.sectionId || '',
             buttonId: data.buttonId || '',

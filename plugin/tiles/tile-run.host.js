@@ -6,7 +6,6 @@
 // ============================================================
 
 var HostAPI = require('../host/host-api.js');
-var serverConfig = require('../core/server-config.js');
 var automationSecurity = require('./tile-automation.host.js');
 var photoshop = require('photoshop');
 var app = photoshop.app;
@@ -36,140 +35,6 @@ function _sameSelectionBounds(a, b) {
         if (!isFinite(av) || !isFinite(bv) || Math.abs(av - bv) > tolerance) return false;
     }
     return true;
-}
-
-// ============================================================
-//  GRS 流: 把 base64 参考图上传到临时图床换公网 URL
-//  从 tile-poster.host.js 原样复制 (海报那边以后改不影响这里)
-//  入参 refs: [{ name?, base64 }, ...]   出参: ['https://...', ...]
-// ============================================================
-var POSTER_TEMP_UPLOAD_PATH = '/api/poster/upload-temp';
-var _WC_SECRET = 'wc-v6-public-default-secret-2026';
-
-function _sha256(str) {
-    function utf8Encode(s) {
-        var bytes = [];
-        for (var i = 0; i < s.length; i++) {
-            var c = s.charCodeAt(i);
-            if (c < 0x80) bytes.push(c);
-            else if (c < 0x800) bytes.push(0xC0 | (c >> 6), 0x80 | (c & 0x3F));
-            else if (c >= 0xD800 && c <= 0xDBFF) {
-                var hi = c, lo = s.charCodeAt(++i);
-                var cp = ((hi - 0xD800) << 10) + (lo - 0xDC00) + 0x10000;
-                bytes.push(0xF0 | (cp >> 18), 0x80 | ((cp >> 12) & 0x3F), 0x80 | ((cp >> 6) & 0x3F), 0x80 | (cp & 0x3F));
-            } else bytes.push(0xE0 | (c >> 12), 0x80 | ((c >> 6) & 0x3F), 0x80 | (c & 0x3F));
-        }
-        return bytes;
-    }
-    var K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,
-        0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
-        0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,
-        0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
-        0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,
-        0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
-        0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,
-        0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
-    function rr(v, n) { return ((v >>> n) | (v << (32 - n))) >>> 0; }
-    var msg = utf8Encode(str);
-    var bitLen = msg.length * 8;
-    msg.push(0x80);
-    while (msg.length % 64 !== 56) msg.push(0);
-    for (var bi = 56; bi >= 0; bi -= 8) msg.push((bitLen / Math.pow(2, bi)) & 0xFF);
-    var H = [0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
-    for (var off = 0; off < msg.length; off += 64) {
-        var W = new Array(64);
-        for (var t = 0; t < 16; t++) W[t] = (msg[off+t*4]<<24)|(msg[off+t*4+1]<<16)|(msg[off+t*4+2]<<8)|msg[off+t*4+3];
-        for (var t2 = 16; t2 < 64; t2++) {
-            var s0 = rr(W[t2-15],7) ^ rr(W[t2-15],18) ^ (W[t2-15]>>>3);
-            var s1 = rr(W[t2-2],17) ^ rr(W[t2-2],19) ^ (W[t2-2]>>>10);
-            W[t2] = (W[t2-16] + s0 + W[t2-7] + s1) >>> 0;
-        }
-        var a=H[0],b=H[1],c=H[2],d=H[3],e=H[4],f=H[5],g=H[6],h=H[7];
-        for (var j = 0; j < 64; j++) {
-            var S1 = rr(e,6) ^ rr(e,11) ^ rr(e,25);
-            var ch = (e & f) ^ ((~e) & g);
-            var temp1 = (h + S1 + ch + K[j] + W[j]) >>> 0;
-            var S0 = rr(a,2) ^ rr(a,13) ^ rr(a,22);
-            var maj = (a & b) ^ (a & c) ^ (b & c);
-            var temp2 = (S0 + maj) >>> 0;
-            h=g; g=f; f=e; e=(d+temp1)>>>0; d=c; c=b; b=a; a=(temp1+temp2)>>>0;
-        }
-        H[0]=(H[0]+a)>>>0; H[1]=(H[1]+b)>>>0; H[2]=(H[2]+c)>>>0; H[3]=(H[3]+d)>>>0;
-        H[4]=(H[4]+e)>>>0; H[5]=(H[5]+f)>>>0; H[6]=(H[6]+g)>>>0; H[7]=(H[7]+h)>>>0;
-    }
-    var hex = '';
-    for (var hi2 = 0; hi2 < 8; hi2++) hex += ('00000000' + H[hi2].toString(16)).slice(-8);
-    return hex;
-}
-
-function _signBody(bodyStr) {
-    var ts = Math.floor(Date.now() / 1000).toString();
-    var sig = _sha256(ts + bodyStr + _WC_SECRET);
-    return { ts: ts, sig: sig };
-}
-function _readDeviceId(ctx) {
-    try {
-        var hs = (ctx.hostStorageRef && ctx.hostStorageRef.value) || {};
-        var v = hs['support.deviceId'];
-        if (typeof v === 'string') {
-            try { v = JSON.parse(v); } catch(_) {}
-        }
-        if (typeof v === 'string' && /^[a-zA-Z0-9_-]{4,64}$/.test(v)) return v;
-    } catch(_) {}
-    return '';
-}
-
-// 把参考图 base64 上传到 preset-server 临时图床, 换成外网 URL
-//   refs: [{ base64 }, ...]
-//   onProgress(i, total) 每张上传成功后回调
-//   返回 ['https://...']  失败抛错
-async function _uploadRefsToTempServer(refs, ctx, onProgress) {
-    if (!refs || !refs.length) return [];
-    var deviceId = _readDeviceId(ctx);
-    if (!deviceId) throw new Error('未找到设备 ID, 请先打开过客服磁贴(用于上传参考图鉴权)');
-    var urls = new Array(refs.length);
-    for (var i = 0; i < refs.length; i++) {
-        var r = refs[i];
-        if (!r || !r.base64) {
-            throw new Error('第 ' + (i + 1) + ' 张参考图无内容');
-        }
-        var bodyObj = { deviceId: deviceId, base64: r.base64, mime: 'image/jpeg' };
-        var bodyStr = JSON.stringify(bodyObj);
-        var sigInfo = _signBody(bodyStr);
-        var ctrl = new AbortController();
-        var to = setTimeout(function() { try { ctrl.abort(); } catch(_){} }, 60 * 1000);
-        var resp;
-        try {
-            resp = await serverConfig.fetchApi(POSTER_TEMP_UPLOAD_PATH, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-WC-Ts': sigInfo.ts,
-                    'X-WC-Sig': sigInfo.sig
-                },
-                body: bodyStr,
-                signal: ctrl.signal
-            });
-        } catch (e) {
-            clearTimeout(to);
-            throw new Error('第 ' + (i + 1) + ' 张上传失败(网络): ' + (e.message || e));
-        }
-        clearTimeout(to);
-        var raw = '';
-        try { raw = await resp.text(); } catch(_) {}
-        var json = null;
-        try { json = JSON.parse(raw); } catch(_) {}
-        if (!resp.ok || !json || !json.success || !json.url) {
-            var errMsg = (json && json.error) || ('HTTP ' + resp.status);
-            throw new Error('第 ' + (i + 1) + ' 张上传失败: ' + errMsg);
-        }
-        urls[i] = json.url;
-        try { ctx.logToPanel('[GRS] 上传参考图 ' + (i + 1) + '/' + refs.length, 'info'); } catch(_) {}
-        if (typeof onProgress === 'function') {
-            try { onProgress(i + 1, refs.length); } catch(_) {}
-        }
-    }
-    return urls;
 }
 
 // 算 targetSize: 保持原比例, 长边 = longSide
@@ -577,7 +442,7 @@ HostAPI.registerAction('runSingle', async function(params, ctx) {
         // --- GRS+GPT-Image 预上传 ---
         // 如果是 GRS 流且模型是 gpt-image 系列, 这里把主图+参考图全部上传换成 URL,
         // 后续 batchSize 次 job 共享同一组 URL (避免每次重复上传)
-        var _grsPreUrls = null;   // 不为 null = 走 GRS+gptImage 路径
+        var _grsImages = null;    // 不为 null = 走 GRS+gptImage 路径 (base64 直传)
         // --- 预占 N 个 pending 槽位 — 必须在所有可能 throw 的步骤 (GRS 预上传/参考图处理) 之前 ---
         // 否则: GRS+GPT 预上传到临时图床失败时, 任务直接抛, 回收站一片空白, 对话式生成也没记录, 用户感觉"静默失败".
         // 现在: 占位先建好, 任何前置步骤失败都能转 failed 反馈给用户.
@@ -632,31 +497,14 @@ HostAPI.registerAction('runSingle', async function(params, ctx) {
                 await _failAllPending(ctx, _archMetas, 'GRS+GPT-Image 模式需要至少一张图作为参考');
                 throw new Error('GRS+GPT-Image 模式需要至少一张图作为参考');
             }
-            // 强制压缩: 任何 > 1.2 MB 的图都重压, 避免中转层 502 / server 端 413 (上限 2 MB)
+            // 强制压缩: 任何 > 1.2 MB 的图都重压, 避免 API 服务端 413 (第一版保留, 后续再单独测能放宽到多少)
             ctx.logToPanel('[GRS] 检查 ' + _allRefs.length + ' 张图体积...', 'info');
             for (var _ci = 0; _ci < _allRefs.length; _ci++) {
                 _allRefs[_ci].base64 = await _ensureSmallEnough(_allRefs[_ci].base64, ctx, _ci);
             }
-            ctx.logToPanel('[GRS] 预上传 ' + _allRefs.length + ' 张图到临时图床...', 'info');
-            ctx.sendToPanel('taskProgress', {
-                taskId: taskId, total: _allRefs.length, index: 0,
-                status: '上传图床 0/' + _allRefs.length
-            });
-            try {
-                _grsPreUrls = await _uploadRefsToTempServer(_allRefs, ctx, function(done, total) {
-                    ctx.sendToPanel('taskProgress', {
-                        taskId: taskId, total: total, index: done,
-                        status: '上传图床 ' + done + '/' + total
-                    });
-                });
-                ctx.logToPanel('[GRS] 全部上传完成, 开始提交 GRS 任务', 'success');
-            } catch (upErr) {
-                var upMsg = '[GRS] 上传图床失败: ' + (upErr.message || upErr);
-                ctx.logToPanel(upMsg, 'error');
-                // 占位转 failed, 让回收站显示红色 ✗ 卡 + 错误信息, 用户能看到
-                await _failAllPending(ctx, _archMetas, upMsg);
-                throw upErr;
-            }
+            // 新接口: 参考图直接以 data URI 放进 images, 不再上传任何图床
+            _grsImages = _allRefs.map(function(r) { return r.base64; }).filter(Boolean);
+            ctx.logToPanel('[GRS] 准备 ' + _grsImages.length + ' 张参考图直接提交 (base64 直传)', 'info');
         }
 
         // --- 构建并发请求队列 ---
@@ -684,23 +532,12 @@ HostAPI.registerAction('runSingle', async function(params, ctx) {
                         };
                         _generationRequestSent = true;
                         _requestStats.sentRequests += 1;
-                        if (_grsPreUrls) {
-                            // GRS+GPT-Image 路径: 不传 base64, 用预上传的 URL 数组
-                            // (callAiApi 内部 grs+gpt-image 分支会走 callGrsGptImageApi)
-                            resultPayload = await ctx.callAiApi(
-                                params.apiKey, params.prompt, '', params.size,
-                                timeout, params.apiBaseUrl, [],
-                                params.model, params.provider, taskId, params.aspectRatio,
-                                { grsUrls: _grsPreUrls, archiveCallback: _archCb, archiveId: _archMeta.id }
-                            );
-                        } else {
-                            resultPayload = await ctx.callAiApi(
-                                params.apiKey, params.prompt, captureBase64, params.size,
-                                timeout, params.apiBaseUrl, params.refImages,
-                                params.model, params.provider, taskId, params.aspectRatio,
-                                { archiveCallback: _archCb, archiveId: _archMeta.id }
-                            );
-                        }
+                        resultPayload = await ctx.callAiApi(
+                            params.apiKey, params.prompt, captureBase64, params.size,
+                            timeout, params.apiBaseUrl, params.refImages,
+                            params.model, params.provider, taskId, params.aspectRatio,
+                            { grsImages: _grsImages, archiveCallback: _archCb, archiveId: _archMeta.id }
+                        );
                         var _jobElapsed = ((Date.now() - _jobStartTime) / 1000).toFixed(1);
                         ctx.logToPanel("[API 任务 " + taskId.slice(-4) + "] 第" + (currentIndex + 1) + "张完成 (" + _jobElapsed + "s)", "success");
                     }

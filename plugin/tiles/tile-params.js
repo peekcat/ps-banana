@@ -22,8 +22,7 @@ var GRS_MODEL_CONFIG = {
   'nano-banana-pro-cl':    { name: '🍌 nano-banana-pro-cl',     sizes: ['1K','2K','4K'], default: '1K', suffixMode: 'none', prices: {'1K':2, '2K':3, '4K':5} },
   'nano-banana-pro-vip':   { name: '👑 nano-banana-pro-vip',    sizes: ['1K','2K'],      default: '1K', suffixMode: 'none', prices: {'1K':3, '2K':5} },
   'nano-banana-pro-4k-vip':{ name: '👑 nano-banana-pro-4k-vip', sizes: ['4K'],           default: '4K', suffixMode: 'none', prices: {'4K':8} },
-  // GRS GPT-Image: 走 callGrsGptImageApi (host/ai-api.js), 调用前需先把所有图上传到临时图床换 URL
-  // (tile-run.host.js 在 callAiApi 之前预上传, 详见 _uploadRefsToTempServer)
+  // GRS GPT-Image: 走 callGrsGptImageApi (host/ai-api.js), 参考图以 data URI 直接放进 images
   'gpt-image-2':           { name: '🟢 GPT-Image-2',             sizes: ['1K','2K'],      default: '1K', suffixMode: 'none', prices: {'1K':2, '2K':4} },
   'gpt-image-2-vip':       { name: '🟢 GPT-Image-2 VIP (支持 4K)', sizes: ['1K','2K','4K'], default: '1K', suffixMode: 'none', prices: {'1K':3, '2K':5, '4K':10} }
 };

@@ -5,7 +5,6 @@
 //  body: { messages, deviceId? }
 //  返回: { success, content, model, remaining }
 //
-//  deviceId 从 host storage 的 support.deviceId 读(跟客服功能共用同一个 ID)
 //  接口签名:X-WC-Ts + X-WC-Sig(sha256(ts + body + secret))
 // ============================================================
 
@@ -79,18 +78,6 @@ function _signBody(bodyStr) {
     return { ts: ts, sig: sig };
 }
 
-function _readDeviceId(ctx) {
-    try {
-        var hs = (ctx.hostStorageRef && ctx.hostStorageRef.value) || {};
-        var v = hs['support.deviceId'];
-        if (typeof v === 'string') {
-            try { v = JSON.parse(v); } catch(_) {}
-        }
-        if (typeof v === 'string' && /^[a-zA-Z0-9_-]{4,64}$/.test(v)) return v;
-    } catch(_) {}
-    return '';
-}
-
 HostAPI.registerAction('promptOptimize', async function(data, ctx) {
     var messages = data && Array.isArray(data.messages) ? data.messages : null;
     if (!messages || messages.length === 0) {
@@ -105,8 +92,7 @@ HostAPI.registerAction('promptOptimize', async function(data, ctx) {
     var timeoutId = setTimeout(function() { try { controller.abort(); } catch(_){} }, 320 * 1000);
 
     try {
-        var deviceId = _readDeviceId(ctx);
-        var bodyObj = { messages: messages, deviceId: deviceId };
+        var bodyObj = { messages: messages };
         var bodyStr = JSON.stringify(bodyObj);
         var sigInfo = _signBody(bodyStr);
         var resp = await serverConfig.fetchApi(OPTIMIZER_PROXY_PATH, {

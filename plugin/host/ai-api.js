@@ -97,7 +97,7 @@ function createAiApiModule(deps) {
                     e2._netDiag = true;
                     // 连续快速建连失败通常代表请求尚未到达服务端；慢失败则按可能已提交处理。
                     e2.requestAttempted = !(safeToRetry && attempt > max);
-                    e2.solution = '①先关/换代理(Clash)再试 ②确认这个域名能正常上网 ③若是隧道地址不稳, 联系作者换地址 ④稍后重试';
+                    e2.solution = '①先关/换代理再试 ②确认这个域名能正常上网 ③换一个服务商节点或稍后重试';
                     throw e2;
                 }
                 var wait = baseDelay * attempt + Math.floor(Math.random() * 200);   // 退避 + 抖动错峰
@@ -682,11 +682,16 @@ async function callGptImageNewApi(apiKey, prompt, inputImageBase64, imageSize, t
 }
 
 // ============================================================
-//  GRS GPT-Image-2 协议:JSON POST + 轮询
-//  端点:POST {grs}/v1/draw/completions  → { code:0, data:{ id } }
-//  轮询:POST {grs}/v1/draw/result body { id }
-//        → { code:0, data:{ status, progress, results:[{url}], failure_reason, error } }
-//  注意:与 AJI 路径完全不同 — JSON body、参考图走 urls(公网 URL)、不支持 base64 参考图
+//  GRS GPT-Image 协议 (官方新接口, 2026-10-26 起)
+//    提交: POST {grs}/v1/api/generate
+//          body { model, prompt, aspectRatio, images:[data URI], replyType:"async" }
+//          → { id, status }
+//    轮询: GET  {grs}/v1/api/result?id={id}
+//          → { id, status, progress, results:[{url}], error }
+//    status: running | succeeded | failed | violation
+//
+//  参考图直接放 images(data URI), 不再经过任何图床 (方案 2, 见 docs/去云化评估.md §5.1)。
+//  aspectRatio 对 -vip/-flare/-sunburst 只收像素值, 由 _mapGptSizeToPixels 生成。
 // ============================================================
 function _grsFailureReasonText(reason) {
     var map = {
@@ -697,7 +702,22 @@ function _grsFailureReasonText(reason) {
     return map[reason] || reason || '未知失败原因';
 }
 
-async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, apiBaseUrl, modelName, taskId, aspectRatio, refUrls, options) {
+// base64 → data URI; 按 magic bytes 判断 png / jpeg / webp
+function _grsImageDataUri(b64) {
+    if (!b64) return '';
+    var s = String(b64).trim();
+    if (/^data:image\//i.test(s)) return s;
+    var mime = 'image/png';
+    try {
+        // base64 前 4 个字符对应文件头 3 字节: PNG 以 "iVBOR" 开头, JPEG 以 "/9j/" 开头
+        if (s.indexOf('/9j/') === 0) mime = 'image/jpeg';
+        else if (s.indexOf('UklGR') === 0) mime = 'image/webp';
+        else if (s.indexOf('iVBOR') === 0) mime = 'image/png';
+    } catch (_) {}
+    return 'data:' + mime + ';base64,' + s;
+}
+
+async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, apiBaseUrl, modelName, taskId, aspectRatio, refBase64s, options) {
     options = options || {};
     var softMode = !!options.softMode;          // 回收站软中断
     var g_activeControllers = getActiveControllers();
@@ -708,33 +728,32 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
     var maxPollAttempts = parseInt(_gptCfg('grsGpt.maxPollAttempts', 1200), 10);
     var pollIntervalSec = parseInt(_gptCfg('grsGpt.pollIntervalSec', 3), 10);
     var maxPollSeconds = parseInt(_gptCfg('grsGpt.maxPollSeconds', 3600), 10);
-    var shutProgress = (_gptCfg('grsGpt.shutProgress', true) !== false);
 
-    // GRS 文档:aspectRatio 字段同时支持比例字符串("16:9")或像素值("3840x2160")
-    //   传比例 → GRS 默认按 1K 出图
-    //   传像素值 → GRS 按指定分辨率出图(海报场景需要 4K,所以这里把 sizeKey+aspect 转成像素值)
+    // GRS 文档:aspectRatio 字段同时支持比例字符串或像素值
+    //   -vip / -flare / -sunburst 只收像素值, 所以这里统一把 sizeKey+aspect 转成像素值
     var pxRes = _mapGptSizeToPixels(imageSize, aspectRatio);
     var ar = pxRes && pxRes.size ? pxRes.size : (aspectRatio || '1:1');
     if (ar === 'Auto' || ar === 'auto') ar = 'auto';
     if (pxRes && pxRes.warning) logToPanel('[GRS-GPT] ' + pxRes.warning, 'warn');
 
-    // 提交体
+    var images = (refBase64s || []).filter(Boolean).map(_grsImageDataUri).filter(Boolean);
+    if (images.length === 0) {
+        var eNoImg = new Error('GRS + GPT-Image 需要至少一张参考图');
+        eNoImg.solution = '先在 Photoshop 里框选一块区域, 再点生成';
+        throw eNoImg;
+    }
+
     var payload = {
         model: modelName,
         prompt: prompt,
         aspectRatio: ar,
-        webHook: '-1',         // 立即返回 id,我们用轮询拿结果
-        shutProgress: shutProgress
+        images: images,
+        replyType: 'async'
     };
-    // 海报磁贴的参考图 URL 数组(先上传到 preset-server 临时图床换的 URL)
-    if (refUrls && refUrls.length) {
-        payload.urls = refUrls;
-        logToPanel('[GRS-GPT] 带 ' + refUrls.length + ' 张参考图 URL', 'info');
-    }
 
-    logToPanel('[GRS-GPT请求] ' + modelName + ' aspectRatio=' + ar + ' (sizeKey=' + imageSize + ')', 'info');
+    logToPanel('[GRS-GPT] 新接口提交: ' + modelName + ' aspectRatio=' + ar + ' (sizeKey=' + imageSize + '), 参考图 ' + images.length + ' 张', 'info');
 
-    // 提交阶段 controller(只控这次 fetch)
+    // 提交阶段 controller (只控这次 fetch)
     var controller = new AbortController();
     var timeoutId = setTimeout(function() { controller.abort(); }, timeoutSeconds * 1000);
     var controllerEntry = { controller: controller, timeoutId: timeoutId, startTime: Date.now(), timeoutSeconds: timeoutSeconds, softMode: softMode };
@@ -771,7 +790,7 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
             var r = await fetch(imgUrl, { signal: dlController.signal });
             if (!r.ok) {
                 var eDl = new Error('图片下载失败: HTTP ' + r.status);
-                eDl.solution = '图片URL可能已过期(2 小时),请重试';
+                eDl.solution = '结果图 URL 有效期 2 小时, 可能已过期, 请重试';
                 throw eDl;
             }
             var buf = await r.arrayBuffer();
@@ -787,13 +806,20 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
         }
     }
 
+    function violationError(inner) {
+        var detail = (inner && inner.error) ? (' (' + inner.error + ')') : '';
+        var eV = new Error('GRS 审核未通过: 参考图或提示词被平台拦截' + detail);
+        eV.solution = '换一张参考图, 或改掉提示词里可能触发审核的内容';
+        return eV;
+    }
+
     var taskApiId;
     try {
         var resp;
         try {
             _notifyRequestAttempt(options);
             resp = await _fetchWithRetry(function() {
-                return fetch(apiBaseUrl + '/v1/draw/completions', {
+                return fetch(apiBaseUrl + '/v1/api/generate', {
                     method: 'POST',
                     headers: {
                         'Authorization': 'Bearer ' + apiKey,
@@ -802,7 +828,7 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
                     body: JSON.stringify(payload),
                     signal: controller.signal
                 });
-            }, { retries: 2, delay: 400, url: apiBaseUrl + '/v1/draw/completions', shouldStop: function() { return !softMode && (getEarlyStop() || (taskId && getTaskEarlyStop()[taskId])); } });
+            }, { retries: 2, delay: 400, url: apiBaseUrl + '/v1/api/generate', shouldStop: function() { return !softMode && (getEarlyStop() || (taskId && getTaskEarlyStop()[taskId])); } });
         } catch(e) {
             if (e.name === 'AbortError') {
                 checkEarlyStop();
@@ -829,11 +855,19 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
         }
 
         var subData = await resp.json();
-        if (!subData || subData.code !== 0) {
-            var msg = (subData && subData.msg) || 'GRS 提交失败';
-            throw new Error('GRS 提交失败 (code=' + (subData && subData.code) + '): ' + msg);
+        // 兼容两种包装: 顶层 {id,status} 或 {code:0,data:{id,status}}
+        var sub = (subData && subData.data && typeof subData.data === 'object' && subData.data.id) ? subData.data : subData;
+        if (subData && typeof subData.code !== 'undefined' && subData.code !== 0) {
+            throw new Error('GRS 提交失败 (code=' + subData.code + '): ' + (subData.msg || ''));
         }
-        taskApiId = subData.data && subData.data.id;
+        var subStatus = sub && sub.status;
+        if (subStatus === 'violation') throw violationError(sub);
+        if (subStatus === 'failed') {
+            var eSubFail = new Error('GRS 任务失败: ' + _grsFailureReasonText(sub && sub.failure_reason) + (sub && sub.error ? ' (' + sub.error + ')' : ''));
+            eSubFail.solution = '建议重新提交';
+            throw eSubFail;
+        }
+        taskApiId = sub && sub.id;
         if (!taskApiId) {
             throw new Error('GRS 提交成功但未返回 task id: ' + JSON.stringify(subData).substring(0, 300));
         }
@@ -853,7 +887,7 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
             throw new Error('GRS-GPT 轮询超时 (' + maxPollSeconds + 's)');
         }
 
-        // 间隔 sleep,每秒检查 earlyStop
+        // 间隔 sleep, 每秒检查 earlyStop
         for (var w = 0; w < pollIntervalSec; w++) {
             checkEarlyStop();
             await new Promise(function(r) { setTimeout(r, 1000); });
@@ -866,13 +900,9 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
 
         var pollResp;
         try {
-            pollResp = await fetch(apiBaseUrl + '/v1/draw/result', {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + apiKey,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: taskApiId }),
+            pollResp = await fetch(apiBaseUrl + '/v1/api/result?id=' + encodeURIComponent(taskApiId), {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + apiKey },
                 signal: pollController.signal
             });
         } catch(pe) {
@@ -894,20 +924,10 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
         var pollData;
         try { pollData = await pollResp.json(); } catch(_) { continue; }
 
-        // code=-22 任务不存在
-        if (pollData.code === -22) {
-            throw new Error('GRS 任务不存在 (id=' + taskApiId + ',可能已过期)');
-        }
-        if (pollData.code !== 0) {
-            // 偶发的非 0 code,继续轮询;连续 5 次累计才报错
-            consecutiveErr++;
-            if (consecutiveErr >= 5) throw new Error('GRS 轮询连续返回非 0 code: ' + pollData.msg);
-            continue;
-        }
-
-        var inner = pollData.data || {};
-        var status = inner.status;
-        var progress = inner.progress;
+        // 兼容 {data:{...}} 与顶层
+        var inner = (pollData && pollData.data && typeof pollData.data === 'object' && pollData.data.status) ? pollData.data : pollData;
+        var status = inner && inner.status;
+        var progress = inner && inner.progress;
 
         // progress 变化才打日志,避免刷屏
         if (typeof progress === 'number' && progress !== lastProgress) {
@@ -915,17 +935,21 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
             logToPanel('[GRS-GPT] 进度 ' + progress + '%', 'info');
         }
 
+        if (status === 'violation') {
+            throw violationError(inner);
+        }
+
         if (status === 'failed') {
-            var reasonText = _grsFailureReasonText(inner.failure_reason);
-            var detail = inner.error ? ' (' + inner.error + ')' : '';
+            var reasonText = _grsFailureReasonText(inner && inner.failure_reason);
+            var detail = (inner && inner.error) ? ' (' + inner.error + ')' : '';
             var eFail = new Error('GRS 任务失败: ' + reasonText + detail);
-            eFail.solution = (inner.failure_reason === 'error') ? '建议重新提交' : '检查提示词或参考图,确保不含违规内容';
+            eFail.solution = (inner && inner.failure_reason === 'error') ? '建议重新提交' : '检查提示词或参考图,确保不含违规内容';
             throw eFail;
         }
 
         if (status === 'succeeded') {
-            var results = inner.results || [];
-            var firstUrl = (results[0] && results[0].url) || inner.url;
+            var results = (inner && inner.results) || [];
+            var firstUrl = (results[0] && results[0].url) || (inner && inner.url);
             if (!firstUrl) throw new Error('GRS 任务成功但无图片 URL');
             logToPanel('[GRS-GPT] 任务完成,下载图片: ' + firstUrl, 'info');
             var grsDl = await downloadImage(firstUrl);
@@ -1154,13 +1178,11 @@ async function _callAiApiInner(apiKey, prompt, inputImageBase64, imageSize, time
     if (requestModelName.toLowerCase().indexOf('gpt-image') !== -1) {
         try {
             if (provider === 'grs') {
-                // GRS 协议:JSON POST /v1/draw/completions + 轮询 /v1/draw/result
-                // 参考图必须是公网 URL(海报磁贴会先把 base64 上传到自己的临时图床换 URL)
-                var grsUrls = (options.grsUrls && options.grsUrls.length) ? options.grsUrls : null;
-                if (!grsUrls && (inputImageBase64 || (extraImages && extraImages.length))) {
-                    logToPanel('[GRS-GPT] 调用方传了 base64 但没传 URL,GRS 流要求 URL,本次将忽略参考图', 'warn');
-                }
-                return await callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, apiBaseUrl, requestModelName, taskId, aspectRatio, grsUrls, { softMode: softMode, onRequestAttempt: options.onRequestAttempt, archiveId: options.archiveId });
+                // GRS 新接口: base64 参考图直接转 data URI 放进 images, 不再需要图床
+                var grsBase64s = (options.grsImages && options.grsImages.length)
+                    ? options.grsImages.slice()
+                    : [inputImageBase64].concat(extraImages || []).filter(Boolean);
+                return await callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, apiBaseUrl, requestModelName, taskId, aspectRatio, grsBase64s, { softMode: softMode, onRequestAttempt: options.onRequestAttempt, archiveId: options.archiveId });
             }
             // AJI / others 走 multipart /v1/images/edits
             return await callGptImageNewApi(apiKey, prompt, inputImageBase64, imageSize, timeoutSeconds, apiBaseUrl, extraImages, requestModelName, taskId, aspectRatio, { softMode: softMode, onRequestAttempt: options.onRequestAttempt, archiveId: options.archiveId });
