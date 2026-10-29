@@ -42,8 +42,6 @@
     "tile-dev-ruler.js",
     "tile-perftest.js",
     "tile-light-splitter.prompts.js",
-    "tile-light-splitter.js",
-    "tile-dlss.js",
-    "tile-qwen21.js"
+    "tile-light-splitter.js"
   ]
 }

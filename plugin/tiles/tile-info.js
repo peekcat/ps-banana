@@ -518,7 +518,7 @@ function _bindActions(container) {
   });
 }
 
-// ========== 对外: 构建信息面板纯文本快照 (供 tile-support 等调用) ==========
+// ========== 对外: 构建信息面板纯文本快照 ==========
 window._buildInfoSnapshot = function() {
   var lines = [];
   var pad = function(k, v) {
