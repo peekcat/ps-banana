@@ -24,6 +24,7 @@ var _netConfig = window.WheelchairServerConfig;
 var _activeContainer = null;     // 当前展开的 panel container
 var _queryingAji = false;
 var _queryingGrs = false;
+var _queryingMomo = false;       // 墨墨余额后台查询进行中
 var _grsRefreshLastTs = 0;       // GRS BYOK 自动刷新节流时间戳
 
 // 算力槽位内置标签 (移到文件顶部,避免 hoisting 导致 _computeAjiStat 等函数访问时为 undefined)
@@ -96,6 +97,36 @@ function _ajiConfigured() {
 }
 function _grsConfigured() {
   return !!(TileAPI.storage.get('connection.grs.url') && TileAPI.storage.get('connection.grs.key'));
+}
+// 墨墨: 无需地址, 有 Key 即可用
+function _momoConfigured() {
+  return !!TileAPI.storage.get('connection.momo.key');
+}
+// 自定义渠道: 取当前选中的那套配置 (与 _sectionPower 的取法一致), 有 Key 才算配好
+function _othersConfigured() {
+  var cfgs = TileAPI.storage.get('connection.others.configs');
+  if (Array.isArray(cfgs) && cfgs.length) {
+    for (var i = 0; i < cfgs.length; i++) {
+      if (cfgs[i] && cfgs[i].isActive) return !!(cfgs[i].key && cfgs[i].url);
+    }
+    return !!(cfgs[0] && cfgs[0].key && cfgs[0].url);
+  }
+  return !!(TileAPI.storage.get('connection.others.key') && TileAPI.storage.get('connection.others.url'));
+}
+// 墨墨余额缓存: -1 = 尚未查询, -2 = 无限额度
+function _getMomoBal() {
+  var v = TileAPI.state.get('momo.balance');
+  return (v === null || v === undefined) ? -1 : v;
+}
+// 自定义渠道余额缓存: -1 = 尚未查询
+function _getOthersBal() {
+  var v = TileAPI.state.get('others.balance');
+  return (v === null || v === undefined) ? -1 : v;
+}
+function _shortMomo(v) {
+  if (v === -2) return '∞';
+  if (v === null || v === undefined || v < 0) return '--';
+  return '$' + v.toFixed(2);
 }
 
 // ============================================================
@@ -174,6 +205,20 @@ function _autoQueryAll(silent) {
       baseUrl: TileAPI.storage.get('connection.grs.url')
     });
   }
+  // 墨墨: 静默查一次, 让收纳条那格有数 (结果进 momoQuotaResult, 失败不打扰用户)
+  if (_momoConfigured() && !_queryingMomo) {
+    _queryingMomo = true;
+    var mrid = 'momobg_' + Date.now() + '_' + Math.floor(Math.random() * 1e6);
+    _momoQuotaPending[mrid] = { container: null };
+    TileAPI.sendToHost('checkMomoQuota', {
+      requestId: mrid,
+      apiKey: TileAPI.storage.get('connection.momo.key'),
+      apiBaseUrl: MOMO_BASE_URL
+    });
+    setTimeout(function() {
+      if (_momoQuotaPending[mrid]) { _queryingMomo = false; delete _momoQuotaPending[mrid]; }
+    }, 15000);
+  }
   if (!silent) TileAPI.toast('正在查询余额...', 'info');
 }
 
@@ -236,19 +281,61 @@ function _computeGrsStat() {
            cls: 'is-clickable' + lowCls, jumpTo: 'grs' };
 }
 
+// 墨墨: 余额来自 checkMomoQuota, 结果缓存在 state('momo.balance'); 未查询过显示 -- 而不是乱报数字
+function _computeMomoStat() {
+  var label = _slotName('momo');
+  if (!_momoConfigured()) {
+    return { html: '<span class="topbar-stat-label">' + _esc(label) + '</span> <span class="topbar-stat-val">⚙</span>',
+             cls: 'is-clickable is-warn', jumpTo: 'momo' };
+  }
+  var bal = _getMomoBal();
+  if (bal < -1) {
+    return { html: '<span class="topbar-stat-label">' + _esc(label) + '</span> <span class="topbar-stat-val">' + _shortMomo(bal) + '</span>',
+             cls: 'is-clickable', jumpTo: 'momo' };
+  }
+  if (bal < 0) {
+    return { html: '<span class="topbar-stat-label">' + _esc(label) + '</span> <span class="topbar-stat-val">--</span>',
+             cls: 'is-clickable topbar-stat-off', jumpTo: 'momo' };
+  }
+  return { html: '<span class="topbar-stat-label">' + _esc(label) + '</span> <span class="topbar-stat-val">' + _shortMomo(bal) + '</span>',
+           cls: 'is-clickable', jumpTo: 'momo' };
+}
+
+// 自定义渠道: 默认是隐藏的第 4 格, 只有当用户在槽位自定义里把它排进前 3 才会出现在收纳条
+function _computeOthersStat() {
+  var label = _slotName('others');
+  if (!_othersConfigured()) {
+    return { html: '<span class="topbar-stat-label">' + _esc(label) + '</span> <span class="topbar-stat-val">⚙</span>',
+             cls: 'is-clickable is-warn', jumpTo: 'others' };
+  }
+  var bal = _getOthersBal();
+  if (bal < 0) {
+    return { html: '<span class="topbar-stat-label">' + _esc(label) + '</span> <span class="topbar-stat-val">--</span>',
+             cls: 'is-clickable topbar-stat-off', jumpTo: 'others' };
+  }
+  return { html: '<span class="topbar-stat-label">' + _esc(label) + '</span> <span class="topbar-stat-val">$' + bal.toFixed(2) + '</span>',
+           cls: 'is-clickable', jumpTo: 'others' };
+}
+
 function _renderFront(container) {
   var aji = _computeAjiStat();
   var grs = _computeGrsStat();
+  var momo = _computeMomoStat();
+  var others = _computeOthersStat();
 
-  // AJI / GRS 两格按槽位顺序排 (others 不在收纳条)
+  // 收纳条显示 TileAPI.slotOrder() 的 3 格 (默认 AJI / GRS / 墨墨),
+  // 与展开面板的 4 个配置页签、参数磁贴的 provider 按钮共用同一套顺序。
+  // 第 4 格 (默认是「自定义渠道」) 不露; 用户若在槽位自定义里把它排进前 3, 这里会跟着显示。
   var statSpan = {
     aji: '<span class="topbar-stat ' + aji.cls + '" data-jump="' + aji.jumpTo + '">' + aji.html + '</span>',
-    grs: '<span class="topbar-stat ' + grs.cls + '" data-jump="' + grs.jumpTo + '">' + grs.html + '</span>'
+    grs: '<span class="topbar-stat ' + grs.cls + '" data-jump="' + grs.jumpTo + '">' + grs.html + '</span>',
+    momo: '<span class="topbar-stat ' + momo.cls + '" data-jump="' + momo.jumpTo + '">' + momo.html + '</span>',
+    others: '<span class="topbar-stat ' + others.cls + '" data-jump="' + others.jumpTo + '">' + others.html + '</span>'
   };
   // 兜底: TileAPI.slotOrder 可能在初始化早期不可用,用默认顺序
-  var slotOrderFn = (TileAPI && TileAPI.slotOrder) || function() { return ['aji', 'grs', 'others']; };
-  var orderedStats = slotOrderFn().filter(function(e) { return e === 'aji' || e === 'grs'; })
-    .map(function(e) { return statSpan[e]; }).join('');
+  var slotOrderFn = (TileAPI && TileAPI.slotOrder) || function() { return ['aji', 'grs', 'momo']; };
+  var orderedStats = slotOrderFn().map(function(e) { return statSpan[e]; })
+    .filter(function(h) { return !!h; }).join('');
 
   var newHtml =
     '<div class="topbar-summary">' +
@@ -372,6 +459,28 @@ function _onFrontClick(target) {
       } else {
         var pwrSec = c.querySelector('[data-section="power"]');
         if (pwrSec) _scrollAndFlash(pwrSec);
+      }
+      return;
+    }
+    if (target === 'momo') {
+      _switchPwrTab(c, 'momo');
+      if (!TileAPI.storage.get('connection.momo.key')) {
+        var mk = c.querySelector('#topbarInpMomoKey');
+        if (mk) _scrollAndFlash(mk, true);
+      } else {
+        var momoSec = c.querySelector('[data-section="power"]');
+        if (momoSec) _scrollAndFlash(momoSec);
+      }
+      return;
+    }
+    if (target === 'others') {
+      _switchPwrTab(c, 'others');
+      if (!_othersConfigured()) {
+        var ok = c.querySelector('#topbarInpOthersKey');
+        if (ok) _scrollAndFlash(ok, true);
+      } else {
+        var othersSec = c.querySelector('[data-section="power"]');
+        if (othersSec) _scrollAndFlash(othersSec);
       }
       return;
     }
@@ -984,7 +1093,13 @@ function _bindEvents(container) {
     var _saveMomoKey = function() {
       var v = (momoKeyInp.value || '').replace(/\s+/g, '');
       if (momoKeyInp.value !== v) momoKeyInp.value = v;
+      var old = TileAPI.storage.get('connection.momo.key') || '';
       TileAPI.storage.set('connection.momo.key', v);
+      // Key 换了 → 旧余额作废, 收纳条那格退回 "--", 避免显示别人账户的数
+      if (v !== old) {
+        TileAPI.state.set('momo.balance', null);
+        _refreshFront();
+      }
     };
     _on(momoKeyInp, 'change', _saveMomoKey);
     _on(momoKeyInp, 'blur', _saveMomoKey);
@@ -1347,18 +1462,30 @@ TileAPI.onHostMessage('momoModelsResult', function(d) {
   TileAPI.toast('墨墨拉取成功: ' + models.length + ' 个模型', 'success');
 });
 
-// 墨墨额度查询回包(顶栏「查询」按钮)
+// 墨墨额度查询回包(顶栏「查询」按钮 / 启动静默查询共用)
 TileAPI.onHostMessage('momoQuotaResult', function(d) {
   if (!d || !d.requestId) return;
   var p = _momoQuotaPending[d.requestId];
   if (!p) return;
   delete _momoQuotaPending[d.requestId];
-  var st = p.container.querySelector('#topbarMomoQuotaStatus');
-  if (!st) return;
-  if (!d.success) { st.textContent = '失败: ' + (d.error || ''); return; }
-  if (d.unlimited_quota) { st.textContent = '余额: 无限'; return; }
+  _queryingMomo = false;
+  var st = p.container ? p.container.querySelector('#topbarMomoQuotaStatus') : null;
+  if (!d.success) { if (st) st.textContent = '失败: ' + (d.error || ''); return; }
+  if (d.unlimited_quota) {
+    TileAPI.state.set('momo.balance', -2);
+    if (st) st.textContent = '余额: 无限';
+    _refreshFront();
+    return;
+  }
   var usd = d.balance_usd;   // 只看令牌自身额度
-  st.textContent = (usd == null) ? '余额: —' : ('余额: $' + (+usd).toFixed(4));
+  if (usd == null) {
+    TileAPI.state.set('momo.balance', null);
+    if (st) st.textContent = '余额: —';
+  } else {
+    TileAPI.state.set('momo.balance', +usd);
+    if (st) st.textContent = '余额: $' + (+usd).toFixed(4);
+  }
+  _refreshFront();
 });
 
 function _bindKeyEyeToggles(container) {
@@ -1448,6 +1575,11 @@ function _handleMessage(action, data) {
         ? ('余额 $' + data.balanceUSD.toFixed(4))
         : (data.remaining !== undefined ? ('剩余 ' + data.remaining) : '查询成功');
       if (quotaStatus) quotaStatus.textContent = quotaText;
+      // 缓存给收纳条那一格用 (没有金额形态接口的自定义渠道就一直显示 --)
+      if (typeof data.balanceUSD === 'number') {
+        TileAPI.state.set('others.balance', data.balanceUSD);
+        _refreshFront();
+      }
     } else if (quotaStatus) {
       quotaStatus.textContent = '查询失败: ' + ((data && data.error) || '该中转没有通用额度接口');
     }
