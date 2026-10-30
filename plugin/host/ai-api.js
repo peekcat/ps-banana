@@ -693,6 +693,17 @@ async function callGptImageNewApi(apiKey, prompt, inputImageBase64, imageSize, t
 //  参考图直接放 images(data URI), 不再经过任何图床 (方案 2, 见 docs/去云化评估.md §5.1)。
 //  aspectRatio 对 -vip/-flare/-sunburst 只收像素值, 由 _mapGptSizeToPixels 生成。
 // ============================================================
+// GRS 有时用 HTTP 400 + {"error":"apikey error"} 表达 Key 问题, 需要单独识别成可读提示
+function _isGrsKeyError(text) {
+    return /apikey\s*(error|not\s*exist|不存在|无效)|api[\s_-]*key\s*(error|invalid|not\s*found)/i.test(String(text || ''));
+}
+
+function _grsKeyError(detail) {
+    var e = new Error('GRS API Key 无效或已过期' + (detail ? '（' + String(detail).slice(0, 120) + '）' : ''));
+    e.solution = '到顶栏「⚡ 算力配置」核对 GRS Key；必要时在 GRS 平台重新生成一个';
+    return e;
+}
+
 function _grsFailureReasonText(reason) {
     var map = {
         'output_moderation': '输出违规(模型生成的图片被审核拦截)',
@@ -849,6 +860,7 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
         if (!resp.ok) {
             var errText = '';
             try { errText = (await resp.text()).substring(0, 300); } catch(_) {}
+            if (_isGrsKeyError(errText)) throw _grsKeyError(errText);
             var eHttp = new Error(getErrorMessage(resp.status) + (errText ? ' — ' + errText : ''));
             eHttp.solution = getErrorSolution(resp.status);
             throw eHttp;
@@ -860,6 +872,7 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
         if (subData && typeof subData.code !== 'undefined' && subData.code !== 0) {
             throw new Error('GRS 提交失败 (code=' + subData.code + '): ' + (subData.msg || ''));
         }
+        if (sub && _isGrsKeyError(sub.error || sub.msg)) throw _grsKeyError(sub.error || sub.msg);
         var subStatus = sub && sub.status;
         if (subStatus === 'violation') throw violationError(sub);
         if (subStatus === 'failed') {
@@ -940,6 +953,7 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
         }
 
         if (status === 'failed') {
+            if (inner && _isGrsKeyError(inner.error)) throw _grsKeyError(inner.error);
             var reasonText = _grsFailureReasonText(inner && inner.failure_reason);
             var detail = (inner && inner.error) ? ' (' + inner.error + ')' : '';
             var eFail = new Error('GRS 任务失败: ' + reasonText + detail);

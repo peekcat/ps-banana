@@ -1437,7 +1437,7 @@ function _handleMessage(action, data) {
         TileAPI.toast('⚠️ GRS 积分低于 ' + _getThresholdGrs() + ', 请及时充值', 'error');
       }
     } else {
-      TileAPI.toast('GRS 查询失败', 'error');
+      TileAPI.toast('GRS 查询失败: ' + ((data && data.error) || '未知原因'), 'error');
     }
   }
 

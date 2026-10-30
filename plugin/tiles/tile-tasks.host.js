@@ -235,10 +235,13 @@ HostAPI.registerAction('grsCheckCredits', async function(params, ctx) {
                 result.success = true;
                 ctx.logToPanel("[GRS] 积分余额: " + result.credits, "success");
             } else {
-                ctx.logToPanel("[GRS] 积分查询返回异常: " + (creditsData.msg || '未知'), "error");
+                var _msg = creditsData.msg || '未知';
+                result.error = /apikey|api\s*key/i.test(String(_msg)) ? 'GRS Key 无效或已过期' : ('积分查询失败: ' + _msg);
+                ctx.logToPanel("[GRS] " + result.error + (result.error === 'GRS Key 无效或已过期' ? ' (' + _msg + ')' : ''), "error");
             }
         } else {
-            ctx.logToPanel("[GRS] 积分查询HTTP错误: " + creditsResp.status, "error");
+            result.error = '积分查询失败: HTTP ' + creditsResp.status;
+            ctx.logToPanel("[GRS] " + result.error, "error");
         }
 
         // 2. 查询各模型状态
@@ -257,7 +260,8 @@ HostAPI.registerAction('grsCheckCredits', async function(params, ctx) {
             } catch(se) { /* 单个模型查询失败不影响整体 */ }
         }
     } catch (e) {
-        ctx.logToPanel("[GRS] 网络连接失败: " + e.message, "error");
+        result.error = '网络连接失败: ' + (e.message || e);
+        ctx.logToPanel("[GRS] " + result.error, "error");
     }
     ctx.sendToPanel('grsCreditsResult', result);
 }, { tileId: 'tasks' });
