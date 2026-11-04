@@ -52,7 +52,11 @@ async function _withPosterDocLock(ctx, taskId, docId, fn) {
 var POSTER_AUTOFILL_PROXY_PATH = '/api/poster-autofill';
 // 调用统计上报(选了哪个选项)
 var POSTER_USAGE_PROXY_PATH = '/api/usage';
-// 海报参考图临时图床(给 GRS 流用,base64 转外网 URL)
+
+// 跟服务端默认密钥保持一致(server.js 里 WC_SHARED_SECRET_DEFAULT)
+var _WC_SECRET = 'wc-v6-public-default-secret-2026';
+
+// 纯 JS SHA-256(UXP 不支持 require('crypto'),抄自 tile-translate.host.js)
 function _sha256(str) {
     function utf8Encode(s) {
         var bytes = [];
