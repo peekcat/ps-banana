@@ -651,7 +651,12 @@ async function callGptImageNewApi(apiKey, prompt, inputImageBase64, imageSize, t
             consecutiveErr = 0;
 
             var pollData;
-            try { pollData = await pollResp.json(); } catch(_) { continue; }
+            try { pollData = await pollResp.json(); } catch(je) {
+                // 解析失败也计入连续错误, 否则响应一直坏就一直空转到 maxPollSeconds
+                consecutiveErr++;
+                if (consecutiveErr >= 5) throw new Error('轮询响应解析失败: ' + (je.message || je));
+                continue;
+            }
 
             var got = _extractGptImageBase64(pollData);
             if (got) {
@@ -748,19 +753,16 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
     if (pxRes && pxRes.warning) logToPanel('[GRS-GPT] ' + pxRes.warning, 'warn');
 
     var images = (refBase64s || []).filter(Boolean).map(_grsImageDataUri).filter(Boolean);
-    if (images.length === 0) {
-        var eNoImg = new Error('GRS + GPT-Image 需要至少一张参考图');
-        eNoImg.solution = '先在 Photoshop 里框选一块区域, 再点生成';
-        throw eNoImg;
-    }
 
+    // images 不是必填: 没有参考图就不放这个字段(纯文生图)。
+    // 单图磁贴"必须有选区"的检查在 tile-run.host.js 里, 不在这里拦。
     var payload = {
         model: modelName,
         prompt: prompt,
         aspectRatio: ar,
-        images: images,
         replyType: 'async'
     };
+    if (images.length > 0) payload.images = images;
 
     logToPanel('[GRS-GPT] 新接口提交: ' + modelName + ' aspectRatio=' + ar + ' (sizeKey=' + imageSize + '), 参考图 ' + images.length + ' 张', 'info');
 
@@ -935,7 +937,12 @@ async function callGrsGptImageApi(apiKey, prompt, imageSize, timeoutSeconds, api
         consecutiveErr = 0;
 
         var pollData;
-        try { pollData = await pollResp.json(); } catch(_) { continue; }
+        try { pollData = await pollResp.json(); } catch(je) {
+            // 解析失败也计入连续错误, 否则响应一直坏就一直空转到 maxPollSeconds
+            consecutiveErr++;
+            if (consecutiveErr >= 5) throw new Error('GRS 轮询响应解析失败: ' + (je.message || je));
+            continue;
+        }
 
         // 兼容 {data:{...}} 与顶层
         var inner = (pollData && pollData.data && typeof pollData.data === 'object' && pollData.data.status) ? pollData.data : pollData;
