@@ -236,7 +236,11 @@ HostAPI.registerAction('grsCheckCredits', async function(params, ctx) {
                 ctx.logToPanel("[GRS] 积分余额: " + result.credits, "success");
             } else {
                 var _msg = creditsData.msg || '未知';
-                result.error = /apikey|api\s*key/i.test(String(_msg)) ? 'GRS Key 无效或已过期' : ('积分查询失败: ' + _msg);
+                // 与 host/ai-api.js 的 _isGrsKeyError 同一正则: 只认 "apikey error" 这类明确表述,
+                // 不再因为报错里随便出现 "api key" 就显示成 Key 无效
+                result.error = /apikey\s*(error|not\s*exist|不存在|无效)|api[\s_-]*key\s*(error|invalid|not\s*found)/i.test(String(_msg))
+                    ? 'GRS Key 无效或已过期'
+                    : ('积分查询失败: ' + _msg);
                 ctx.logToPanel("[GRS] " + result.error + (result.error === 'GRS Key 无效或已过期' ? ' (' + _msg + ')' : ''), "error");
             }
         } else {
