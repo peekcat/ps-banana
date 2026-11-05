@@ -11,17 +11,8 @@ var core = photoshop.core;
 
 function sleep(ms) { return new Promise(function(resolve) { setTimeout(resolve, ms); }); }
 
-// 规范化 chat URL — 与 tile-hemisynth.host.js 同一套
-function _normalizeChatUrl(url) {
-  var u = String(url || '').trim();
-  if (!/^https?:\/\//i.test(u)) return null;
-  u = u.replace(/\/+$/, '');
-  if (/\/chat\/completions$/i.test(u)) { /* 已完整 */ }
-  else if (/\/completions$/i.test(u)) { /* 老接口保留 */ }
-  else if (/\/v\d+$/i.test(u)) u += '/chat/completions';
-  else u += '/v1/chat/completions';
-  return u;
-}
+// 规范化 chat URL — 用公用那份 (host/aux-llm.js), 不再各留一份拷贝
+var _normalizeChatUrl = require('../host/aux-llm.js').normalizeChatUrl;
 
 // 从模型回复文本里挖 JSON 数组 (容忍 ```json 围栏 / 前后废话 / 截断)
 function _extractJsonArray(text) {

@@ -1082,9 +1082,9 @@ Owns:
 - poster prompt templates;
 - prompt editor;
 - PS capture slots;
-- autofill（阶段 B 改造中）;
+- autofill（调用户配置的语言模型）;
 - GPT-image generation;
-- usage reporting（阶段 B 删除）.
+- usage reporting（已删除）.
 
 Host:
 
@@ -1093,7 +1093,7 @@ Host:
 Risk:
 
 - Large file and external-server dependent.
-- 参考图上传仍走旧的临时图床接口，阶段 C 改成 data URI 直传；自动填充 / 用量上报阶段 B 改造。
+- 参考图以 data URI 直传（阶段 C 已改），不再走临时图床；自动填充改调用户配置的语言模型，用量上报已删除。
 
 ### 15.6 Light and Camera
 
@@ -1154,7 +1154,7 @@ Storage:
 - 可选：`api.ipify.org` / `ipinfo.io`（展开「信息」磁贴时查一次公网 IP，用户主动触发，已决定保留）；
 - 本地引擎：Forge `http://127.0.0.1:7860`、ComfyUI `http://127.0.0.1:8188`。
 
-翻译 / 提示词优化 / 海报自动填充当前仍是「待改造」（阶段 B 改成直连用户配置的 LLM）。
+翻译 / 提示词优化 / 海报自动填充都直连用户配置的语言模型（「AI 助手」的 `chat.url` / `chat.key` / `chat.model`）。
 
 ## 17. Update System
 
@@ -1343,12 +1343,12 @@ Before changing these:
 P0 before public release:
 
 - 确认 Momo API 请求格式在真实环境可用；
-- GRS + GPT-Image 带图仍是旧图床路径（阶段 C 改成 data URI 直传）。
+- GRS + GPT-Image 带图已改 data URI 直传（阶段 C），旧图床代码已删除。
 
 Security/privacy:
 
 - 不再有账号 / token / 云端密码；本地存储只保存用户自己填的 Key 与设置。
-- 阶段 B 接入辅助 LLM 时，注意不要把 Key 写进日志。
+- 辅助 LLM 的 Key 只从本地存储读取，不写日志、不写终端输出。
 - 原版的遥测（用户改进计划）已换成空实现，不发任何数据。
 
 Reliability:

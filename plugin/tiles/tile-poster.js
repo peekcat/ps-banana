@@ -1575,15 +1575,6 @@ function _bindPanel(container) {
       _setCfg(cat, cfg);
       _patchPillSelection(container, sectionId, cfg.selections[sectionId]);
       _patchPromptPreview(container);
-      // 埋点上报:select 或 deselect(失败静默)
-      try {
-        TileAPI.sendToHost('posterReportUsage', {
-          category: cat,
-          sectionId: sectionId,
-          buttonId: btnId,
-          action: wasOn ? 'deselect' : 'select'
-        });
-      } catch(_) {}
     });
   });
   container.querySelectorAll('[data-section][data-mode="toggle"]').forEach(function(btn) {
@@ -1849,8 +1840,33 @@ function _bindPanel(container) {
     if (statusEl) { statusEl.textContent = '正在调用 AI 解析…'; statusEl.className = 'poster-autofill-status is-loading'; }
     autofillBtn.disabled = true;
     autofillBtn.textContent = '⏳ 解析中…';
-    TileAPI.sendToHost('posterAutofill', { mode: cat, userText: txt });
+    // 把当前类别的表单字段精简后一起发过去: host 拿它拼提示词里的字段说明,
+    // 这样使用者在管理预设里改了选项, 自动填充跟着变 (字段定义不写死在提示词里)
+    TileAPI.sendToHost('posterAutofill', { mode: cat, userText: txt, sections: _trimSectionsForAutofill(cat) });
   });
+}
+
+// 自动填充只关心 id / label / type 和按钮的 id / label
+function _trimSectionsForAutofill(cat) {
+  var def = window._posterPrompts && window._posterPrompts[cat];
+  if (!def || !Array.isArray(def.sections)) return [];
+  var out = [];
+  for (var i = 0; i < def.sections.length; i++) {
+    var sec = def.sections[i] || {};
+    if (!sec.id || !sec.type) continue;
+    var item = { id: sec.id, label: sec.label || '', type: sec.type };
+    if (sec.type === 'single-select' || sec.type === 'multi-select') {
+      var btns = [];
+      var src = Array.isArray(sec.buttons) ? sec.buttons : [];
+      for (var j = 0; j < src.length; j++) {
+        if (!src[j] || !src[j].id) continue;
+        btns.push({ id: src[j].id, label: src[j].label || '' });
+      }
+      item.buttons = btns;
+    }
+    out.push(item);
+  }
+  return out;
 }
 
 // ========== 添加图片到池子 ==========
